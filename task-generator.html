@@ -822,6 +822,10 @@
 
     <div class="stats-grid" id="skill-stats">
       <div class="stat-field">
+        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAnUlEQVR4nMWUUQ6AMAhDp/H+V8ZfZQVaZmZ/TDbgMQTG2KBDsLWm3zgV4662QLaoqq0V90yMtFwMANmZP4sgTCc9z819X0IQpVURaPJDEOSYwfzdZBuVK8qwCgyTyX68NNWZ/dV1VNSdeLa9lyCSWAjKnH5N5yVV57UgaMgkUAXJAtAgZUG225lZkBGA3nHVglwGRJBPARVEWfP/6wabWBsx9++9+AAAAABJRU5ErkJggg==" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Agility</label>
+        <input type="number" id="stat-agility" min="1" max="99" value="" placeholder="1">
+      </div>
+      <div class="stat-field">
         <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABJElEQVR4nN2VsQ3CQAxFfwLNIaZgBMpImYEShmACBmAChoCSGU6iZASmQKSCUDmYnO0zQTR8CRFyzn/nH6MD/kWFs679xscDaQEgrEs09SNdXea9Si9A1SHjkIEkgBBLhKg+0kKJVWsxATT1AyEqkZGU6KRtiQD+rXajRCdWm++AaqIZ41ts46wbjJ1Lawfw2ADkp0vU4jxJAIvzRN1MthMyPM5vb7/765ZEdLN7TRCZc/F7dN3dWybl9giTVtW0M+Kd0WZW1RT701X11d5JwT6dAY+GrmkDvedcnfTVCoaYje4AgG1sTC/vdCUGPYCpQSNMYgAzkUEQ6sIDGAy53Ecf1Xsh1smYOzVdEHGyAGBTBxfI1YkEoMgYSJX7jHfI+5/7jZ5cmV0xV2/8bgAAAABJRU5ErkJggg==" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Woodcutting</label>
         <input type="number" id="stat-wc" min="1" max="99" value="" placeholder="1">
       </div>
@@ -979,9 +983,9 @@ const NPC_IMAGES = {
 };
 
 const CLUE_TASKS = [
-  { name: 'Easy Clue',   icon: '🗺️', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: 'Easy clues can be obtained from low-level monsters, skilling, or pickpocketing.' },
-  { name: 'Medium Clue', icon: '🗺️', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', note: 'Medium clues drop from higher-level monsters and require moderate skill levels to complete.' },
-  { name: 'Hard Clue',   icon: '🗺️', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   note: 'Hard clues drop from powerful monsters and may require completion of certain quests.' },
+  { name: 'Easy Clue',   icon: '🗺️', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: 'Easy clues can be obtained from low-level monsters, skilling, or pickpocketing. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Medium Clue', icon: '🗺️', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', note: 'Medium clues drop from higher-level monsters and require moderate skill levels to complete. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Hard Clue',   icon: '🗺️', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   note: 'Hard clues drop from powerful monsters and may require completion of certain quests. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
 ];
 
 const COMBAT_TASKS = [
@@ -1003,12 +1007,12 @@ const COMBAT_TASKS = [
   { name: 'Moss Giants',       icon: '🧟', min: 35, max: 126,  loc: 'Varrock Sewers or Crandor',        countMin: 50, countMax: 120, prayer: false , npcImage: 'Moss_giant' },
   { name: 'Ice Giants',        icon: '🧊', min: 40, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_giant' },
   { name: 'Ice Warriors',      icon: '❄️', min: 45, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_warrior' },
-  { name: 'Earth Warriors',    icon: '🪨', min: 40, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false , npcImage: 'Earth_warrior' },
+  { name: 'Earth Warriors',    icon: '🪨', min: 40, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false, note: '⚠️ Located in the Wilderness (level 5). Accessible via the monkey bars shortcut in Edgeville Dungeon (requires 15 Agility), or the long route through the dungeon', agility: 15 , npcImage: 'Earth_warrior' },
   { name: 'Jogres',            icon: '🦍', min: 45, max: 126,  loc: 'Karamja',                          countMin: 50, countMax: 120, prayer: false , npcImage: 'Jogre' },
   { name: 'Ogres',             icon: '👹', min: 40, max: 126,  loc: "Gu'Tanoth",                        countMin: 50, countMax: 120, prayer: false , npcImage: 'Ogre' },
 
   // High tier
-  { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon',                countMin: 50, countMax: 150, prayer: false, note: 'Requires Waterfall Quest' , npcImage: 'Fire_giant' },
+  { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon (level 5-12 Wilderness) — no quest required, but bring PK awareness' , npcImage: 'Fire_giant' },
   { name: 'Lesser Demons',     icon: '😈', min: 65, max: 126,  loc: 'Karamja Volcano or Taverley Dungeon', countMin: 50, countMax: 150, prayer: false , npcImage: 'Lesser_demon' },
   { name: 'Greater Demons',    icon: '👿', min: 75, max: 126,  loc: 'Brimhaven Dungeon',                countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Greater_demon' },
   { name: 'Blue Dragons',      icon: '🐉', min: 85, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: 'Anti-dragon shield required; <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> prayer recommended' , npcImage: 'Blue_dragon' },
@@ -1020,7 +1024,7 @@ const COMBAT_TASKS = [
   { name: 'Kalphite Workers',   icon: '🦂', min: 20,  max: 65,  loc: 'Kalphite Hive',  countMin: 20, countMax: 60, prayer: false, npcImage: 'Kalphite_Worker' },
   { name: 'Kalphite Soldiers',  icon: '🦂', min: 65,  max: 126, loc: 'Kalphite Hive',  countMin: 50, countMax: 120, prayer: false, note: '⚠️ Poisonous — bring antipoison', npcImage: 'Kalphite_Soldier' },
   { name: 'Kalphite Guardians', icon: '🦂', min: 100, max: 126, loc: 'Kalphite Hive',  countMin: 50, countMax: 150, prayer: false, note: '⚠️ Poisonous — bring antipoison', npcImage: 'Kalphite_Guardian' },
-  { name: 'Kalphite Queen',     icon: '🦂', min: 110, max: 126, loc: "Kalphite Hive - Queen's lair", countMin: 3, countMax: 15, prayer: true, note: 'Two-phase boss; bring antipoison and high food' },
+  { name: 'Kalphite Queen',     icon: '🦂', min: 110, max: 126, loc: "Kalphite Hive - Queen's lair", countMin: 3, countMax: 15, prayer: true, note: 'Two-phase boss; requires Protect from Magic (37 Prayer) and Protect from Missiles (40 Prayer) for each phase. Bring antipoison and high food' },
   { name: 'King Black Dragon', icon: '👑', min: 99, max: 126,  loc: 'Wilderness',                       countMin: 3,  countMax: 15, prayer: true,  note: 'Anti-dragon shield required; <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> prayer recommended; ⚠️ Wilderness' , npcImage: 'King_Black_Dragon' },
 ];
 
@@ -1093,16 +1097,16 @@ const SKILL_TASKS = [
   { skill: 'fletching', name: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABQUlEQVR4nL2WT2rCQBTGfxOC4Bm8huDKq7QHsHXTRcEDFLropq0HaK/SleA1cgQpDNJxoWYm8/eNhH4QJCR5v3zfezMR/kFKeJ+58TkAWnHxyd/5Vzc19UUQZpN3ADoXphtDhZvcaw0imvGZvX4rpHcB0PFgL1yjEyoVV/CWrpMBUKCkE9dFRqLIYhBZ1hWR+RADoYtOr+n0uj+PDEFWQU8Gzb4ULkRXHOfiysoChJEFTtxYxpLvRDlHVl5fssMiXoxJ2ciSoBRENMZXN5vl1H/OOEcfS1B0s5zytXtNAj6+nwDYb21bX35+7Q3Ort3irQ238feL5yhgvjqy37bMV0cL2B2AJjpxCjCl7H2YW/zx7i2/l+lGBsmpBICLExBviHU78BmiWhc0CiDyeQ6mqya6HhoWVskTKj6pEVX9gxldJ0pkX/QakqN5AAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Magic longbows',   icon: '🏹', req: 85, unitMin: 20,  unitMax: 60,  unit: 'magic longbows',  loc: 'Anywhere'  },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABeklEQVR4nJ2Wsa3CMBRFTxAUjMAAfwbEFjRUWSINygwWDUukomELxAxIVJEyAsVHmOpZ9ovj2Nwu2L7nXT8nBsplSxcsSgHX3bIYVAIRAKWgXIgDiEpAORALsL+9eXxW7sf97R2Mp7RMjFmA8/kMQNM0ownemICqXEhgrgGPz4rj/eWeh2GgbVsAjDFRmIZY31xMpqTHFMyB/J4EgGEYnIksFp2260mwN9/1SpKMACJjTGDgb1VKdX2g6y4WqEY9iW2Prlwnm9OCSB+0dPU63ZTq+gBgg/cklkKqPt5fHO8vl8oYMwnr+2fwHEA2m010Udu2Aey0XQewFEAgVdM0yaOao75/jgBddwGoZrdLJBVLAulTXR+i1fvy30wbOzV9/5SKooApSQoIe1IZY4LYfoX6GOcCdBKR1Sa5SWSe9o1+NWOwrrtw2q75W/y7j6Q/lvJLQQIY4CAQ3CezPjkQiNyMHmjWI/f6rVTl2YBfZK+7peWHv0XFoNIFXxdG0fzbO+GzAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Runecrafting — level from runecraft.dbrow
-  { skill: 'rc', name: 'Air runes',    icon: '🌀', req: 1,  unitMin: 300, unitMax: 700, unit: 'air runes',    loc: 'Air Altar, south of Falador' , itemImage: 'Air_rune'  },
-  { skill: 'rc', name: 'Mind runes',   icon: '🌀', req: 2,  unitMin: 300, unitMax: 700, unit: 'mind runes',   loc: 'Mind Altar' , itemImage: 'Mind_rune'  },
-  { skill: 'rc', name: 'Water runes',  icon: '💧', req: 5,  unitMin: 250, unitMax: 600, unit: 'water runes',  loc: 'Water Altar, south of Lumbridge' , itemImage: 'Water_rune'  },
-  { skill: 'rc', name: 'Earth runes',  icon: '🌍', req: 9,  unitMin: 250, unitMax: 600, unit: 'earth runes',  loc: 'Earth Altar, east of Varrock' , itemImage: 'Earth_rune'  },
-  { skill: 'rc', name: 'Fire runes',   icon: '🔥', req: 14, unitMin: 200, unitMax: 500, unit: 'fire runes',   loc: 'Fire Altar, north of Al-Kharid' , itemImage: 'Fire_rune'  },
-  { skill: 'rc', name: 'Body runes',   icon: '🌀', req: 20, unitMin: 200,  unitMax: 500, unit: 'body runes',   loc: 'Body Altar' , itemImage: 'Body_rune'  },
-  { skill: 'rc', name: 'Cosmic runes', icon: '⭐', req: 27, unitMin: 150,  unitMax: 400, unit: 'cosmic runes', loc: 'Cosmic Altar, Zanaris',  note: 'Requires Lost City quest' , itemImage: 'Cosmic_rune'  },
-  { skill: 'rc', name: 'Chaos runes',  icon: '💥', req: 35, unitMin: 150,  unitMax: 400, unit: 'chaos runes',  loc: 'Chaos Altar' , itemImage: 'Chaos_rune'  },
-  { skill: 'rc', name: 'Nature runes', icon: '🍃', req: 44, unitMin: 100,  unitMax: 250, unit: 'nature runes', loc: 'Nature Altar, Karamja' , itemImage: 'Nature_rune'  },
-  { skill: 'rc', name: 'Law runes',    icon: '⚖️', req: 54, unitMin: 100,  unitMax: 250,  unit: 'law runes',    loc: 'Law Altar, Entrana',     note: 'Requires Troll Stronghold quest' , itemImage: 'Law_rune'  },
+  { skill: 'rc', name: 'Air runes',    icon: '🌀', req: 1,  unitMin: 300, unitMax: 700, unit: 'air runes',    loc: 'Air Altar, south of Falador',    note: 'Air talisman: dropped by Goblins', itemImage: 'Air_rune'  },
+  { skill: 'rc', name: 'Mind runes',   icon: '🌀', req: 2,  unitMin: 300, unitMax: 700, unit: 'mind runes',   loc: 'Mind Altar',                      note: 'Mind talisman: dropped by Imps and Wizards', itemImage: 'Mind_rune'  },
+  { skill: 'rc', name: 'Water runes',  icon: '💧', req: 5,  unitMin: 250, unitMax: 600, unit: 'water runes',  loc: 'Water Altar, south of Lumbridge', note: 'Water talisman: dropped by Wizards and Dark Wizards', itemImage: 'Water_rune'  },
+  { skill: 'rc', name: 'Earth runes',  icon: '🌍', req: 9,  unitMin: 250, unitMax: 600, unit: 'earth runes',  loc: 'Earth Altar, east of Varrock',    note: 'Earth talisman: dropped by Men, Al-Kharid Warriors, Rogues, and Farmers', itemImage: 'Earth_rune'  },
+  { skill: 'rc', name: 'Fire runes',   icon: '🔥', req: 14, unitMin: 200, unitMax: 500, unit: 'fire runes',   loc: 'Fire Altar, north of Al-Kharid',  note: 'Fire talisman: dropped by Dark Wizards and Skeletons', itemImage: 'Fire_rune'  },
+  { skill: 'rc', name: 'Body runes',   icon: '🌀', req: 20, unitMin: 200, unitMax: 500, unit: 'body runes',   loc: 'Body Altar',                      note: 'Body talisman: dropped by Guards and Giants', itemImage: 'Body_rune'  },
+  { skill: 'rc', name: 'Cosmic runes', icon: '⭐', req: 27, unitMin: 150, unitMax: 400, unit: 'cosmic runes', loc: 'Cosmic Altar, Zanaris',            note: 'Requires Lost City quest. Cosmic talisman: on the rare drop table', itemImage: 'Cosmic_rune'  },
+  { skill: 'rc', name: 'Chaos runes',  icon: '💥', req: 35, unitMin: 150, unitMax: 400, unit: 'chaos runes',  loc: 'Chaos Altar',                     note: 'Chaos talisman: on the rare drop table (from monsters in underground areas)', itemImage: 'Chaos_rune'  },
+  { skill: 'rc', name: 'Nature runes', icon: '🍃', req: 44, unitMin: 100, unitMax: 250, unit: 'nature runes', loc: 'Nature Altar, Karamja',            note: 'Nature talisman: on the rare drop table (from monsters above ground)', itemImage: 'Nature_rune'  },
+  { skill: 'rc', name: 'Law runes',    icon: '⚖️', req: 54, unitMin: 100, unitMax: 250, unit: 'law runes',    loc: 'Law Altar, Entrana',               note: 'Requires Troll Stronghold quest. Law talisman: rewarded upon completing Troll Stronghold (given by Dunstan)', itemImage: 'Law_rune'  },
 ];
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -1321,16 +1325,18 @@ function generateTask(isReroll = false) {
     ? (['combat', 'combat', 'skill', 'skill', 'clue'][randInt(0, 4)])
     : (doCombat ? 'combat' : 'skill');
 
+  const agility = getStat('stat-agility');
+
   if (doMix) {
     const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc') };
-    const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name))).length > 0;
+    const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
     const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && skillStats[t.skill] <= (t.maxReq || 99)).length > 0;
     if (pickType === 'combat' && !hasCombat && hasSkill) pickType = 'skill';
     if (pickType === 'skill'  && !hasSkill  && hasCombat) pickType = 'combat';
   }
 
   if (pickType === 'combat') {
-    const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)));
+    const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -1569,7 +1575,7 @@ function dbClear(store) {
 
 async function saveStats() {
   const data = {};
-  const keys = ['attack','strength','defence','hp','prayer','ranged','magic','wc','mining','fishing','fm','cooking','fletching','rc'];
+  const keys = ['attack','strength','defence','hp','prayer','ranged','magic','agility','wc','mining','fishing','fm','cooking','fletching','rc'];
   for (const k of keys) {
     const el = document.getElementById('stat-' + k);
     if (el) data[k] = el.value;
