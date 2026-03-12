@@ -782,7 +782,7 @@ function loadState() {
 
 function renderIcon(drop) {
   if (drop.img) {
-    return `<span class="drop-icon"><img src="images/${drop.img}.png" alt="${drop.icon}" onerror="this.parentElement.textContent='${drop.icon}'">${'&zwnj;'}</span>`;
+    return `<span class="drop-icon"><img src="https://oldschool.runescape.wiki/w/Special:FilePath/${drop.img}.png" alt="${drop.icon}" onerror="this.parentElement.textContent='${drop.icon}'">${'&zwnj;'}</span>`;
   }
   return `<span class="drop-icon">${drop.icon}</span>`;
 }
