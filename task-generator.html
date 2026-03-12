@@ -1401,7 +1401,7 @@ function skillLabel(skill) {
 function renderTask(task) {
   document.getElementById('task-display').style.display = 'block';
   document.getElementById('task-title').textContent = task.title;
-  document.getElementById('task-desc').textContent = task.desc;
+  document.getElementById('task-desc').innerHTML = task.desc;
 
   const badge = document.getElementById('task-badge');
   badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : '🛠 Skilling Task';
