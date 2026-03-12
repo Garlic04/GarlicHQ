@@ -1014,6 +1014,34 @@
   }
   .safe-reroll-btn.visible { display: inline-block; }
   .safe-reroll-btn:hover { background: rgba(75,200,100,0.3); }
+
+  .tab-nav {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    flex: 1;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    padding: 0.7rem 2rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--gold-dim); }
+  .tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 </style>
 </head>
 <body>
@@ -1035,6 +1063,12 @@
     </div>
   </header>
 
+  <nav class="tab-nav">
+    <button class="tab-btn" id="tab-btn-stats" onclick="switchTab('stats')">⚔ Stats</button>
+    <button class="tab-btn active" id="tab-btn-tasks" onclick="switchTab('tasks')">📜 Tasks</button>
+  </nav>
+
+  <div class="tab-content" id="tab-stats">
   <!-- Stats Panel -->
   <div class="panel">
     <div class="lookup-bar">
@@ -1117,6 +1151,9 @@
     </div>
   </div>
 
+  </div>
+
+  <div class="tab-content active" id="tab-tasks">
   <!-- Task Type Panel -->
   <div class="panel">
     <div class="panel-title">⚙ Task Type</div>
@@ -1242,7 +1279,8 @@
       <div id="task-log-empty" style="color:var(--text-dim); font-style:italic; font-size:0.85rem; text-align:center; padding: 16px 0;">No tasks completed yet. Get to work, adventurer!</div>
       <div id="task-log-list" class="task-log-scroll"></div>
     </div>
-  </div>
+  </div>  </div>
+
 
 <script>
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -1796,6 +1834,7 @@ function generateTask(isReroll = false) {
 
   currentTask = task;
   dbPut('settings', 'currentTask', task);
+  switchTab('tasks');
   renderTask(task);
 }
 
@@ -2129,6 +2168,8 @@ document.querySelectorAll('input[type=number]').forEach(el => {
 openDB().then(async () => {
   await loadStats();
   await loadTracker();
+  const savedTab = await dbGet('settings', 'activeTab');
+  if (savedTab && savedTab.value) switchTab(savedTab.value);
   await loadBossToggle();
   await loadSkillFilters();
   buildSkillFilterGrid();
@@ -2186,6 +2227,14 @@ async function lookupUser() {
   } catch(e) {
     status.textContent = 'Error fetching stats. Try again.';
   }
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
+  document.getElementById('tab-tasks').classList.toggle('active', tab === 'tasks');
+  document.getElementById('tab-btn-stats').classList.toggle('active', tab === 'stats');
+  document.getElementById('tab-btn-tasks').classList.toggle('active', tab === 'tasks');
+  dbPut('settings', 'activeTab', tab);
 }
 </script>
 </body>
