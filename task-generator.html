@@ -1131,7 +1131,7 @@
       </button>
       <button class="toggle-btn" id="btn-mix" onclick="setMode('mix')">
         <span class="toggle-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAABb0lEQVR4nO1VMW7CMBR9oF7lOyMDKyfIHA9ZewxEp3IAVpCYUeSsRRWqEGJnYAQfoKp6h/wOyKkJNjGQDpXypEiR4/9e3v/PCdCixR+h41okQWzu9VE79/jwSC1IEK83W15vtmwTNVnXrSObzuYIESdBPJ3NQ9/xOlGWZUEObKdZlt3UpbvFGxetipvLJn5ENCh1JIhlItHr9QAAo5cRgNP8v78+sd/voXJ1U4qfQjbpo+6oXJ25Gb+O8bF6B4CbRYFAxwamlTKR5do9okCgYxuult+D2nNs4JqzTCRkIoPOeZAwCWJz+URt2OLVWh+8rT4sCAAQpbgQNTNVuTp7pnLFv3W6zrQbJIiLXczFLmZzln0fkOFwyNX9dfxX01js4pIgSrU3vSSodAoA3f6yNuXecJEgttt1WJAzRFXRKNVBYfOGazI4iXb7y07IvKJUl04ngzDxC9G3Z1zMyZdU17qPo1a4iT9MUzwtWvwf/AA0hQ5xITn0NwAAAABJRU5ErkJggg==" width="14" height="14" style="image-rendering:pixelated;vertical-align:middle;margin-right:1px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAA4UlEQVR4nO2WQQ7CIBBFP8bEWDiXGz2NF1L3bkzUhedCWOKiSRM6UzKhBRb278p0+mDmFwBWtZDRXajF2pARparAt+MB0+1hv06W/QKd5BFKkkpWbJ2XrZqDviGuGC01AISQnvUUFH3F8sEzZJ1vA5aKgKWlWhwsNtdMkd8JQGSuD6iRDguAkz3moI8FoElwSSgL/mtz5cHDHX3uiQnuBtMW2kA46DmqZAHwBHSkecciq6forWbmyjsWi4EriN1AUpe+m+4mP2auiZi+RM8qDpa9ZVrnhzbSXpY2VgX/rIr0A0wjRUtUVXRgAAAAAElFTkSuQmCC" width="14" height="14" style="image-rendering:pixelated;vertical-align:middle;margin-right:1px;"></span>
-        Mixture
+        Random
       </button>
     </div>
   </div>
@@ -1473,11 +1473,11 @@ const TITLES = [
 
 const MILESTONES = [
   // Rank milestones — match TITLES thresholds
-  { id: 'tasks10',   label: '10 tasks — Adventurer',  check: () => tracker.total >= 10,  reward: 'Rank up!' },
-  { id: 'tasks50',   label: '50 tasks — Veteran',     check: () => tracker.total >= 50,  reward: 'Rank up!' },
-  { id: 'tasks150',  label: '150 tasks — Champion',   check: () => tracker.total >= 150, reward: 'Rank up!' },
-  { id: 'tasks350',  label: '350 tasks — Hero',       check: () => tracker.total >= 350, reward: 'Rank up!' },
-  { id: 'tasks750',  label: '750 tasks — Legend',     check: () => tracker.total >= 750, reward: 'Rank up!' },
+  { id: 'tasks10',   label: '10 tasks',  rankLabel: 'Adventurer', rankColor: '#c8a84b', check: () => tracker.total >= 10,  reward: 'Rank up!' },
+  { id: 'tasks50',   label: '50 tasks',  rankLabel: 'Veteran',    rankColor: '#4bc8a0', check: () => tracker.total >= 50,  reward: 'Rank up!' },
+  { id: 'tasks150',  label: '150 tasks', rankLabel: 'Champion',   rankColor: '#4b8ec8', check: () => tracker.total >= 150, reward: 'Rank up!' },
+  { id: 'tasks350',  label: '350 tasks', rankLabel: 'Hero',       rankColor: '#c84b4b', check: () => tracker.total >= 350, reward: 'Rank up!' },
+  { id: 'tasks750',  label: '750 tasks', rankLabel: 'Legend',     rankColor: '#c84bc8', check: () => tracker.total >= 750, reward: 'Rank up!' },
   // Streak milestones
   { id: 'streak5',   label: 'Reach a 5 streak',       check: () => tracker.streak > 5,   reward: 'On a roll' },
   { id: 'streak10',  label: 'Reach a 10 streak',      check: () => tracker.streak > 10,  reward: 'Bonus points active' },
@@ -1517,8 +1517,11 @@ function renderMilestones() {
     const unlocked = m.check();
     const div = document.createElement('div');
     div.className = 'milestone-item' + (unlocked ? ' unlocked' : '');
+    const labelHtml = m.rankLabel
+      ? `${m.label} — <span style="color:${m.rankColor};font-weight:600;">${m.rankLabel}</span>`
+      : m.label;
     div.innerHTML = `<div class="milestone-check">${unlocked ? '✓' : ''}</div>
-      <div class="milestone-label">${m.label}</div>
+      <div class="milestone-label">${labelHtml}</div>
       <div class="milestone-reward">${m.reward}</div>`;
     list.appendChild(div);
 
@@ -1810,7 +1813,7 @@ function renderTask(task) {
   document.getElementById('task-desc').innerHTML = task.desc;
 
   const badge = document.getElementById('task-badge');
-  badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : '🛠 Skilling Task';
+  badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : task.type === 'clue' ? '🗺 Clue Task' : '🛠 Skilling Task';
   badge.className = 'task-type-badge ' + task.type;
 
   const notesEl = document.getElementById('task-notes');
