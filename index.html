@@ -138,7 +138,7 @@
     height: 28px;
     object-fit: contain;
     opacity: 0.7;
-    border-radius: 50%;
+    border-radius: 6px;
   }
 
   /* ── SECTION LABEL ── */
@@ -285,6 +285,34 @@
     opacity: 0.6;
   }
 
+  /* ── LIVE BADGE ── */
+  .live-badge {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: #ff4444;
+    text-transform: uppercase;
+  }
+
+  .live-badge.visible { display: inline-flex; }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff4444;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.8); }
+  }
+
   /* ── FADE IN ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
@@ -311,6 +339,9 @@
     <div class="header-text">
       <h1>Garlic</h1>
       <div class="tagline">Lost City Tools &amp; Resources</div>
+      <div class="live-badge" id="liveBadge">
+        <span class="live-dot"></span> Live Now
+      </div>
       <a class="yt-link" href="https://youtube.com/@garlic04" target="_blank">
         <svg class="yt-icon" viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
         youtube.com/@garlic04
@@ -320,7 +351,7 @@
 
   <div class="divider">
     <div class="divider-line"></div>
-    <img class="divider-icon" src="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/Garlic_detail.png" alt="">
+    <img class="divider-icon" id="dividerIcon" src="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/Garlic_detail.png" alt="">
     <div class="divider-line"></div>
   </div>
 </header>
@@ -363,6 +394,26 @@
 </main>
 
 <footer>Garlic &nbsp;·&nbsp; Lost City Fan Tools &nbsp;·&nbsp; Not affiliated with Jagex</footer>
+<script>
+  const API_KEY = 'AIzaSyDeZrtqF27rGdvrdDQVsQf5Bqdi0tT9s8M';
+  const CHANNEL_ID = 'UCOWK0096cCvWPrDSjc12P9w';
+
+  async function checkIfLive() {
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        document.getElementById('liveBadge').classList.add('visible');
+        document.getElementById('dividerIcon').src = 'https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlic_live.png';
+      }
+    } catch (e) {
+      // silently fail if API unreachable
+    }
+  }
+
+  checkIfLive();
+</script>
 
 </body>
 </html>
