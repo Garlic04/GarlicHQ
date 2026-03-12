@@ -107,6 +107,41 @@
 
 
   <!-- EASY -->
+  <!-- Clue Counter -->
+  <div class="card bg-base-200 shadow p-4 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Clues Completed</h2>
+    <div class="flex flex-wrap gap-6">
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Easy</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('easy', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-easy">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('easy', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Medium</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('medium', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-medium">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('medium', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Hard</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('hard', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-hard">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('hard', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px] ml-auto">
+        <span class="text-sm opacity-60">Total</span>
+        <span class="text-xl font-bold" id="count-total">0</span>
+      </div>
+    </div>
+  </div>
+
   <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-easy">
     <div class="flex justify-between items-center mb-4">
       <div>
@@ -240,6 +275,28 @@ const state = {
   medium: { obtained: new Set(JSON.parse(localStorage.getItem('clue-medium-obt') || '[]')), counts: JSON.parse(localStorage.getItem('clue-medium-cnt') || '{}') },
   hard:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-hard-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-hard-cnt')   || '{}') },
 };
+
+
+// Clue completion counts
+const clueCounts = {
+  easy:   parseInt(localStorage.getItem('clue-done-easy')   || '0'),
+  medium: parseInt(localStorage.getItem('clue-done-medium') || '0'),
+  hard:   parseInt(localStorage.getItem('clue-done-hard')   || '0'),
+};
+
+function adjustCount(tier, delta) {
+  clueCounts[tier] = Math.max(0, clueCounts[tier] + delta);
+  localStorage.setItem('clue-done-' + tier, clueCounts[tier]);
+  updateCountDisplay();
+}
+
+function updateCountDisplay() {
+  ['easy', 'medium', 'hard'].forEach(tier => {
+    document.getElementById('count-' + tier).textContent = clueCounts[tier];
+  });
+  const total = clueCounts.easy + clueCounts.medium + clueCounts.hard;
+  document.getElementById('count-total').textContent = total;
+}
 
 function saveState() {
   ['easy','medium','hard'].forEach(tier => {
@@ -407,6 +464,7 @@ function setTheme(val) {
 
 // Restore saved theme
 const savedTheme = localStorage.getItem('clue-theme') || 'garlic';
+updateCountDisplay();
 setTheme(savedTheme);
 const sel = document.querySelector('.select');
 if (sel) sel.value = savedTheme;
