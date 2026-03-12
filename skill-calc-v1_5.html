@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Calculators — Garlic</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d0b08;
+    --bg2:       #141109;
+    --gold:      #c8a84b;
+    --gold-dim:  #8a6f2e;
+    --gold-glow: #f0cc6e;
+    --parchment: #e8d5a3;
+    --border:    rgba(200,168,75,0.25);
+    --card-bg:   rgba(20,17,9,0.9);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    background-image: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,168,75,0.06) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'IM Fell English', Georgia, serif;
+    color: var(--parchment);
+  }
+  nav {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,8,4,0.6);
+    font-size: 0.85rem;
+  }
+  nav a { color: var(--gold-dim); text-decoration: none; transition: color 0.2s; }
+  nav a:hover { color: var(--gold); }
+  nav .sep { color: var(--border); }
+  nav .current { color: var(--parchment); opacity: 0.7; }
+  .page-header { text-align: center; padding: 2.5rem 1rem 2rem; border-bottom: 1px solid var(--border); }
+  .page-header h1 {
+    font-family: 'Cinzel', serif; font-weight: 700;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--gold-glow);
+    text-shadow: 0 0 30px rgba(200,168,75,0.5), 0 2px 4px rgba(0,0,0,0.9);
+    letter-spacing: 0.05em;
+  }
+  .page-header p { font-style: italic; color: var(--gold-dim); margin-top: 0.4rem; font-size: 0.95rem; }
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1rem; }
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 6px; margin-bottom: 2rem;
+  }
+  .skill-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 0.5rem 0.25rem;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+    cursor: pointer; color: var(--parchment);
+    font-family: 'IM Fell English', serif; font-size: 0.72rem;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    opacity: 0.75;
+  }
+  .skill-btn:hover { border-color: var(--gold-dim); opacity: 1; }
+  .skill-btn.active {
+    border-color: var(--gold); background: rgba(200,168,75,0.12);
+    color: var(--gold-glow); opacity: 1;
+    box-shadow: 0 0 12px rgba(200,168,75,0.2);
+  }
+  :root {
+    --sprite1: url('data:image/png;base64,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');
+    --sprite2: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABLCAYAAACSoX4TAAAD5klEQVR4nO3aMU8bSQDF8bcOV/ARUEQVRUpHiSKZMkl7DbYUn5TOFHeFG3ur5GS6PRoXpiAdShaJ0KS9uxKkiBIpRaRT0hjER6DI5eYKPHOzs7vGJibsRf+fZAl2Z20kP72ZWVaanbnGNfNivBcqrDbjePP24YJ0819sUYDM4/qKHtdX/DGoqGiGsTZUkqQf3/096/VTf86fv99xvzx68kWS/EBJkv44OrE/3sTfgK80bWNlQiVJ36i55IcM/x/TBMtIlw311z8/uIPjxnLn5yh69OSLayopHy7aqvomBctIMoPBQIPBoHCAd27eC+pI44BZ3efv1X3+PhyDiir6coykTJg6nY4kaWt1UZLUPb6QHXN+fu7GJUky6X1nZX56+lSS9OzZfubEOHAEq8LCxso1lB+cUHgujmPFcSzNeXrc3W1mfh9PjewKK8wPlgkDZYMzDotjm6vMDOEyZa84jnV3edkN3N1tFq27CFdF2a1eLlSWN71J+m8avEqrta40PTAqn7LM4f5O7uBacyMT5LvLyzobjfR6b0/S5TTITrH6FsIDRVNf2FBhg12DC1W90XYHoygqfO/Xe3s63N/RWnNDkvzmYp1VUTUFbVUkbKmwxcq0WutSfrrKhWp7M1YUTc5IvdHW4f6OvJYjVBWWaayitorjWEmSuHBtrS6qe3zhwlXUMKenn8o+LxOqozcvMyftLtCXJImMMe4aSTqUtNbcmDTN4pZldoVLS0uFg7zdnrrHF9paXXTTY9heE0Ll2IDUG+3MVChJZ6OR+9kPVRRFV7YaqqMmKep0OhNvK0zj9PRTLlRpeiBN0So/v0g07PfcAv1sNMqEyhr2e1/1N+LbyTTWpHDZZgpvkrZa61O1lC+cArc3L9tw2O/pVZrqVZrmQiVJv/z620yfg9vjt4kpWy+Nm6cwVGVK2soM+z2tPLjnDti1Vrg7zFxUELKjNy/tLpH5sYL8xoqSJMlMaX4ThbccrhGqQmGorGG/p/A+l11nbW/GbpcobpJWUngfKxrf1MwFxy7arTQ9yI2xzaYrQnXy4aMkZZorZKe9onWWva7eaLNDrKiipxsiXQbMBcUP0P3a51x7eWMjzfAF24CFay5jjHuFVh7ccw3HLrG6cnfePZEk+2+ZjPu1zxqfy4y9CTZ09UY7FzT/bjyqZdpA5J4gla79eLIJbxv4U5sVtphvrbnhQjXs9+y0SX1VyG09814aLt/Jh49urWXH23GE6vti3j5cmNfToqWPzBS8Jo3Hd4IvEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQYf8CLGPNf3WPRFcAAAAASUVORK5CYII=');
+  }
+  .skill-sprite {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-size: 150px 75px;
+    image-rendering: pixelated;
+    vertical-align: middle;
+  }
+  .skill-icon-prayer { background-image: var(--sprite1); background-position: -100px -0px; }
+  .skill-icon-magic { background-image: var(--sprite1); background-position: -125px -0px; }
+  .skill-icon-cooking { background-image: var(--sprite1); background-position: -75px -50px; }
+  .skill-icon-woodcutting { background-image: var(--sprite1); background-position: -125px -50px; }
+  .skill-icon-fletching { background-image: var(--sprite1); background-position: -125px -25px; }
+  .skill-icon-fishing { background-image: var(--sprite1); background-position: -50px -50px; }
+  .skill-icon-firemaking { background-image: var(--sprite1); background-position: -100px -50px; }
+  .skill-icon-crafting { background-image: var(--sprite1); background-position: -100px -25px; }
+  .skill-icon-smithing { background-image: var(--sprite1); background-position: -25px -50px; }
+  .skill-icon-mining { background-image: var(--sprite1); background-position: -0px -50px; }
+  .skill-icon-herblore { background-image: var(--sprite1); background-position: -50px -25px; }
+  .skill-icon-agility { background-image: var(--sprite1); background-position: -25px -25px; }
+  .skill-icon-thieving { background-image: var(--sprite1); background-position: -75px -25px; }
+  .skill-icon-runecraft { background-image: var(--sprite2); background-position: -0px -0px; }
+  .skill-btn .skill-icon { display:inline-flex; align-items:center; justify-content:center; }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-family: 'Cinzel', serif; font-size: 0.75rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold-dim); margin-bottom: 1rem;
+  }
+  .mode-toggle { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; }
+  .mode-label {
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dim);
+  }
+  .toggle-btns { display: flex; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+  .toggle-btns button, .bar-btn {
+    padding: 0.3rem 1rem; font-family: 'Cinzel', serif; font-size: 0.75rem;
+    border: none; cursor: pointer; transition: background 0.15s, color 0.15s;
+  }
+  .toggle-btns button:first-child { border-right: 1px solid var(--border); }
+  .toggle-btns button.active-toggle, .bar-btn.active-toggle { background: rgba(200,168,75,0.15); color: var(--gold); }
+  .toggle-btns button:not(.active-toggle), .bar-btn:not(.active-toggle) { background: transparent; color: var(--gold-dim); }
+  .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+  .input-group label {
+    display: block; font-size: 0.75rem; color: var(--gold-dim);
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem;
+    font-family: 'Cinzel', serif;
+  }
+  .input-group input, .input-group .xp-display {
+    width: 100%; padding: 0.5rem 0.75rem;
+    background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--parchment); font-family: 'IM Fell English', serif; font-size: 0.95rem;
+    outline: none; transition: border-color 0.15s;
+  }
+  .input-group input:focus { border-color: var(--gold); }
+  .input-group .xp-display { color: var(--gold); opacity: 0.85; font-style: italic; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th {
+    padding: 0.4rem 0.6rem; text-align: left;
+    font-family: 'Cinzel', serif; font-size: 0.68rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold-dim); font-weight: 600;
+  }
+  th.right { text-align: right; }
+  td { padding: 0.45rem 0.6rem; border-bottom: 1px solid rgba(200,168,75,0.07); }
+  td.right { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.method-row { cursor: pointer; transition: background 0.1s; }
+  tr.method-row:hover { background: rgba(200,168,75,0.06); }
+  tr.method-row.selected { background: rgba(200,168,75,0.12); outline: 1px solid rgba(200,168,75,0.3); }
+  .dim { opacity: 0.35; }
+  .warn { color: #c0392b; }
+  .table-hint { font-size: 0.75rem; color: var(--gold-dim); font-style: italic; margin-top: 0.75rem; opacity: 0.6; }
+  #calc-panel.hidden { display: none; }
+  .prompt { text-align: center; padding: 3rem 1rem; color: var(--gold-dim); font-style: italic; opacity: 0.5; font-size: 1.05rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">← Garlic</a>
+  <span class="sep">/</span>
+  <span class="current">Skill Calculators</span>
+</nav>
+
+<div class="page-header">
+  <h1>Skill Calculators</h1>
+  <p>2004Scape XP rates — select a skill to get started</p>
+</div>
+
+<div class="container">
+  <div class="skill-grid" id="skill-grid"></div>
+  <div class="prompt" id="skill-prompt">Select a skill above to begin</div>
+
+  <div id="calc-panel" class="hidden">
+    <div class="card">
+      <div class="card-title" id="method-title-top">Calculator</div>
+      <div class="mode-toggle">
+        <span class="mode-label">Input mode:</span>
+        <div class="toggle-btns">
+          <button id="toggle-level" class="active-toggle" onclick="setInputMode('level')">Level</button>
+          <button id="toggle-xp" onclick="setInputMode('xp')">XP</button>
+        </div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label id="label-current">Current Level</label>
+          <input type="number" id="input-current-level" min="1" max="99" value="1" oninput="recalc()">
+          <input type="number" id="input-current-xp" min="0" max="13034431" value="0" oninput="recalc()" style="display:none">
+        </div>
+        <div class="input-group">
+          <label id="label-target">Target Level</label>
+          <input type="number" id="input-target-level" min="1" max="99" value="99" oninput="recalc()">
+          <input type="number" id="input-target-xp" min="0" max="13034431" value="13034431" oninput="recalc()" style="display:none">
+        </div>
+        <div class="input-group">
+          <label>XP Needed</label>
+          <div class="xp-display" id="xp-needed-display">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" id="method-title">Training Methods</div>
+
+      <!-- Smithing bar selector (shown only for Smithing) -->
+      <div id="smithing-bar-row" style="display:none; margin-bottom:1rem;">
+        <div class="mode-toggle" style="flex-wrap:wrap; gap:0.4rem;">
+          <span class="mode-label">Bar:</span>
+          <div class="toggle-btns" style="flex-wrap:wrap; border:none; gap:4px;">
+            <button id="bar-btn-smelting"   class="bar-btn active-toggle" onclick="setSmithingBar('smelting')"   style="border:1px solid var(--border); border-radius:5px;">Smelting</button>
+            <button id="bar-btn-bronze"     class="bar-btn"               onclick="setSmithingBar('bronze')"     style="border:1px solid var(--border); border-radius:5px;">Bronze</button>
+            <button id="bar-btn-iron"       class="bar-btn"               onclick="setSmithingBar('iron')"       style="border:1px solid var(--border); border-radius:5px;">Iron</button>
+            <button id="bar-btn-steel"      class="bar-btn"               onclick="setSmithingBar('steel')"      style="border:1px solid var(--border); border-radius:5px;">Steel</button>
+            <button id="bar-btn-mithril"    class="bar-btn"               onclick="setSmithingBar('mithril')"    style="border:1px solid var(--border); border-radius:5px;">Mithril</button>
+            <button id="bar-btn-adamantite" class="bar-btn"               onclick="setSmithingBar('adamantite')" style="border:1px solid var(--border); border-radius:5px;">Adamantite</button>
+            <button id="bar-btn-runite"     class="bar-btn"               onclick="setSmithingBar('runite')"     style="border:1px solid var(--border); border-radius:5px;">Runite</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generic subcategory selector (herblore, crafting, fletching, magic) -->
+      <div id="subcat-row" class="mode-toggle" style="display:none; flex-wrap:wrap; gap:0.4rem; margin-bottom:1rem;"></div>
+
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th class="right">Lvl req</th>
+              <th class="right" id="th-bars" style="display:none">Bars</th>
+              <th class="right">XP / action</th>
+              <th class="right">Actions needed</th>
+            </tr>
+          </thead>
+          <tbody id="method-tbody"></tbody>
+        </table>
+      </div>
+      <p class="table-hint">Click a method to highlight it. Actions needed calculated from current → target.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function xpForLevel(lvl) {
+  let xp = 0, output = 0;
+  for (let i = 1; i < lvl; i++) {
+    output += Math.floor(i + 300 * Math.pow(2, i / 7));
+    xp = Math.floor(output / 4);
+  }
+  return xp;
+}
+const XP_TABLE = Array.from({length: 100}, (_, i) => xpForLevel(i + 1));
+
+const SKILLS = [
+  { id: 'prayer',      name: 'Prayer' },
+  { id: 'magic',       name: 'Magic' },
+  { id: 'cooking',     name: 'Cooking' },
+  { id: 'woodcutting', name: 'Woodcutting' },
+  { id: 'fletching',   name: 'Fletching' },
+  { id: 'fishing',     name: 'Fishing' },
+  { id: 'firemaking',  name: 'Firemaking' },
+  { id: 'crafting',    name: 'Crafting' },
+  { id: 'smithing',    name: 'Smithing' },
+  { id: 'mining',      name: 'Mining' },
+  { id: 'herblore',    name: 'Herblore' },
+  { id: 'agility',     name: 'Agility' },
+  { id: 'thieving',    name: 'Thieving' },
+  { id: 'runecraft',   name: 'Runecraft' },
+];
+
+const METHODS = {
+  prayer: [
+    { name: 'Bones',            lvl: 1, xp: 4.5 },
+    { name: 'Burnt bones',      lvl: 1, xp: 4.5 },
+    { name: 'Wolf bones',       lvl: 1, xp: 4.5 },
+    { name: 'Bat bones',        lvl: 1, xp: 4.5 },
+    { name: 'Big bones',        lvl: 1, xp: 15.0 },
+    { name: 'Babydragon bones', lvl: 1, xp: 30.0 },
+    { name: 'Dragon bones',     lvl: 1, xp: 72.0 },
+  ],
+  magic: [], // uses SUBCATEGORIES
+  cooking: [
+    { name: 'Meat / Rat meat', lvl: 1,  xp: 30.0 },
+    { name: 'Shrimps',         lvl: 1,  xp: 30.0 },
+    { name: 'Anchovies',       lvl: 1,  xp: 30.0 },
+    { name: 'Sardine',         lvl: 1,  xp: 40.0 },
+    { name: 'Herring',         lvl: 5,  xp: 50.0 },
+    { name: 'Trout',           lvl: 15, xp: 70.0 },
+    { name: 'Cod',             lvl: 18, xp: 75.0 },
+    { name: 'Pike',            lvl: 20, xp: 80.0 },
+    { name: 'Salmon',          lvl: 25, xp: 90.0 },
+    { name: 'Stew',            lvl: 25, xp: 90.0 },
+    { name: 'Tuna',            lvl: 30, xp: 100.0 },
+    { name: 'Lobster',         lvl: 40, xp: 120.0 },
+    { name: 'Swordfish',       lvl: 45, xp: 140.0 },
+    { name: 'Curry',           lvl: 60, xp: 125.0 },
+    { name: 'Shark',           lvl: 80, xp: 210.0 },
+  ],
+  woodcutting: [
+    { name: 'Logs (Normal tree)', lvl: 1,  xp: 25.0 },
+    { name: 'Oak logs',           lvl: 15, xp: 37.5 },
+    { name: 'Willow logs',        lvl: 30, xp: 67.5 },
+    { name: 'Maple logs',         lvl: 45, xp: 100.0 },
+    { name: 'Yew logs',           lvl: 60, xp: 175.0 },
+    { name: 'Magic logs',         lvl: 75, xp: 250.0 },
+  ],
+  fletching: [], // uses SUBCATEGORIES
+  fishing: [
+    { name: 'Shrimps',   lvl: 1,  xp: 10.0 },
+    { name: 'Sardine',   lvl: 5,  xp: 20.0 },
+    { name: 'Herring',   lvl: 10, xp: 30.0 },
+    { name: 'Anchovies', lvl: 15, xp: 40.0 },
+    { name: 'Trout',     lvl: 20, xp: 50.0 },
+    { name: 'Pike',      lvl: 25, xp: 60.0 },
+    { name: 'Salmon',    lvl: 30, xp: 70.0 },
+    { name: 'Tuna',      lvl: 35, xp: 80.0 },
+    { name: 'Lobster',   lvl: 40, xp: 90.0 },
+    { name: 'Swordfish', lvl: 50, xp: 100.0 },
+    { name: 'Shark',     lvl: 76, xp: 110.0 },
+  ],
+  firemaking: [
+    { name: 'Logs',        lvl: 1,  xp: 40.0 },
+    { name: 'Oak logs',    lvl: 15, xp: 60.0 },
+    { name: 'Willow logs', lvl: 30, xp: 90.0 },
+    { name: 'Maple logs',  lvl: 45, xp: 135.0 },
+    { name: 'Yew logs',    lvl: 60, xp: 202.5 },
+    { name: 'Magic logs',  lvl: 75, xp: 303.8 },
+  ],
+  crafting: [], // uses SUBCATEGORIES
+  // Smithing uses SMITHING_BARS instead — see below
+  smithing: [],
+  mining: [
+    { name: 'Rune essence',   lvl: 1,  xp: 5.0 },
+    { name: 'Clay',           lvl: 1,  xp: 5.0 },
+    { name: 'Copper ore',     lvl: 1,  xp: 17.5 },
+    { name: 'Tin ore',        lvl: 1,  xp: 17.5 },
+    { name: 'Iron ore',       lvl: 15, xp: 35.0 },
+    { name: 'Silver ore',     lvl: 20, xp: 40.0 },
+    { name: 'Coal',           lvl: 30, xp: 50.0 },
+    { name: 'Gold ore',       lvl: 40, xp: 65.0 },
+    { name: 'Mithril ore',    lvl: 55, xp: 80.0 },
+    { name: 'Adamantite ore', lvl: 70, xp: 95.0 },
+    { name: 'Runite ore',     lvl: 85, xp: 125.0 },
+  ],
+  herblore: [], // uses SUBCATEGORIES
+  agility: [
+    { name: 'Gnome Stronghold course',   lvl: 1,  xp: 86.5 },
+    { name: 'Barbarian Outpost course',  lvl: 35, xp: 117.0 },
+    { name: 'Wilderness Agility course', lvl: 52, xp: 571.4 },
+  ],
+  thieving: [
+    { name: 'Pickpocket Man/Woman', lvl: 1,  xp: 8.0 },
+    { name: "Baker's stall",        lvl: 5,  xp: 16.0 },
+    { name: 'Tea stall',            lvl: 5,  xp: 16.0 },
+    { name: 'Pickpocket Farmer',    lvl: 10, xp: 14.5 },
+    { name: 'Silk stall',           lvl: 20, xp: 24.0 },
+    { name: 'Pickpocket Warrior',   lvl: 25, xp: 26.0 },
+    { name: 'Pickpocket Rogue',     lvl: 32, xp: 36.5 },
+    { name: 'Fur stall',            lvl: 35, xp: 36.0 },
+    { name: 'Pickpocket Guard',     lvl: 40, xp: 46.8 },
+    { name: 'Silver stall',         lvl: 50, xp: 54.0 },
+    { name: 'Pickpocket Knight',    lvl: 55, xp: 84.3 },
+    { name: 'Pickpocket Paladin',   lvl: 70, xp: 137.5 },
+    { name: 'Pickpocket Gnome',     lvl: 75, xp: 151.8 },
+    { name: 'Gem stall',            lvl: 75, xp: 81.0 },
+    { name: 'Pickpocket Hero',      lvl: 80, xp: 198.3 },
+    { name: 'Pickpocket Elf',       lvl: 85, xp: 273.3 },
+  ],
+  runecraft: [
+    { name: 'Air runes',    lvl: 1,  xp: 5.0 },
+    { name: 'Mind runes',   lvl: 2,  xp: 5.5 },
+    { name: 'Water runes',  lvl: 5,  xp: 6.0 },
+    { name: 'Earth runes',  lvl: 9,  xp: 6.5 },
+    { name: 'Fire runes',   lvl: 14, xp: 7.0 },
+    { name: 'Body runes',   lvl: 20, xp: 7.5 },
+    { name: 'Cosmic runes', lvl: 27, xp: 8.0 },
+    { name: 'Chaos runes',  lvl: 35, xp: 8.5 },
+    { name: 'Nature runes', lvl: 44, xp: 9.0 },
+    { name: 'Law runes',    lvl: 54, xp: 9.5 },
+    { name: 'Death runes',  lvl: 65, xp: 10.0 },
+  ],
+};
+
+// ── SUBCATEGORY DATA ──────────────────────────────────────────────────────────
+// Skills that use tab selectors instead of a flat method list.
+const SUBCATEGORIES = {
+  herblore: {
+    cleaning: {
+      label: 'Cleaning herbs',
+      items: [
+        { name: 'Guam leaf',   lvl: 1,  xp: 2.5 },
+        { name: 'Marrentill',  lvl: 5,  xp: 3.8 },
+        { name: 'Tarromin',    lvl: 11, xp: 5.0 },
+        { name: 'Harralander', lvl: 20, xp: 6.3 },
+        { name: 'Ranarr weed', lvl: 25, xp: 7.5 },
+        { name: 'Toadflax',    lvl: 30, xp: 8.0 },
+        { name: 'Irit leaf',   lvl: 40, xp: 8.8 },
+        { name: 'Avantoe',     lvl: 48, xp: 10.0 },
+        { name: 'Kwuarm',      lvl: 54, xp: 11.3 },
+        { name: 'Snapdragon',  lvl: 59, xp: 11.8 },
+        { name: 'Cadantine',   lvl: 65, xp: 12.5 },
+        { name: 'Lantadyme',   lvl: 67, xp: 13.1 },
+        { name: 'Dwarf weed',  lvl: 70, xp: 13.8 },
+        { name: 'Torstol',     lvl: 75, xp: 15.0 },
+      ],
+    },
+    potions: {
+      label: 'Brewing potions',
+      items: [
+        { name: 'Attack potion',      lvl: 3,  xp: 25.0 },
+        { name: 'Antipoison',         lvl: 5,  xp: 37.5 },
+        { name: 'Strength potion',    lvl: 12, xp: 50.0 },
+        { name: 'Restore potion',     lvl: 22, xp: 62.5 },
+        { name: 'Blamish oil',        lvl: 25, xp: 80.0 },
+        { name: 'Energy potion',      lvl: 26, xp: 67.5 },
+        { name: 'Defence potion',     lvl: 30, xp: 75.0 },
+        { name: 'Agility potion',     lvl: 34, xp: 80.0 },
+        { name: 'Prayer potion',      lvl: 38, xp: 87.5 },
+        { name: 'Super attack',       lvl: 45, xp: 100.0 },
+        { name: 'Super antipoison',   lvl: 48, xp: 106.3 },
+        { name: 'Fishing potion',     lvl: 50, xp: 112.5 },
+        { name: 'Super strength',     lvl: 55, xp: 125.0 },
+        { name: 'Weapon poison',      lvl: 60, xp: 127.5 },
+        { name: 'Super restore',      lvl: 63, xp: 142.5 },
+        { name: 'Super defence',      lvl: 66, xp: 150.0 },
+        { name: 'Antifire potion',    lvl: 69, xp: 157.5 },
+        { name: 'Ranging potion',     lvl: 72, xp: 162.5 },
+        { name: 'Zamorak brew',       lvl: 78, xp: 175.0 },
+      ],
+    },
+  },
+  crafting: {
+    gems: {
+      label: 'Cutting gems',
+      items: [
+        { name: 'Opal',        lvl: 1,  xp: 15.0 },
+        { name: 'Jade',        lvl: 13, xp: 20.0 },
+        { name: 'Red Topaz',   lvl: 16, xp: 25.0 },
+        { name: 'Sapphire',    lvl: 20, xp: 50.0 },
+        { name: 'Emerald',     lvl: 27, xp: 67.5 },
+        { name: 'Ruby',        lvl: 34, xp: 85.0 },
+        { name: 'Diamond',     lvl: 43, xp: 107.5 },
+        { name: 'Dragonstone', lvl: 55, xp: 137.5 },
+      ],
+    },
+    leather: {
+      label: 'Leather & hides',
+      items: [
+        { name: 'Leather gloves',         lvl: 1,  xp: 13.8 },
+        { name: 'Leather boots',          lvl: 7,  xp: 16.3 },
+        { name: 'Leather cowl',           lvl: 9,  xp: 18.5 },
+        { name: 'Leather vambraces',      lvl: 11, xp: 22.0 },
+        { name: 'Leather body',           lvl: 14, xp: 25.0 },
+        { name: 'Leather chaps',          lvl: 18, xp: 27.0 },
+        { name: 'Hard leather body',      lvl: 28, xp: 35.0 },
+        { name: 'Coif',                   lvl: 38, xp: 37.0 },
+        { name: 'Green d\'hide vambs',    lvl: 57, xp: 62.0 },
+        { name: 'Green d\'hide chaps',    lvl: 60, xp: 124.0 },
+        { name: 'Green d\'hide body',     lvl: 63, xp: 186.0 },
+        { name: 'Blue d\'hide vambs',     lvl: 66, xp: 70.0 },
+        { name: 'Blue d\'hide chaps',     lvl: 68, xp: 140.0 },
+        { name: 'Blue d\'hide body',      lvl: 71, xp: 210.0 },
+        { name: 'Red d\'hide vambs',      lvl: 73, xp: 78.0 },
+        { name: 'Red d\'hide chaps',      lvl: 75, xp: 156.0 },
+        { name: 'Red d\'hide body',       lvl: 77, xp: 234.0 },
+        { name: 'Black d\'hide vambs',    lvl: 79, xp: 86.0 },
+        { name: 'Black d\'hide chaps',    lvl: 82, xp: 172.0 },
+        { name: 'Black d\'hide body',     lvl: 84, xp: 258.0 },
+      ],
+    },
+  },
+  fletching: {
+    bows: {
+      label: 'Bows',
+      items: [
+        { name: 'Shortbow (u)',           lvl: 5,  xp: 5.0 },
+        { name: 'String shortbow',        lvl: 5,  xp: 5.0 },
+        { name: 'Longbow (u)',            lvl: 10, xp: 10.0 },
+        { name: 'String longbow',         lvl: 10, xp: 10.0 },
+        { name: 'Oak shortbow (u)',       lvl: 20, xp: 16.5 },
+        { name: 'String oak shortbow',    lvl: 20, xp: 16.5 },
+        { name: 'Oak longbow (u)',        lvl: 25, xp: 25.0 },
+        { name: 'String oak longbow',     lvl: 25, xp: 25.0 },
+        { name: 'Willow shortbow (u)',    lvl: 35, xp: 33.3 },
+        { name: 'String willow shortbow', lvl: 35, xp: 33.2 },
+        { name: 'Willow longbow (u)',     lvl: 40, xp: 41.5 },
+        { name: 'String willow longbow',  lvl: 40, xp: 41.5 },
+        { name: 'Maple shortbow (u)',     lvl: 50, xp: 50.0 },
+        { name: 'String maple shortbow',  lvl: 50, xp: 50.0 },
+        { name: 'Maple longbow (u)',      lvl: 55, xp: 58.3 },
+        { name: 'String maple longbow',   lvl: 55, xp: 58.2 },
+        { name: 'Yew shortbow (u)',       lvl: 65, xp: 67.5 },
+        { name: 'String yew shortbow',    lvl: 65, xp: 67.5 },
+        { name: 'Yew longbow (u)',        lvl: 70, xp: 75.0 },
+        { name: 'String yew longbow',     lvl: 70, xp: 75.0 },
+        { name: 'Magic shortbow (u)',     lvl: 80, xp: 83.3 },
+        { name: 'String magic shortbow',  lvl: 80, xp: 83.2 },
+        { name: 'Magic longbow (u)',      lvl: 85, xp: 91.5 },
+        { name: 'String magic longbow',   lvl: 85, xp: 91.5 },
+      ],
+    },
+    arrows: {
+      label: 'Arrows',
+      items: [
+        { name: 'Arrow shafts (×15)',     lvl: 1,  xp: 5.0 },
+        { name: 'Bronze arrowheads (×15)',lvl: 1,  xp: 1.3 },
+        { name: 'Iron arrowheads (×15)',  lvl: 15, xp: 2.5 },
+        { name: 'Steel arrowheads (×15)', lvl: 30, xp: 5.0 },
+        { name: 'Mithril arrowheads (×15)', lvl: 45, xp: 7.5 },
+        { name: 'Adamant arrowheads (×15)', lvl: 60, xp: 10.0 },
+        { name: 'Rune arrowheads (×15)', lvl: 75, xp: 12.5 },
+      ],
+    },
+    darts: {
+      label: 'Darts',
+      items: [
+        { name: 'Bronze darts',  lvl: 1,  xp: 1.8 },
+        { name: 'Iron darts',    lvl: 22, xp: 3.8 },
+        { name: 'Steel darts',   lvl: 37, xp: 7.5 },
+        { name: 'Mithril darts', lvl: 52, xp: 11.2 },
+        { name: 'Adamant darts', lvl: 67, xp: 15.0 },
+        { name: 'Rune darts',    lvl: 81, xp: 18.8 },
+      ],
+    },
+  },
+  magic: {
+    combat: {
+      label: 'Combat spells',
+      items: [
+        { name: 'Wind Strike',   lvl: 1,  xp: 5.5 },
+        { name: 'Water Strike',  lvl: 5,  xp: 7.5 },
+        { name: 'Earth Strike',  lvl: 9,  xp: 9.5 },
+        { name: 'Fire Strike',   lvl: 13, xp: 11.5 },
+        { name: 'Wind Bolt',     lvl: 17, xp: 13.5 },
+        { name: 'Water Bolt',    lvl: 23, xp: 16.5 },
+        { name: 'Earth Bolt',    lvl: 29, xp: 19.5 },
+        { name: 'Fire Bolt',     lvl: 35, xp: 22.5 },
+        { name: 'Crumble Undead',lvl: 39, xp: 49.0 },
+        { name: 'Wind Blast',    lvl: 41, xp: 25.5 },
+        { name: 'Water Blast',   lvl: 47, xp: 28.5 },
+        { name: 'Earth Blast',   lvl: 53, xp: 31.5 },
+        { name: 'Saradomin Strike', lvl: 60, xp: 35.0 },
+        { name: 'Fire Blast',    lvl: 59, xp: 34.5 },
+        { name: 'Wind Wave',     lvl: 62, xp: 36.0 },
+        { name: 'Water Wave',    lvl: 65, xp: 37.5 },
+        { name: 'Earth Wave',    lvl: 70, xp: 40.0 },
+        { name: 'Fire Wave',     lvl: 75, xp: 42.5 },
+        { name: 'Bind',          lvl: 20, xp: 30.0 },
+        { name: 'Snare',         lvl: 50, xp: 60.0 },
+        { name: 'Entangle',      lvl: 79, xp: 89.0 },
+        { name: 'Confuse',       lvl: 3,  xp: 13.0 },
+        { name: 'Weaken',        lvl: 11, xp: 21.0 },
+        { name: 'Curse',         lvl: 19, xp: 29.0 },
+        { name: 'Vulnerability', lvl: 66, xp: 76.0 },
+        { name: 'Enfeeble',      lvl: 73, xp: 83.0 },
+        { name: 'Stun',          lvl: 80, xp: 90.0 },
+        { name: 'Charge',        lvl: 80, xp: 180.0 },
+      ],
+    },
+    alchemy: {
+      label: 'Alchemy & Superheat',
+      items: [
+        { name: 'Low Level Alchemy',  lvl: 21, xp: 31.0 },
+        { name: 'High Level Alchemy', lvl: 55, xp: 65.0 },
+        { name: 'Superheat Item',     lvl: 43, xp: 53.0 },
+        { name: 'Bones to Bananas',   lvl: 15, xp: 25.0 },
+        { name: 'Charge Water Orb',   lvl: 56, xp: 66.0 },
+        { name: 'Charge Earth Orb',   lvl: 60, xp: 70.0 },
+        { name: 'Charge Fire Orb',    lvl: 63, xp: 73.0 },
+        { name: 'Charge Air Orb',     lvl: 66, xp: 76.0 },
+      ],
+    },
+    enchanting: {
+      label: 'Enchanting',
+      items: [
+        { name: 'Enchant Lvl 1 (Sapphire)',    lvl: 7,  xp: 17.5 },
+        { name: 'Enchant Lvl 2 (Emerald)',     lvl: 27, xp: 37.0 },
+        { name: 'Enchant Lvl 3 (Ruby)',        lvl: 49, xp: 59.0 },
+        { name: 'Enchant Lvl 4 (Diamond)',     lvl: 57, xp: 67.0 },
+        { name: 'Enchant Lvl 5 (Dragonstone)', lvl: 68, xp: 78.0 },
+      ],
+    },
+    teleports: {
+      label: 'Teleports & Utility',
+      items: [
+        { name: 'Telekinetic Grab',  lvl: 33, xp: 43.0 },
+        { name: 'Varrock Teleport',  lvl: 25, xp: 35.0 },
+        { name: 'Lumbridge Teleport',lvl: 31, xp: 41.0 },
+        { name: 'Falador Teleport',  lvl: 37, xp: 48.0 },
+        { name: 'Camelot Teleport',  lvl: 45, xp: 55.5 },
+        { name: 'Ardougne Teleport', lvl: 51, xp: 61.0 },
+      ],
+    },
+  },
+};
+
+// Track active subcategory per skill
+const activeSubcat = {};
+
+// ── SMITHING DATA ─────────────────────────────────────────────────────────────
+// xpPerBar: source value ÷ 10. Item XP = bars × xpPerBar.
+const SMITHING_BARS = {
+  smelting: {
+    label: 'Smelting',
+    items: [
+      { name: 'Bronze bar',     lvl: 1,  xp: 6.3 },
+      { name: 'Iron bar',       lvl: 15, xp: 12.5 },
+      { name: 'Steel bar',      lvl: 30, xp: 17.5 },
+      { name: 'Gold bar',       lvl: 40, xp: 22.5 },
+      { name: 'Mithril bar',    lvl: 50, xp: 25.0 },
+      { name: 'Adamantite bar', lvl: 70, xp: 37.5 },
+      { name: 'Runite bar',     lvl: 85, xp: 50.0 },
+    ],
+  },
+  bronze: {
+    label: 'Bronze (12.5 XP/bar)',
+    xpPerBar: 12.5,
+    items: [
+      { name: 'Bronze dagger',    lvl: 1,  bars: 1 },
+      { name: 'Bronze axe',       lvl: 1,  bars: 1 },
+      { name: 'Bronze mace',      lvl: 2,  bars: 1 },
+      { name: 'Bronze med helm',  lvl: 3,  bars: 1 },
+      { name: 'Bronze wire',      lvl: 4,  bars: 1 },
+      { name: 'Bronze dart tips (×10)', lvl: 4, bars: 1 },
+      { name: 'Bronze arrowheads (×15)', lvl: 5, bars: 1 },
+      { name: 'Bronze scimitar',  lvl: 5,  bars: 2 },
+      { name: 'Bronze longsword', lvl: 6,  bars: 2 },
+      { name: 'Bronze full helm', lvl: 7,  bars: 2 },
+      { name: 'Bronze sq shield', lvl: 8,  bars: 2 },
+      { name: 'Bronze warhammer', lvl: 9,  bars: 3 },
+      { name: 'Bronze battleaxe', lvl: 10, bars: 3 },
+      { name: 'Bronze chainbody', lvl: 11, bars: 3 },
+      { name: 'Bronze kiteshield',lvl: 12, bars: 3 },
+      { name: 'Bronze claws',     lvl: 13, bars: 2 },
+      { name: 'Bronze 2h sword',  lvl: 14, bars: 3 },
+      { name: 'Bronze platelegs', lvl: 16, bars: 3 },
+      { name: 'Bronze plateskirt',lvl: 16, bars: 3 },
+      { name: 'Bronze platebody', lvl: 18, bars: 5 },
+      { name: 'Bronze sword',     lvl: 4,  bars: 1 },
+      { name: 'Bronze knives (×5)', lvl: 7, bars: 1 },
+    ],
+  },
+  iron: {
+    label: 'Iron (25 XP/bar)',
+    xpPerBar: 25.0,
+    items: [
+      { name: 'Iron dagger',    lvl: 15, bars: 1 },
+      { name: 'Iron axe',       lvl: 16, bars: 1 },
+      { name: 'Iron mace',      lvl: 17, bars: 1 },
+      { name: 'Iron med helm',  lvl: 18, bars: 1 },
+      { name: 'Iron dart tips (×10)', lvl: 19, bars: 1 },
+      { name: 'Iron sword',     lvl: 19, bars: 1 },
+      { name: 'Iron arrowheads (×15)', lvl: 20, bars: 1 },
+      { name: 'Iron scimitar',  lvl: 20, bars: 2 },
+      { name: 'Iron longsword', lvl: 21, bars: 2 },
+      { name: 'Iron full helm', lvl: 22, bars: 2 },
+      { name: 'Iron knives (×5)', lvl: 22, bars: 1 },
+      { name: 'Iron sq shield', lvl: 23, bars: 2 },
+      { name: 'Iron warhammer', lvl: 24, bars: 3 },
+      { name: 'Iron battleaxe', lvl: 25, bars: 3 },
+      { name: 'Iron chainbody', lvl: 26, bars: 3 },
+      { name: 'Iron kiteshield',lvl: 27, bars: 3 },
+      { name: 'Iron claws',     lvl: 28, bars: 2 },
+      { name: 'Iron 2h sword',  lvl: 29, bars: 3 },
+      { name: 'Iron platelegs', lvl: 31, bars: 3 },
+      { name: 'Iron plateskirt',lvl: 31, bars: 3 },
+      { name: 'Iron platebody', lvl: 33, bars: 5 },
+    ],
+  },
+  steel: {
+    label: 'Steel (37.5 XP/bar)',
+    xpPerBar: 37.5,
+    items: [
+      { name: 'Steel dagger',    lvl: 30, bars: 1 },
+      { name: 'Steel axe',       lvl: 31, bars: 1 },
+      { name: 'Steel mace',      lvl: 32, bars: 1 },
+      { name: 'Steel med helm',  lvl: 33, bars: 1 },
+      { name: 'Steel dart tips (×10)', lvl: 34, bars: 1 },
+      { name: 'Steel sword',     lvl: 34, bars: 1 },
+      { name: 'Steel nails (×2)',lvl: 34, bars: 1 },
+      { name: 'Steel arrowheads (×15)', lvl: 35, bars: 1 },
+      { name: 'Steel scimitar',  lvl: 35, bars: 2 },
+      { name: 'Steel studs',     lvl: 36, bars: 1 },
+      { name: 'Steel longsword', lvl: 36, bars: 2 },
+      { name: 'Steel full helm', lvl: 37, bars: 2 },
+      { name: 'Steel knives (×5)', lvl: 37, bars: 1 },
+      { name: 'Steel sq shield', lvl: 38, bars: 2 },
+      { name: 'Steel warhammer', lvl: 39, bars: 3 },
+      { name: 'Steel battleaxe', lvl: 40, bars: 3 },
+      { name: 'Steel chainbody', lvl: 41, bars: 3 },
+      { name: 'Steel kiteshield',lvl: 42, bars: 3 },
+      { name: 'Steel claws',     lvl: 43, bars: 2 },
+      { name: 'Steel 2h sword',  lvl: 44, bars: 3 },
+      { name: 'Steel platelegs', lvl: 46, bars: 3 },
+      { name: 'Steel plateskirt',lvl: 46, bars: 3 },
+      { name: 'Steel platebody', lvl: 48, bars: 5 },
+    ],
+  },
+  mithril: {
+    label: 'Mithril (50 XP/bar)',
+    xpPerBar: 50.0,
+    items: [
+      { name: 'Mithril dagger',    lvl: 50, bars: 1 },
+      { name: 'Mithril axe',       lvl: 51, bars: 1 },
+      { name: 'Mithril mace',      lvl: 52, bars: 1 },
+      { name: 'Mithril med helm',  lvl: 53, bars: 1 },
+      { name: 'Mithril dart tips (×10)', lvl: 54, bars: 1 },
+      { name: 'Mithril sword',     lvl: 54, bars: 1 },
+      { name: 'Mithril arrowheads (×15)', lvl: 55, bars: 1 },
+      { name: 'Mithril scimitar',  lvl: 55, bars: 2 },
+      { name: 'Mithril longsword', lvl: 56, bars: 2 },
+      { name: 'Mithril full helm', lvl: 57, bars: 2 },
+      { name: 'Mithril knives (×5)', lvl: 57, bars: 1 },
+      { name: 'Mithril sq shield', lvl: 58, bars: 2 },
+      { name: 'Mithril warhammer', lvl: 59, bars: 3 },
+      { name: 'Mithril battleaxe', lvl: 60, bars: 3 },
+      { name: 'Mithril chainbody', lvl: 61, bars: 3 },
+      { name: 'Mithril kiteshield',lvl: 62, bars: 3 },
+      { name: 'Mithril claws',     lvl: 63, bars: 2 },
+      { name: 'Mithril 2h sword',  lvl: 64, bars: 3 },
+      { name: 'Mithril platelegs', lvl: 66, bars: 3 },
+      { name: 'Mithril plateskirt',lvl: 66, bars: 3 },
+      { name: 'Mithril platebody', lvl: 68, bars: 5 },
+    ],
+  },
+  adamantite: {
+    label: 'Adamantite (62.5 XP/bar)',
+    xpPerBar: 62.5,
+    items: [
+      { name: 'Adamant dagger',    lvl: 70, bars: 1 },
+      { name: 'Adamant axe',       lvl: 71, bars: 1 },
+      { name: 'Adamant mace',      lvl: 72, bars: 1 },
+      { name: 'Adamant med helm',  lvl: 73, bars: 1 },
+      { name: 'Adamant dart tips (×10)', lvl: 74, bars: 1 },
+      { name: 'Adamant sword',     lvl: 74, bars: 1 },
+      { name: 'Adamant arrowheads (×15)', lvl: 75, bars: 1 },
+      { name: 'Adamant scimitar',  lvl: 75, bars: 2 },
+      { name: 'Adamant longsword', lvl: 76, bars: 2 },
+      { name: 'Adamant full helm', lvl: 77, bars: 2 },
+      { name: 'Adamant knives (×5)', lvl: 77, bars: 1 },
+      { name: 'Adamant sq shield', lvl: 78, bars: 2 },
+      { name: 'Adamant warhammer', lvl: 79, bars: 3 },
+      { name: 'Adamant battleaxe', lvl: 80, bars: 3 },
+      { name: 'Adamant chainbody', lvl: 81, bars: 3 },
+      { name: 'Adamant kiteshield',lvl: 82, bars: 3 },
+      { name: 'Adamant claws',     lvl: 83, bars: 2 },
+      { name: 'Adamant 2h sword',  lvl: 84, bars: 3 },
+      { name: 'Adamant platelegs', lvl: 86, bars: 3 },
+      { name: 'Adamant plateskirt',lvl: 86, bars: 3 },
+      { name: 'Adamant platebody', lvl: 88, bars: 5 },
+    ],
+  },
+  runite: {
+    label: 'Runite (75 XP/bar)',
+    xpPerBar: 75.0,
+    items: [
+      { name: 'Rune dagger',    lvl: 85, bars: 1 },
+      { name: 'Rune axe',       lvl: 86, bars: 1 },
+      { name: 'Rune mace',      lvl: 87, bars: 1 },
+      { name: 'Rune med helm',  lvl: 88, bars: 1 },
+      { name: 'Rune dart tips (×10)', lvl: 89, bars: 1 },
+      { name: 'Rune sword',     lvl: 89, bars: 1 },
+      { name: 'Rune arrowheads (×15)', lvl: 90, bars: 1 },
+      { name: 'Rune scimitar',  lvl: 90, bars: 2 },
+      { name: 'Rune longsword', lvl: 91, bars: 2 },
+      { name: 'Rune full helm', lvl: 92, bars: 2 },
+      { name: 'Rune knives (×5)', lvl: 92, bars: 1 },
+      { name: 'Rune sq shield', lvl: 93, bars: 2 },
+      { name: 'Rune warhammer', lvl: 94, bars: 3 },
+      { name: 'Rune battleaxe', lvl: 95, bars: 3 },
+      { name: 'Rune chainbody', lvl: 96, bars: 3 },
+      { name: 'Rune kiteshield',lvl: 97, bars: 3 },
+      { name: 'Rune claws',     lvl: 98, bars: 2 },
+      { name: 'Rune 2h sword',  lvl: 99, bars: 3 },
+      { name: 'Rune platelegs', lvl: 99, bars: 3 },
+      { name: 'Rune plateskirt',lvl: 99, bars: 3 },
+      { name: 'Rune platebody', lvl: 99, bars: 5 },
+    ],
+  },
+};
+
+let currentSmithingBar = 'smelting';
+
+let currentSkill = null;
+let inputMode = 'level';
+
+function setInputMode(mode) {
+  inputMode = mode;
+  const isXP = mode === 'xp';
+  document.getElementById('toggle-level').className = isXP ? '' : 'active-toggle';
+  document.getElementById('toggle-xp').className    = isXP ? 'active-toggle' : '';
+  document.getElementById('input-current-level').style.display = isXP ? 'none' : '';
+  document.getElementById('input-current-xp').style.display   = isXP ? '' : 'none';
+  document.getElementById('input-target-level').style.display = isXP ? 'none' : '';
+  document.getElementById('input-target-xp').style.display    = isXP ? '' : 'none';
+  document.getElementById('label-current').textContent = isXP ? 'Current XP' : 'Current Level';
+  document.getElementById('label-target').textContent  = isXP ? 'Target XP'  : 'Target Level';
+  recalc();
+}
+
+function getCurrentXP() {
+  if (inputMode === 'xp') return parseInt(document.getElementById('input-current-xp').value) || 0;
+  const lvl = Math.min(99, Math.max(1, parseInt(document.getElementById('input-current-level').value) || 1));
+  return XP_TABLE[lvl - 1] || 0;
+}
+
+function getTargetXP() {
+  if (inputMode === 'xp') return parseInt(document.getElementById('input-target-xp').value) || 0;
+  const lvl = Math.min(99, Math.max(1, parseInt(document.getElementById('input-target-level').value) || 99));
+  return XP_TABLE[lvl - 1] || 0;
+}
+
+function getCurrentLevel() {
+  const xp = getCurrentXP();
+  for (let i = XP_TABLE.length - 1; i >= 0; i--) {
+    if (xp >= XP_TABLE[i]) return i + 1;
+  }
+  return 1;
+}
+
+function recalc() { updateXP(); renderMethods(); }
+
+function buildSkillGrid() {
+  const grid = document.getElementById('skill-grid');
+  for (const skill of SKILLS) {
+    const btn = document.createElement('button');
+    btn.className = 'skill-btn';
+    btn.id = 'skill-btn-' + skill.id;
+    btn.innerHTML = `<span class="skill-icon"><span class="skill-sprite skill-icon-${skill.id}"></span></span><span>${skill.name}</span>`;
+    btn.onclick = () => selectSkill(skill.id);
+    grid.appendChild(btn);
+  }
+}
+
+function selectSkill(id) {
+  currentSkill = id;
+  document.querySelectorAll('.skill-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('skill-btn-' + id).classList.add('active');
+  document.getElementById('skill-prompt').style.display = 'none';
+  document.getElementById('calc-panel').classList.remove('hidden');
+  document.getElementById('method-title').textContent = SKILLS.find(s => s.id === id).name + ' — Training Methods';
+
+  // Smithing bar selector
+  const barRow = document.getElementById('smithing-bar-row');
+  if (barRow) barRow.style.display = id === 'smithing' ? '' : 'none';
+
+  // Generic subcategory selector
+  const subcatRow = document.getElementById('subcat-row');
+  if (subcatRow) {
+    if (SUBCATEGORIES[id]) {
+      const cats = SUBCATEGORIES[id];
+      // Set default if not yet visited
+      if (!activeSubcat[id]) activeSubcat[id] = Object.keys(cats)[0];
+      // Build buttons
+      subcatRow.innerHTML = '';
+      const label = document.createElement('span');
+      label.className = 'mode-label';
+      label.textContent = 'Category:';
+      subcatRow.appendChild(label);
+      const btnGroup = document.createElement('div');
+      btnGroup.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
+      for (const [key, cat] of Object.entries(cats)) {
+        const btn = document.createElement('button');
+        btn.className = 'bar-btn' + (activeSubcat[id] === key ? ' active-toggle' : '');
+        btn.id = 'subcat-btn-' + key;
+        btn.textContent = cat.label;
+        btn.style.cssText = 'border:1px solid var(--border);border-radius:5px;';
+        btn.onclick = () => setSubcat(id, key);
+        btnGroup.appendChild(btn);
+      }
+      subcatRow.appendChild(btnGroup);
+      subcatRow.style.display = '';
+    } else {
+      subcatRow.style.display = 'none';
+    }
+  }
+  recalc();
+}
+
+function setSubcat(skillId, key) {
+  activeSubcat[skillId] = key;
+  document.querySelectorAll('#subcat-row .bar-btn').forEach(b => b.classList.remove('active-toggle'));
+  const btn = document.getElementById('subcat-btn-' + key);
+  if (btn) btn.classList.add('active-toggle');
+  recalc();
+}
+
+function setSmithingBar(bar) {
+  currentSmithingBar = bar;
+  document.querySelectorAll('.bar-btn').forEach(b => {
+    if (b.id.startsWith('bar-btn-')) b.classList.remove('active-toggle');
+  });
+  document.getElementById('bar-btn-' + bar).classList.add('active-toggle');
+  recalc();
+}
+
+function renderMethods() {
+  const tbody = document.getElementById('method-tbody');
+  const curXP      = getCurrentXP();
+  const tgtXP      = getTargetXP();
+  const xpNeeded   = Math.max(0, tgtXP - curXP);
+  const currentLvl = getCurrentLevel();
+
+  tbody.innerHTML = '';
+
+  let methods;
+  let showBarsCol = false;
+
+  if (currentSkill === 'smithing') {
+    const bar = SMITHING_BARS[currentSmithingBar];
+    if (!bar) return;
+    showBarsCol = currentSmithingBar !== 'smelting';
+    methods = bar.items.map(item => ({
+      name: item.name,
+      lvl:  item.lvl,
+      xp:   bar.xpPerBar !== undefined ? +(item.bars * bar.xpPerBar).toFixed(1) : item.xp,
+      bars: item.bars,
+    })).sort((a, b) => a.lvl - b.lvl);
+  } else if (SUBCATEGORIES[currentSkill]) {
+    const catKey = activeSubcat[currentSkill];
+    const cat = SUBCATEGORIES[currentSkill][catKey];
+    methods = cat ? [...cat.items].sort((a, b) => a.lvl - b.lvl) : [];
+  } else {
+    methods = METHODS[currentSkill] || [];
+  }
+
+  const barsHeader = document.getElementById('th-bars');
+  if (barsHeader) barsHeader.style.display = showBarsCol ? '' : 'none';
+
+  for (const m of methods) {
+    const tr = document.createElement('tr');
+    tr.className = 'method-row';
+    const actions = m.xp > 0 ? Math.ceil(xpNeeded / m.xp).toLocaleString() : '—';
+    const tooLow  = currentLvl < m.lvl;
+    const barsCell = showBarsCol ? `<td class="right">${m.bars}</td>` : '';
+    tr.innerHTML = `
+      <td class="${tooLow ? 'dim' : ''}">${m.name}</td>
+      <td class="right ${tooLow ? 'warn' : ''}">${m.lvl}</td>
+      ${barsCell}
+      <td class="right">${m.xp > 0 ? m.xp.toFixed(1) : '—'}</td>
+      <td class="right">${actions}</td>`;
+    tr.onclick = () => {
+      document.querySelectorAll('.method-row').forEach(r => r.classList.remove('selected'));
+      tr.classList.add('selected');
+    };
+    tbody.appendChild(tr);
+  }
+}
+
+function updateXP() {
+  const needed = Math.max(0, getTargetXP() - getCurrentXP());
+  document.getElementById('xp-needed-display').textContent = needed.toLocaleString() + ' XP';
+}
+
+buildSkillGrid();
+</script>
+</body>
+</html>
