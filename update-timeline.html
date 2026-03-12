@@ -929,12 +929,18 @@ const canvas = document.getElementById('tlCanvas');
 const outer  = document.getElementById('tlOuter');
 // Canvas is 2x outer height. Line sits at the 3/4 mark so above-cards
 // have a full outer-height of space and below-cards have a quarter.
-const TRACK_TOP = Math.round(outer.clientHeight * 1.5);
+// Fixed canvas layout: 500px above track line for tallest above-cards,
+// 420px below for tallest below-cards (max offset 225 + NODE_H 105 = 330px + breathing room)
+// Extra padding lets you pan so the topmost/bottommost nodes reach the screen edge
+const EXTRA_PAD  = outer.clientHeight;
+const ABOVE_ROOM = 500 + EXTRA_PAD;
+const BELOW_ROOM = 420 + EXTRA_PAD;
+const CANVAS_H   = ABOVE_ROOM + BELOW_ROOM;
+const TRACK_TOP  = ABOVE_ROOM;
 
 const TOTAL_PX = START_PX + YEAR_PX * 2 + 80;
 canvas.style.width  = TOTAL_PX + 'px';
-// Make canvas 2x the outer height so there's room to pan up into for tall above-cards
-canvas.style.height = (outer.clientHeight * 2) + 'px';
+canvas.style.height = CANVAS_H + 'px';
 
 // Track line — created in JS so the extraAbove shift can move it via style.top
 const tlLine = document.createElement('div');
@@ -1185,9 +1191,9 @@ function hideTip() { tip.classList.remove('visible'); }
 let isDown = false, startX, startY, scrollLeft, panY = 0;
 
 function applyPanY() {
-  // Clamp: can't pan past top or bottom of canvas
-  const maxPan = 0;
-  const minPan = -(canvas.offsetHeight * zoomLevel - outer.clientHeight);
+  // Allow panning into the extra padding so nodes can reach the screen edge
+  const maxPan =  EXTRA_PAD * zoomLevel;
+  const minPan = -(canvas.offsetHeight * zoomLevel - outer.clientHeight) - EXTRA_PAD * zoomLevel;
   panY = Math.min(maxPan, Math.max(minPan, panY));
   canvas.style.marginTop = panY + 'px';
 }
@@ -1241,8 +1247,8 @@ function zoom(delta, anchorX) {
   outer.scrollLeft = contentX * zoomLevel - ax;
 }
 
-// On load: pan up so the track line appears in the vertical centre of the viewport
-panY = -(TRACK_TOP - outer.clientHeight / 2);
+// On load: pan so track line sits at ~45% down the viewport (room for below-cards)
+panY = -(TRACK_TOP - Math.round(outer.clientHeight * 0.45));
 applyZoom();
 
 // Scroll to show RS2 launch area on load
