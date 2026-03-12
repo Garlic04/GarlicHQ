@@ -1443,6 +1443,13 @@ const SKILL_TASKS = [
   { skill: 'rc', name: 'Chaos runes',  icon: '💥', req: 35, unitMin: 150, unitMax: 400, unit: 'chaos runes',  loc: 'Chaos Altar',                     note: 'Chaos talisman: on the rare drop table (from monsters in underground areas)', itemImage: 'Chaos_rune'  },
   { skill: 'rc', name: 'Nature runes', icon: '🍃', req: 44, unitMin: 100, unitMax: 250, unit: 'nature runes', loc: 'Nature Altar, Karamja',            note: 'Nature talisman: on the rare drop table (from monsters above ground)', itemImage: 'Nature_rune'  },
   { skill: 'rc', name: 'Law runes',    icon: '⚖️', req: 54, unitMin: 100, unitMax: 250, unit: 'law runes',    loc: 'Law Altar, Entrana',               note: 'Requires Troll Stronghold quest. Law talisman: rewarded upon completing Troll Stronghold (given by Dunstan)', itemImage: 'Law_rune'  },
+
+  // Agility — Brimhaven Agility Arena tickets
+  { skill: 'agility', name: 'Brimhaven tickets (low)',  icon: '🎟️', req: 35, unitMin: 20,  unitMax: 60,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 59 },
+  { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 60, unitMin: 60,  unitMax: 150, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 79 },
+  { skill: 'agility', name: 'Brimhaven tickets (high)', icon: '🎟️', req: 80, unitMin: 150, unitMax: 350, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket' },
+  { skill: 'agility', name: 'Barbarian Outpost laps',   icon: '🏃', req: 35, unitMin: 20,  unitMax: 60,  unit: 'laps', loc: 'Barbarian Outpost Agility Course, north of Baxtorian Falls', itemImage: 'Agility_icon_(detail)', maxReq: 51 },
+  { skill: 'agility', name: 'Wilderness laps',          icon: '🏃', req: 52, unitMin: 15,  unitMax: 45,  unit: 'laps', loc: 'Wilderness Agility Course, level 50-56 Wilderness', note: '⚠️ Located deep in the Wilderness. Bring nothing you are not willing to lose.', itemImage: 'Agility_icon_(detail)' },
 ];
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -1697,6 +1704,7 @@ const SKILL_DEFS = [
   { key: 'cooking',  label: 'Cooking',     icon: 'stat-cooking' },
   { key: 'fletching',label: 'Fletching',   icon: 'stat-fletching' },
   { key: 'rc',       label: 'Runecrafting',icon: 'stat-rc' },
+  { key: 'agility',  label: 'Agility',     icon: 'stat-agility' },
 ];
 
 // All skills enabled by default
@@ -1782,7 +1790,7 @@ function generateTask(isReroll = false) {
   const agility = getStat('stat-agility');
 
   if (doMix) {
-    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc') };
+    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility') };
     const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
     const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && skillStats[t.skill] <= (t.maxReq || 99)).length > 0;
     if (pickType === 'combat' && !hasCombat && hasSkill) pickType = 'skill';
@@ -1812,6 +1820,7 @@ function generateTask(isReroll = false) {
       cooking: getStat('stat-cooking'),
       fletching: getStat('stat-fletching'),
       rc: getStat('stat-rc'),
+      agility: getStat('stat-agility'),
     };
 
     const eligible = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && stats[t.skill] >= t.req && stats[t.skill] <= (t.maxReq || 99));
@@ -1849,7 +1858,8 @@ function generateTask(isReroll = false) {
 function skillLabel(skill) {
   const map = {
     wc: 'Chop', mining: 'Mine', fishing: 'Catch',
-    fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', rc: 'Craft'
+    fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', rc: 'Craft',
+    agility: 'Collect'
   };
   return map[skill] || 'Gather';
 }
