@@ -148,6 +148,27 @@
   .table-hint { font-size: 0.75rem; color: var(--gold-dim); font-style: italic; margin-top: 0.75rem; opacity: 0.6; }
   #calc-panel.hidden { display: none; }
   .prompt { text-align: center; padding: 3rem 1rem; color: var(--gold-dim); font-style: italic; opacity: 0.5; font-size: 1.05rem; }
+  .lookup-bar {
+    display: flex; align-items: center; gap: 0.6rem;
+    max-width: 420px; margin: 0 auto 1.5rem;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0.5rem 0.75rem;
+  }
+  .lookup-bar input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--parchment); font-family: 'IM Fell English', serif;
+    font-size: 0.95rem;
+  }
+  .lookup-bar input::placeholder { color: var(--gold-dim); opacity: 0.6; }
+  .lookup-bar button {
+    background: rgba(200,168,75,0.12); border: 1px solid var(--border);
+    border-radius: 2px; color: var(--gold); font-family: 'Cinzel', serif;
+    font-size: 0.72rem; letter-spacing: 0.1em; padding: 0.35rem 0.8rem;
+    cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .lookup-bar button:hover { background: rgba(200,168,75,0.22); border-color: var(--gold); }
+  .lookup-status { text-align: center; font-size: 0.82rem; font-style: italic; color: var(--gold-dim); margin-bottom: 1rem; min-height: 1.2em; }
 </style>
 </head>
 <body>
@@ -164,6 +185,11 @@
 </div>
 
 <div class="container">
+  <div class="lookup-bar">
+    <input type="text" id="username-input" placeholder="Enter username to autofill levels..." onkeydown="if(event.key==='Enter')lookupUser()">
+    <button onclick="lookupUser()">Look Up</button>
+  </div>
+  <div class="lookup-status" id="lookup-status"></div>
   <div class="skill-grid" id="skill-grid"></div>
   <div class="prompt" id="skill-prompt">Select a skill above to begin</div>
 
@@ -816,6 +842,60 @@ function getCurrentLevel() {
 
 function recalc() { updateXP(); renderMethods(); }
 
+// Map hiscores skill names to calc skill IDs
+const HISCORE_MAP = {
+  'Attack':      'attack',
+  'Defence':     'defence',
+  'Strength':    'strength',
+  'Hitpoints':   'hitpoints',
+  'Ranged':      'ranged',
+  'Prayer':      'prayer',
+  'Magic':       'magic',
+  'Cooking':     'cooking',
+  'Woodcutting': 'woodcutting',
+  'Fletching':   'fletching',
+  'Fishing':     'fishing',
+  'Firemaking':  'firemaking',
+  'Crafting':    'crafting',
+  'Smithing':    'smithing',
+  'Mining':      'mining',
+  'Herblore':    'herblore',
+  'Agility':     'agility',
+  'Thieving':    'thieving',
+  'Runecrafting':'runecraft',
+};
+
+// Stored levels from hiscores lookup
+const hiscoreLevels = {};
+
+async function lookupUser() {
+  const username = document.getElementById('username-input').value.trim();
+  if (!username) return;
+  const status = document.getElementById('lookup-status');
+  status.textContent = 'Looking up ' + username + '...';
+  try {
+    const res = await fetch('https://lostcity-hiscores.nehughes97.workers.dev/?username=' + encodeURIComponent(username));
+    const data = await res.json();
+    if (!data.skills || data.skills.length === 0) {
+      status.textContent = 'Player not found.';
+      return;
+    }
+    for (const s of data.skills) {
+      const id = HISCORE_MAP[s.skill];
+      if (id) hiscoreLevels[id] = s.level;
+    }
+    // If a skill is currently selected, update the current level input
+    if (currentSkill && hiscoreLevels[currentSkill]) {
+      document.getElementById('input-current-level').value = hiscoreLevels[currentSkill];
+      setInputMode('level');
+      recalc();
+    }
+    status.textContent = '✓ Loaded stats for ' + data.username;
+  } catch (e) {
+    status.textContent = 'Error fetching stats. Try again.';
+  }
+}
+
 function buildSkillGrid() {
   const grid = document.getElementById('skill-grid');
   for (const skill of SKILLS) {
@@ -835,6 +915,11 @@ function selectSkill(id) {
   document.getElementById('skill-prompt').style.display = 'none';
   document.getElementById('calc-panel').classList.remove('hidden');
   document.getElementById('method-title').textContent = SKILLS.find(s => s.id === id).name + ' — Training Methods';
+  // Autofill current level from hiscores if available
+  if (hiscoreLevels[id]) {
+    document.getElementById('input-current-level').value = hiscoreLevels[id];
+    setInputMode('level');
+  }
 
   // Smithing bar selector
   const barRow = document.getElementById('smithing-bar-row');
