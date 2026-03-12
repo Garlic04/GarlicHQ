@@ -250,7 +250,7 @@ const REWARDS = {
     { id: 'rune_platebody_g',    name: 'Rune Platebody (g)',    img: 'Rune_platebody_(g)' },
     { id: 'rune_platelegs_g',    name: 'Rune Platelegs (g)',    img: 'Rune_platelegs_(g)' },
     { id: 'rune_kiteshield_g',   name: 'Rune Kiteshield (g)',   img: 'Rune_kiteshield_(g)' },
-    { id: 'pirates_hat',         name: "Pirate's Hat",          img: 'Pirates_hat' },
+    { id: 'pirates_hat',         name: "Pirate's Hat",          img: 'Pirates_hat', imgUrl: 'https://oldschool.runescape.wiki/w/Special:FilePath/Pirate%27s_hat.png' },
     { id: 'tan_cavalier',        name: 'Tan Cavalier',          img: 'Tan_cavalier' },
     { id: 'dark_cavalier',       name: 'Dark Cavalier',         img: 'Dark_cavalier' },
     { id: 'black_cavalier',      name: 'Black Cavalier',        img: 'Black_cavalier' },
@@ -324,7 +324,7 @@ function buildGrid(tier) {
       em.textContent = '🗡️';
       this.replaceWith(em);
     };
-    imgEl.src = `https://oldschool.runescape.wiki/images/${item.img}.png`;
+    imgEl.src = item.imgUrl || `https://oldschool.runescape.wiki/images/${item.img}.png`;
 
     const name = document.createElement('div');
     name.className = 'text-xs mt-1 leading-tight';
@@ -369,7 +369,7 @@ function openPopup(tier, id) {
   document.getElementById('popup-name').textContent = item.name;
   document.getElementById('popup-count').textContent = count;
   const img = document.getElementById('popup-img');
-  img.src = `https://oldschool.runescape.wiki/images/${item.img}.png`;
+  img.src = item.imgUrl || `https://oldschool.runescape.wiki/images/${item.img}.png`;
   img.onerror = function() { this.style.display = 'none'; };
   img.style.display = 'block';
   document.getElementById('item-popup').showModal();
