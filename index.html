@@ -395,15 +395,11 @@
 
 <footer>Garlic &nbsp;·&nbsp; Lost City Fan Tools &nbsp;·&nbsp; Not affiliated with Jagex</footer>
 <script>
-  const API_KEY = 'AIzaSyDeZrtqF27rGdvrdDQVsQf5Bqdi0tT9s8M';
-  const CHANNEL_ID = 'UCOWK0096cCvWPrDSjc12P9w';
-
   async function checkIfLive() {
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`;
-      const res = await fetch(url);
+      const res = await fetch('https://lostcity-hiscores.nehughes97.workers.dev/live');
       const data = await res.json();
-      if (data.items && data.items.length > 0) {
+      if (data.live) {
         document.getElementById('liveBadge').classList.add('visible');
         document.getElementById('dividerIcon').src = 'https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlic_live.png';
       }
