@@ -808,34 +808,36 @@
   .milestones-trigger {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    background: #1e1a10;
-    border: 1px solid var(--border);
+    background: #2a2210;
+    border: 1px solid var(--gold-dim);
     border-right: none;
     border-radius: 6px 0 0 6px;
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.6rem;
     cursor: pointer;
     font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     letter-spacing: 0.15em;
-    color: var(--gold-dim);
+    color: var(--gold);
     user-select: none;
     transition: background 0.2s, color 0.2s;
+    box-shadow: -3px 0 12px rgba(0,0,0,0.5);
   }
   .milestones-tab:hover .milestones-trigger,
   .milestones-tab.open .milestones-trigger {
-    background: #2a2210;
-    color: var(--gold);
+    background: #3a3015;
+    color: #f0d060;
   }
   .milestones-panel {
     width: 0;
     overflow: hidden;
     background: #1e1a10;
-    border: 1px solid var(--border);
+    border: 1px solid var(--gold-dim);
     border-right: none;
     border-radius: 6px 0 0 6px;
     transition: width 0.3s ease;
     display: flex;
     flex-direction: column;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.6);
   }
   .milestones-tab:hover .milestones-panel,
   .milestones-tab.open .milestones-panel { width: 280px; }
@@ -848,7 +850,7 @@
     font-family: 'Cinzel', serif;
     font-size: 0.78rem;
     letter-spacing: 0.15em;
-    color: var(--gold-dim);
+    color: var(--gold);
     text-transform: uppercase;
     margin-bottom: 0.75rem;
     white-space: nowrap;
@@ -858,9 +860,9 @@
     align-items: center;
     gap: 0.6rem;
     padding: 0.35rem 0;
-    border-bottom: 1px solid rgba(200,168,75,0.08);
+    border-bottom: 1px solid rgba(200,168,75,0.12);
     font-size: 0.82rem;
-    opacity: 0.4;
+    opacity: 0.35;
     transition: opacity 0.3s;
     white-space: nowrap;
   }
@@ -879,8 +881,8 @@
     border-color: var(--gold);
     color: var(--bg);
   }
-  .milestone-label { flex: 1; color: var(--parchment); }
-  .milestone-reward { font-size: 0.72rem; color: var(--gold-dim); }
+  .milestone-label { flex: 1; color: #e8d89a; }
+  .milestone-reward { font-size: 0.72rem; color: var(--gold); }
 </style>
 </head>
 <body>
