@@ -1604,9 +1604,10 @@ async function saveStats() {
   const keys = ['attack','strength','defence','hp','prayer','ranged','magic','agility','wc','mining','fishing','fm','cooking','fletching','rc'];
   for (const k of keys) {
     const el = document.getElementById('stat-' + k);
-    if (el) data[k] = el.value;
+    if (el && el.value !== '') data[k] = el.value;
   }
-  await dbPut('settings', 'stats', data);
+  // Only save if at least one stat is filled in
+  if (Object.keys(data).length > 0) await dbPut('settings', 'stats', data);
 }
 
 async function loadStats() {
