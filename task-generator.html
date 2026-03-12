@@ -1380,6 +1380,7 @@ function generateTask(isReroll = false) {
   }
 
   currentTask = task;
+  dbPut('settings', 'currentTask', task);
   renderTask(task);
 }
 
@@ -1461,6 +1462,7 @@ function completeTask() {
   showToast(msg);
 
   currentTask = null;
+  dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
 }
 
@@ -1714,6 +1716,13 @@ openDB().then(async () => {
   updateSkillFilterVisibility();
   await loadLogCollapsed();
   loadTaskLog();
+
+  // Restore any task that was active when the user navigated away
+  const saved = await dbGet('settings', 'currentTask');
+  if (saved) {
+    currentTask = saved;
+    renderTask(currentTask);
+  }
 });
 </script>
 </body>
