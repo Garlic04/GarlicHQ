@@ -31,6 +31,8 @@
     --skill-bright: #50c870;
     --mix: #3a2a6b;
     --mix-bright: #8060cc;
+    --quest: #5a3a10;
+    --quest-bright: #c88030;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -340,6 +342,7 @@
 
   .task-type-badge.combat { color: var(--combat-bright); border-color: var(--combat-bright); background: rgba(139,32,32,0.15); }
   .task-type-badge.skill { color: var(--skill-bright); border-color: var(--skill-bright); background: rgba(26,90,42,0.15); }
+  .task-type-badge.quest { color: var(--quest-bright); border-color: var(--quest-bright); background: rgba(90,58,16,0.20); }
 
   .task-monster-icon {
     font-size: 3rem;
@@ -531,6 +534,7 @@
 
   .log-combat { color: var(--combat-bright); }
   .log-skill  { color: var(--skill-bright); }
+  .log-quest  { color: var(--quest-bright); }
 
   .log-bonus {
     font-size: 0.7rem;
@@ -1114,6 +1118,10 @@
         <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABQUlEQVR4nL2WT2rCQBTGfxOC4Bm8huDKq7QHsHXTRcEDFLropq0HaK/SleA1cgQpDNJxoWYm8/eNhH4QJCR5v3zfezMR/kFKeJ+58TkAWnHxyd/5Vzc19UUQZpN3ADoXphtDhZvcaw0imvGZvX4rpHcB0PFgL1yjEyoVV/CWrpMBUKCkE9dFRqLIYhBZ1hWR+RADoYtOr+n0uj+PDEFWQU8Gzb4ULkRXHOfiysoChJEFTtxYxpLvRDlHVl5fssMiXoxJ2ciSoBRENMZXN5vl1H/OOEcfS1B0s5zytXtNAj6+nwDYb21bX35+7Q3Ort3irQ238feL5yhgvjqy37bMV0cL2B2AJjpxCjCl7H2YW/zx7i2/l+lGBsmpBICLExBviHU78BmiWhc0CiDyeQ6mqya6HhoWVskTKj6pEVX9gxldJ0pkX/QakqN5AAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Magic</label>
         <input type="number" id="stat-magic" min="1" max="99" value="" placeholder="1">
       </div>
+      <div class="stat-field">
+        <label><img src="https://oldschool.runescape.wiki/images/Quest_point_icon.png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Quest Points</label>
+        <input type="number" id="stat-qp" min="0" max="250" value="" placeholder="0">
+      </div>
     </div>
 
     <div class="combat-level-display">
@@ -1155,6 +1163,32 @@
         <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABeklEQVR4nJ2Wsa3CMBRFTxAUjMAAfwbEFjRUWSINygwWDUukomELxAxIVJEyAsVHmOpZ9ovj2Nwu2L7nXT8nBsplSxcsSgHX3bIYVAIRAKWgXIgDiEpAORALsL+9eXxW7sf97R2Mp7RMjFmA8/kMQNM0ownemICqXEhgrgGPz4rj/eWeh2GgbVsAjDFRmIZY31xMpqTHFMyB/J4EgGEYnIksFp2260mwN9/1SpKMACJjTGDgb1VKdX2g6y4WqEY9iW2Prlwnm9OCSB+0dPU63ZTq+gBgg/cklkKqPt5fHO8vl8oYMwnr+2fwHEA2m010Udu2Aey0XQewFEAgVdM0yaOao75/jgBddwGoZrdLJBVLAulTXR+i1fvy30wbOzV9/5SKooApSQoIe1IZY4LYfoX6GOcCdBKR1Sa5SWSe9o1+NWOwrrtw2q75W/y7j6Q/lvJLQQIY4CAQ3CezPjkQiNyMHmjWI/f6rVTl2YBfZK+7peWHv0XFoNIFXxdG0fzbO+GzAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Runecrafting</label>
         <input type="number" id="stat-rc" min="1" max="99" value="" placeholder="1">
       </div>
+      <div class="stat-field">
+        <label><img src="https://oldschool.runescape.wiki/images/Crafting_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Crafting</label>
+        <input type="number" id="stat-crafting" min="1" max="99" value="" placeholder="1">
+      </div>
+      <div class="stat-field">
+        <label><img src="https://oldschool.runescape.wiki/images/Smithing_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Smithing</label>
+        <input type="number" id="stat-smithing" min="1" max="99" value="" placeholder="1">
+      </div>
+      <div class="stat-field">
+        <label><img src="https://oldschool.runescape.wiki/images/Thieving_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Thieving</label>
+        <input type="number" id="stat-thieving" min="1" max="99" value="" placeholder="1">
+      </div>
+      <div class="stat-field">
+        <label><img src="https://oldschool.runescape.wiki/images/Herblore_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Herblore</label>
+        <input type="number" id="stat-herblore" min="1" max="99" value="" placeholder="1">
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:16px;" id="quest-tracker-panel">
+    <div class="panel-title">📜 Completed Quests</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Tick off quests you've already done — they won't be assigned as tasks. Already done all your quests? Tick them here! <span style="color:var(--gold)">💡 Tip: if you've already done a quest that's assigned, just mark it complete.</span></div>
+    <div id="quest-checklist" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;max-height:320px;overflow-y:auto;padding-right:4px;"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button onclick="markAllQuests(true)" style="padding:4px 10px;font-size:12px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);border-radius:4px;cursor:pointer;">✓ All</button>
+      <button onclick="markAllQuests(false)" style="padding:4px 10px;font-size:12px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);border-radius:4px;cursor:pointer;">✗ None</button>
     </div>
   </div>
 
@@ -1317,6 +1351,77 @@ const SKILL_ICONS = {
 const NPC_IMAGES = {
 };
 
+// ─── Quest Tasks ─────────────────────────────────────────────────────────────
+// skillReqs keys: attack, strength, defence, prayer, ranged, magic, hp,
+//   agility, wc, mining, fishing, fm, cooking, fletching, rc,
+//   crafting, smithing, thieving, herblore, slayer
+// questReqs: ['Quest Name'] all must be in completedQuests
+// qpReq: minimum quest points
+const QUEST_TASKS = [
+  // ── Free to Play ──
+  { name: "Cook's Assistant",           f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Sheep Shearer",              f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Romeo & Juliet",             f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Witch's Potion",             f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Imp Catcher",                f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Ernest the Chicken",         f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Goblin Diplomacy",           f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Pirate's Treasure",          f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "The Restless Ghost",         f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Rune Mysteries",             f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Doric's Quest",              f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Prince Ali Rescue",          f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Vampire Slayer",             f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "The Knight's Sword",         f2p: true,  qpReq: 0,   skillReqs: { mining: 10 },                                                                   questReqs: [] },
+  { name: "Shield of Arrav",            f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Demon Slayer",               f2p: true,  qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Black Knight's Fortress",    f2p: true,  qpReq: 12,  skillReqs: {},                                                                               questReqs: [] },
+  { name: "Dragon Slayer",              f2p: true,  qpReq: 32,  skillReqs: {},                                                                               questReqs: [] },
+  // ── Members ──
+  { name: "Monk's Friend",              f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Clock Tower",                f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Hazeel Cult",                f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Sheep Herder",               f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Jungle Potion",              f2p: false, qpReq: 0,   skillReqs: { herblore: 3 },                                                                  questReqs: [] },
+  { name: "Murder Mystery",             f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Gertrude's Cat",             f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Tribal Totem",               f2p: false, qpReq: 0,   skillReqs: { thieving: 21 },                                                                 questReqs: [] },
+  { name: "Dwarf Cannon",               f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Witch's House",              f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Fight Arena",                f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Observatory Quest",          f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Plague City",                f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Sea Slug",                   f2p: false, qpReq: 0,   skillReqs: { fm: 30 },                                                                       questReqs: [] },
+  { name: "Druidic Ritual",             f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Fishing Contest",            f2p: false, qpReq: 0,   skillReqs: { fishing: 10 },                                                                  questReqs: [] },
+  { name: "Big Chompy Bird Hunting",    f2p: false, qpReq: 0,   skillReqs: { fletching: 5, cooking: 30, ranged: 30 },                                        questReqs: [] },
+  { name: "Merlin's Crystal",           f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Lost City",                  f2p: false, qpReq: 0,   skillReqs: { wc: 36, crafting: 31 },                                                         questReqs: [] },
+  { name: "Waterfall Quest",            f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Tree Gnome Village",         f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Holy Grail",                 f2p: false, qpReq: 0,   skillReqs: { attack: 20 },                                                                   questReqs: ["Merlin's Crystal"] },
+  { name: "Biohazard",                  f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: ["Plague City"] },
+  { name: "Priest in Peril",            f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Nature Spirit",              f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: ["Priest in Peril", "The Restless Ghost"] },
+  { name: "Death Plateau",              f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Elemental Workshop",         f2p: false, qpReq: 0,   skillReqs: { mining: 20, smithing: 20, crafting: 20 },                                       questReqs: [] },
+  { name: "Digsite",                    f2p: false, qpReq: 0,   skillReqs: { agility: 10, herblore: 10, thieving: 25 },                                      questReqs: [] },
+  { name: "Scorpion Catcher",           f2p: false, qpReq: 0,   skillReqs: { prayer: 31 },                                                                   questReqs: [] },
+  { name: "Shilo Village",              f2p: false, qpReq: 0,   skillReqs: { crafting: 20, agility: 32 },                                                    questReqs: ["Jungle Potion"] },
+  { name: "Underground Pass",           f2p: false, qpReq: 0,   skillReqs: { ranged: 25 },                                                                   questReqs: ["Biohazard"] },
+  { name: "Watch Tower",                f2p: false, qpReq: 0,   skillReqs: { agility: 40, thieving: 15, herblore: 14, mining: 40, magic: 14 },               questReqs: [] },
+  { name: "Temple of Ikov",             f2p: false, qpReq: 0,   skillReqs: { ranged: 40, thieving: 42 },                                                     questReqs: [] },
+  { name: "Tourist Trap",               f2p: false, qpReq: 0,   skillReqs: { fletching: 10, smithing: 20 },                                                  questReqs: [] },
+  { name: "Troll Stronghold",           f2p: false, qpReq: 0,   skillReqs: { agility: 15 },                                                                  questReqs: ["Death Plateau"] },
+  { name: "Family Crest",               f2p: false, qpReq: 0,   skillReqs: { mining: 40, smithing: 40, magic: 59, crafting: 40 },                            questReqs: [] },
+  { name: "The Grand Tree",             f2p: false, qpReq: 0,   skillReqs: { agility: 25 },                                                                  questReqs: [] },
+  { name: "Hero's Quest",               f2p: false, qpReq: 55,  skillReqs: { cooking: 53, fishing: 53, herblore: 25, mining: 50 },                           questReqs: ["Shield of Arrav", "Lost City", "Dragon Slayer", "Merlin's Crystal"] },
+  { name: "Legends Quest",              f2p: false, qpReq: 107, skillReqs: { agility: 50, crafting: 50, herblore: 45, mining: 52, prayer: 42, smithing: 52, strength: 50, thieving: 50, wc: 50 }, questReqs: ["Hero's Quest", "Underground Pass", "Family Crest", "Waterfall Quest"] },
+  // ── Miniquests ──
+  { name: "Alfred Grimhand's Barcrawl", f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Mage Arena",                 f2p: false, qpReq: 0,   skillReqs: { magic: 60 },                                                                    questReqs: [] },
+];
+
 const CLUE_TASKS = [
   { name: 'Easy Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
   { name: 'Medium Clue', icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
@@ -1473,6 +1578,7 @@ const STREAK_BONUS_AT  = 10;  // milestone interval
 
 let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0 };
 let currentTask = null;  // track whether a task is pending completion
+let completedQuests = new Set(); // set of quest names the player has finished
 
 function promptReset() {
   document.getElementById('reset-confirm').style.display = 'flex';
@@ -1764,6 +1870,36 @@ function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getQuestStats() {
+  return {
+    attack: getStat('stat-attack'), strength: getStat('stat-strength'),
+    defence: getStat('stat-defence'), prayer: getStat('stat-prayer'),
+    ranged: getStat('stat-ranged'), magic: getStat('stat-magic'),
+    hp: getStat('stat-hp'), agility: getStat('stat-agility'),
+    wc: getStat('stat-wc'), mining: getStat('stat-mining'),
+    fishing: getStat('stat-fishing'), fm: getStat('stat-fm'),
+    cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'),
+    rc: getStat('stat-rc'), crafting: getStat('stat-crafting'),
+    smithing: getStat('stat-smithing'), thieving: getStat('stat-thieving'),
+    herblore: getStat('stat-herblore'),
+  };
+}
+
+function isQuestEligible(q) {
+  if (completedQuests.has(q.name)) return false;
+  const qpEl = document.getElementById('stat-qp');
+  const qp = qpEl ? (parseInt(qpEl.value) || 0) : 0;
+  if (qp < q.qpReq) return false;
+  const stats = getQuestStats();
+  for (const [skill, lvl] of Object.entries(q.skillReqs)) {
+    if ((stats[skill] || 1) < lvl) return false;
+  }
+  for (const prereq of q.questReqs) {
+    if (!completedQuests.has(prereq)) return false;
+  }
+  return true;
+}
+
 function generateTask(isReroll = false) {
   hideError();
 
@@ -1782,9 +1918,9 @@ function generateTask(isReroll = false) {
 
   let task = null;
 
-  // In mix mode, clues get a 1-in-5 chance alongside combat and skill
+  // In mix mode: combat 2/8, skill 2/8, clue 1/8, quest 3/8
   let pickType = doMix
-    ? (['combat', 'combat', 'skill', 'skill', 'clue'][randInt(0, 4)])
+    ? (['combat', 'combat', 'skill', 'skill', 'clue', 'quest', 'quest', 'quest'][randInt(0, 7)])
     : (doCombat ? 'combat' : 'skill');
 
   const agility = getStat('stat-agility');
@@ -1793,8 +1929,10 @@ function generateTask(isReroll = false) {
     const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility') };
     const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
     const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && skillStats[t.skill] <= (t.maxReq || 99)).length > 0;
-    if (pickType === 'combat' && !hasCombat && hasSkill) pickType = 'skill';
-    if (pickType === 'skill'  && !hasSkill  && hasCombat) pickType = 'combat';
+    const hasQuest  = QUEST_TASKS.filter(isQuestEligible).length > 0;
+    if (pickType === 'combat' && !hasCombat) pickType = hasSkill ? 'skill' : (hasQuest ? 'quest' : 'clue');
+    if (pickType === 'skill'  && !hasSkill)  pickType = hasCombat ? 'combat' : (hasQuest ? 'quest' : 'clue');
+    if (pickType === 'quest'  && !hasQuest)  pickType = hasCombat ? 'combat' : (hasSkill ? 'skill' : 'clue');
   }
 
   if (pickType === 'combat') {
@@ -1847,6 +1985,25 @@ function generateTask(isReroll = false) {
       desc: t.desc,
       note: t.note || null,
     };
+  } else if (pickType === 'quest') {
+    const eligible = QUEST_TASKS.filter(isQuestEligible);
+    if (eligible.length === 0) { showError(); return; }
+    const t = eligible[randInt(0, eligible.length - 1)];
+    const reqParts = [];
+    for (const [sk, lvl] of Object.entries(t.skillReqs)) reqParts.push(`${lvl} ${sk.charAt(0).toUpperCase()+sk.slice(1)}`);
+    if (t.qpReq > 0) reqParts.push(`${t.qpReq} QP`);
+    const reqStr = reqParts.length ? `Requires: ${reqParts.join(', ')}. ` : '';
+    const prereqStr = t.questReqs.length ? `Complete first: ${t.questReqs.join(', ')}. ` : '';
+    task = {
+      type: 'quest',
+      name: t.name,
+      icon: '📜',
+      itemImage: 'Quest_point_icon',
+      title: `Complete: ${t.name}`,
+      desc: `${reqStr}${prereqStr}Start this quest in-game and see it through to the end!`,
+      note: `💡 Already done this quest? Mark it complete below, or tick it off in the <strong>Stats tab → Completed Quests</strong> so it won't appear again.`,
+      questName: t.name,
+    };
   }
 
   currentTask = task;
@@ -1870,7 +2027,7 @@ function renderTask(task) {
   document.getElementById('task-desc').innerHTML = task.desc;
 
   const badge = document.getElementById('task-badge');
-  badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : task.type === 'clue' ? '🗺 Clue Task' : '🛠 Skilling Task';
+  badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : task.type === 'clue' ? '🗺 Clue Task' : task.type === 'quest' ? '📜 Quest Task' : '🛠 Skilling Task';
   badge.className = 'task-type-badge ' + task.type;
 
   const notesEl = document.getElementById('task-notes');
@@ -1919,6 +2076,13 @@ function completeTask() {
   tracker.total++;
   tracker.streak++;
   if (currentTask && currentTask.type === 'combat' && ['King Black Dragon','Kalphite Queen'].includes(currentTask.name)) tracker.bossKills = (tracker.bossKills || 0) + 1;
+
+  // Mark quest as completed so it won't appear again
+  if (currentTask.type === 'quest' && currentTask.questName) {
+    completedQuests.add(currentTask.questName);
+    saveCompletedQuests();
+    updateQuestChecklist();
+  }
 
   const base    = taskPointValue(currentTask);
   const isBonus = tracker.streak % STREAK_BONUS_AT === 0;
@@ -2042,7 +2206,7 @@ function dbClear(store) {
 
 async function saveStats() {
   const data = {};
-  const keys = ['attack','strength','defence','hp','prayer','ranged','magic','agility','wc','mining','fishing','fm','cooking','fletching','rc'];
+  const keys = ['attack','strength','defence','hp','prayer','ranged','magic','agility','wc','mining','fishing','fm','cooking','fletching','rc','crafting','smithing','thieving','herblore','qp'];
   for (const k of keys) {
     const el = document.getElementById('stat-' + k);
     if (el && el.value !== '') data[k] = el.value;
@@ -2163,7 +2327,7 @@ function renderTaskLog(entries) {
     const dateStr = date.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
     const timeStr = date.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
     const bonusBadge = e.bonus ? ' <span class="log-bonus">★ BONUS</span>' : '';
-    const typeClass  = e.type === 'combat' ? 'log-combat' : 'log-skill';
+    const typeClass  = e.type === 'combat' ? 'log-combat' : e.type === 'quest' ? 'log-quest' : 'log-skill';
     return `<div class="log-entry">
       <span class="log-title ${typeClass}">${e.title}${bonusBadge}</span>
       <span class="log-meta">${dateStr} ${timeStr} · <span class="log-pts">+${e.points}pts</span></span>
@@ -2197,6 +2361,7 @@ openDB().then(async () => {
   await loadSkillFilters();
   buildSkillFilterGrid();
   updateSkillFilterVisibility();
+  await loadCompletedQuests();
   await loadLogCollapsed();
   loadTaskLog();
 
@@ -2252,6 +2417,65 @@ async function lookupUser() {
   } catch(e) {
     status.textContent = 'Error fetching stats. Try again.';
   }
+}
+
+function buildQuestChecklist() {
+  const container = document.getElementById('quest-checklist');
+  if (!container) return;
+  container.innerHTML = '';
+  QUEST_TASKS.forEach(q => {
+    const label = document.createElement('label');
+    label.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:3px 0;color:var(--text);';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = completedQuests.has(q.name);
+    cb.style.cssText = 'accent-color:var(--gold);width:14px;height:14px;flex-shrink:0;';
+    cb.addEventListener('change', () => {
+      if (cb.checked) completedQuests.add(q.name);
+      else completedQuests.delete(q.name);
+      saveCompletedQuests();
+    });
+    const span = document.createElement('span');
+    span.textContent = q.name + (q.f2p ? '' : ' ★');
+    span.title = q.f2p ? 'Free to play' : 'Members quest';
+    if (completedQuests.has(q.name)) span.style.color = 'var(--text-dim)';
+    cb.addEventListener('change', () => { span.style.color = cb.checked ? 'var(--text-dim)' : 'var(--text)'; });
+    label.appendChild(cb);
+    label.appendChild(span);
+    container.appendChild(label);
+  });
+}
+
+function updateQuestChecklist() {
+  const container = document.getElementById('quest-checklist');
+  if (!container) return;
+  container.querySelectorAll('label').forEach((label, i) => {
+    const q = QUEST_TASKS[i];
+    if (!q) return;
+    const cb = label.querySelector('input');
+    const span = label.querySelector('span');
+    if (cb) cb.checked = completedQuests.has(q.name);
+    if (span) span.style.color = completedQuests.has(q.name) ? 'var(--text-dim)' : 'var(--text)';
+  });
+}
+
+function markAllQuests(done) {
+  if (done) QUEST_TASKS.forEach(q => completedQuests.add(q.name));
+  else completedQuests.clear();
+  saveCompletedQuests();
+  updateQuestChecklist();
+}
+
+function saveCompletedQuests() {
+  dbPut('settings', 'completedQuests', [...completedQuests]);
+}
+
+async function loadCompletedQuests() {
+  try {
+    const saved = await dbGet('settings', 'completedQuests');
+    if (Array.isArray(saved)) completedQuests = new Set(saved);
+  } catch(e) {}
+  buildQuestChecklist();
 }
 
 function switchTab(tab) {
