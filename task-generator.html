@@ -2168,6 +2168,11 @@ document.querySelectorAll('input[type=number]').forEach(el => {
 
 openDB().then(async () => {
   await loadStats();
+  const savedUsername = await dbGet('settings', 'lastUsername');
+  if (savedUsername && savedUsername.value) {
+    document.getElementById('username-input').value = savedUsername.value;
+    document.getElementById('lookup-status').textContent = '✓ Loaded stats for ' + savedUsername.value;
+  }
   await loadTracker();
   const savedTab = await dbGet('settings', 'activeTab');
   if (savedTab && savedTab.value) switchTab(savedTab.value);
@@ -2225,6 +2230,8 @@ async function lookupUser() {
     }
     document.getElementById('combat-level-value').textContent = calcCombatLevel();
     status.textContent = '✓ Loaded stats for ' + data.username;
+    await saveStats();
+    await dbPut('settings', 'lastUsername', data.username);
   } catch(e) {
     status.textContent = 'Error fetching stats. Try again.';
   }
