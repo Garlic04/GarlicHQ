@@ -324,13 +324,23 @@ function popupAdjust(delta) {
   if (!tier || !id) return;
 
   if (delta === -1) {
-    // Minus: unmark entirely
-    state[tier].obtained.delete(id);
-    delete state[tier].counts[id];
-    saveState();
-    buildGrid(tier);
-    closePopup();
-    showToast('Unmarked.');
+    const current = state[tier].counts[id] || 1;
+    if (current <= 1) {
+      // Count would hit 0 — unmark entirely
+      state[tier].obtained.delete(id);
+      delete state[tier].counts[id];
+      saveState();
+      buildGrid(tier);
+      closePopup();
+      showToast('Unmarked.');
+    } else {
+      // Decrement count
+      state[tier].counts[id] = current - 1;
+      document.getElementById('popup-count').textContent = state[tier].counts[id];
+      saveState();
+      buildGrid(tier);
+      showToast('Count updated!');
+    }
   } else {
     // Plus: increment count
     state[tier].counts[id] = (state[tier].counts[id] || 1) + 1;
