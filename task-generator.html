@@ -1314,24 +1314,30 @@ function taskPointValue(task) {
 
 
 const TITLES = [
-  { points: 0,    label: '— Wanderer —',    cls: 'rank-1' },
-  { points: 50,   label: '— Adventurer —',  cls: 'rank-2' },
-  { points: 150,  label: '— Slayer —',      cls: 'rank-3' },
-  { points: 350,  label: '— Champion —',    cls: 'rank-4' },
-  { points: 750,  label: '— Hero —',        cls: 'rank-5' },
-  { points: 1500, label: '— Legend —',      cls: 'rank-6' },
+  { tasks: 0,   label: '— Wanderer —',   cls: 'rank-1' },
+  { tasks: 10,  label: '— Adventurer —', cls: 'rank-2' },
+  { tasks: 50,  label: '— Veteran —',    cls: 'rank-3' },
+  { tasks: 150, label: '— Champion —',   cls: 'rank-4' },
+  { tasks: 350, label: '— Hero —',       cls: 'rank-5' },
+  { tasks: 750, label: '— Legend —',     cls: 'rank-6' },
 ];
 
 const MILESTONES = [
-  { id: 'tasks5',    label: 'Complete 5 tasks',       check: () => tracker.total >= 5,   reward: 'Getting started' },
-  { id: 'tasks25',   label: 'Complete 25 tasks',      check: () => tracker.total >= 25,  reward: 'Seasoned tasker' },
-  { id: 'tasks100',  label: 'Complete 100 tasks',     check: () => tracker.total >= 100, reward: 'Century complete' },
+  // Rank milestones — match TITLES thresholds
+  { id: 'tasks10',   label: '10 tasks — Adventurer',  check: () => tracker.total >= 10,  reward: 'Rank up!' },
+  { id: 'tasks50',   label: '50 tasks — Veteran',     check: () => tracker.total >= 50,  reward: 'Rank up!' },
+  { id: 'tasks150',  label: '150 tasks — Champion',   check: () => tracker.total >= 150, reward: 'Rank up!' },
+  { id: 'tasks350',  label: '350 tasks — Hero',       check: () => tracker.total >= 350, reward: 'Rank up!' },
+  { id: 'tasks750',  label: '750 tasks — Legend',     check: () => tracker.total >= 750, reward: 'Rank up!' },
+  // Streak milestones
   { id: 'streak5',   label: 'Reach a 5 streak',       check: () => tracker.streak > 5,   reward: 'On a roll' },
   { id: 'streak10',  label: 'Reach a 10 streak',      check: () => tracker.streak > 10,  reward: 'Bonus points active' },
   { id: 'streak25',  label: 'Reach a 25 streak',      check: () => tracker.streak > 25,  reward: 'Unstoppable' },
-  { id: 'points50',  label: 'Earn 50 points',         check: () => tracker.points >= 50,   reward: 'Adventurer rank' },
-  { id: 'points350', label: 'Earn 350 points',        check: () => tracker.points >= 350,  reward: 'Champion rank' },
-  { id: 'points1500',label: 'Earn 1500 points',       check: () => tracker.points >= 1500, reward: 'Legend rank' },
+  // Points milestones
+  { id: 'points50',  label: 'Earn 50 points',         check: () => tracker.points >= 50,   reward: 'Points milestone' },
+  { id: 'points350', label: 'Earn 350 points',        check: () => tracker.points >= 350,  reward: 'Points milestone' },
+  { id: 'points1500',label: 'Earn 1500 points',       check: () => tracker.points >= 1500, reward: 'Points milestone' },
+  // Boss milestones
   { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Proven in battle' },
   { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Boss Hunter' },
 ];
@@ -1341,7 +1347,7 @@ let milestonesUnlocked = new Set();
 function getTitle() {
   let current = TITLES[0];
   for (const t of TITLES) {
-    if (tracker.points >= t.points) current = t;
+    if (tracker.total >= t.tasks) current = t;
   }
   return current;
 }
