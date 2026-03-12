@@ -778,6 +778,109 @@
   }
   .lookup-bar button:hover { background: rgba(200,168,75,0.22); border-color: #c8a84b; }
   .lookup-status { font-size: 0.8rem; font-style: italic; color: #8a6f2e; margin-bottom: 0.75rem; min-height: 1.2em; }
+
+  .player-title {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+    min-height: 1.2em;
+    transition: color 0.3s;
+  }
+  .player-title.rank-1 { color: #a0a0a0; }
+  .player-title.rank-2 { color: #c8a84b; }
+  .player-title.rank-3 { color: #4bc8a0; }
+  .player-title.rank-4 { color: #4b8ec8; }
+  .player-title.rank-5 { color: #c84b4b; }
+  .player-title.rank-6 { color: #c84bc8; }
+
+  .milestones-tab {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: stretch;
+  }
+  .milestones-trigger {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    padding: 1rem 0.5rem;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    user-select: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .milestones-tab:hover .milestones-trigger,
+  .milestones-tab.open .milestones-trigger {
+    background: rgba(200,168,75,0.12);
+    color: var(--gold);
+  }
+  .milestones-panel {
+    width: 0;
+    overflow: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .milestones-tab:hover .milestones-panel,
+  .milestones-tab.open .milestones-panel { width: 280px; }
+  .milestones-inner {
+    width: 280px;
+    padding: 1rem 1.2rem;
+    flex-shrink: 0;
+  }
+  .milestones-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+  }
+  .milestone-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(200,168,75,0.08);
+    font-size: 0.82rem;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .milestone-item:last-child { border-bottom: none; }
+  .milestone-item.unlocked { opacity: 1; }
+  .milestone-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+  }
+  .milestone-item.unlocked .milestone-check {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--bg);
+  }
+  .milestone-label { flex: 1; color: var(--parchment); }
+  .milestone-reward { font-size: 0.72rem; color: var(--gold-dim); }
 </style>
 </head>
 <body>
@@ -915,6 +1018,7 @@
   </div>
 
   <!-- Tracker -->
+  <div style="text-align:center;margin-bottom:0.5rem;"><span class="player-title" id="player-title">— Wanderer —</span></div>
   <div class="tracker-panel">
     <div class="tracker-stat">
       <div class="tracker-label">Tasks Done</div>
@@ -1153,7 +1257,7 @@ const BASE_POINTS = {
 const BONUS_MULTIPLIER = 2;   // every 10th streak task doubles points
 const STREAK_BONUS_AT  = 10;  // milestone interval
 
-let tracker = { total: 0, streak: 0, points: 0 };
+let tracker = { total: 0, streak: 0, points: 0, bossKills: 0 };
 let currentTask = null;  // track whether a task is pending completion
 
 function promptReset() {
@@ -1165,7 +1269,7 @@ function cancelReset() {
 }
 
 function confirmReset() {
-  tracker = { total: 0, streak: 0, points: 0 };
+  tracker = { total: 0, streak: 0, points: 0, bossKills: 0 };
   saveTracker();
   renderTracker();
   dbClear('tasklog').then(() => loadTaskLog());
@@ -1196,8 +1300,73 @@ function taskPointValue(task) {
   return BASE_POINTS.combat_low;
 }
 
+
+const TITLES = [
+  { points: 0,    label: '— Wanderer —',    cls: 'rank-1' },
+  { points: 50,   label: '— Adventurer —',  cls: 'rank-2' },
+  { points: 150,  label: '— Slayer —',      cls: 'rank-3' },
+  { points: 350,  label: '— Champion —',    cls: 'rank-4' },
+  { points: 750,  label: '— Hero —',        cls: 'rank-5' },
+  { points: 1500, label: '— Legend —',      cls: 'rank-6' },
+];
+
+const MILESTONES = [
+  { id: 'tasks5',    label: 'Complete 5 tasks',       check: () => tracker.total >= 5,   reward: '+5 pts bonus' },
+  { id: 'tasks25',   label: 'Complete 25 tasks',      check: () => tracker.total >= 25,  reward: '+10 pts bonus' },
+  { id: 'tasks100',  label: 'Complete 100 tasks',     check: () => tracker.total >= 100, reward: 'Title: Slayer' },
+  { id: 'streak5',   label: 'Reach a 5 streak',       check: () => tracker.streak >= 5,  reward: 'Streak bonus unlocked' },
+  { id: 'streak10',  label: 'Reach a 10 streak',      check: () => tracker.streak >= 10, reward: 'Double points!' },
+  { id: 'streak25',  label: 'Reach a 25 streak',      check: () => tracker.streak >= 25, reward: 'Title: Champion' },
+  { id: 'points50',  label: 'Earn 50 points',         check: () => tracker.points >= 50,  reward: 'Title: Adventurer' },
+  { id: 'points350', label: 'Earn 350 points',        check: () => tracker.points >= 350, reward: 'Title: Hero' },
+  { id: 'points1500',label: 'Earn 1500 points',       check: () => tracker.points >= 1500,reward: 'Title: Legend' },
+  { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Proven in battle' },
+  { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Boss Hunter' },
+];
+
+let milestonesUnlocked = new Set();
+
+function getTitle() {
+  let current = TITLES[0];
+  for (const t of TITLES) {
+    if (tracker.points >= t.points) current = t;
+  }
+  return current;
+}
+
+function renderTitle() {
+  const t = getTitle();
+  const el = document.getElementById('player-title');
+  if (!el) return;
+  el.textContent = t.label;
+  el.className = 'player-title ' + t.cls;
+}
+
+function renderMilestones() {
+  const list = document.getElementById('milestones-list');
+  if (!list) return;
+  list.innerHTML = '';
+  for (const m of MILESTONES) {
+    const unlocked = m.check();
+    const div = document.createElement('div');
+    div.className = 'milestone-item' + (unlocked ? ' unlocked' : '');
+    div.innerHTML = `<div class="milestone-check">${unlocked ? '✓' : ''}</div>
+      <div class="milestone-label">${m.label}</div>
+      <div class="milestone-reward">${m.reward}</div>`;
+    list.appendChild(div);
+
+    // Toast on first unlock
+    if (unlocked && !milestonesUnlocked.has(m.id)) {
+      milestonesUnlocked.add(m.id);
+      showToast('🏆 Milestone: ' + m.label);
+    }
+  }
+}
+
 function renderTracker() {
   document.getElementById('tracker-total').textContent  = tracker.total;
+  renderTitle();
+  renderMilestones();
   document.getElementById('tracker-points').textContent = tracker.points;
 
   const streakEl  = document.getElementById('tracker-streak');
@@ -1478,6 +1647,7 @@ function completeTask() {
 
   tracker.total++;
   tracker.streak++;
+  if (currentTask && currentTask.type === 'combat' && ['King Black Dragon','Kalphite Queen'].includes(currentTask.name)) tracker.bossKills = (tracker.bossKills || 0) + 1;
 
   const base    = taskPointValue(currentTask);
   const isBonus = tracker.streak % STREAK_BONUS_AT === 0;
