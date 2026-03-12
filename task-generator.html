@@ -768,6 +768,13 @@
     flex: 1; background: transparent; border: none; outline: none;
     color: #e8d5a3; font-family: 'IM Fell English', serif; font-size: 0.95rem;
   }
+  .lookup-bar input:-webkit-autofill,
+  .lookup-bar input:-webkit-autofill:hover,
+  .lookup-bar input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #14110a inset;
+    -webkit-text-fill-color: #e8d5a3;
+    caret-color: #e8d5a3;
+  }
   .lookup-bar input::placeholder { color: #8a6f2e; opacity: 0.6; }
   .lookup-bar button {
     background: rgba(200,168,75,0.12); border: 1px solid rgba(200,168,75,0.25);
