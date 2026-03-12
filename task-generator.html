@@ -831,16 +831,19 @@
     width: 0;
     overflow: hidden;
     background: #1e1a10;
-    border: 1px solid var(--gold-dim);
+    border: 0px solid var(--gold-dim);
     border-right: none;
     border-radius: 6px 0 0 6px;
     transition: width 0.3s ease;
     display: flex;
     flex-direction: column;
-    box-shadow: -4px 0 20px rgba(0,0,0,0.6);
   }
   .milestones-tab:hover .milestones-panel,
-  .milestones-tab.open .milestones-panel { width: 280px; }
+  .milestones-tab.open .milestones-panel {
+    width: 280px;
+    border-width: 1px;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.6);
+  }
   .milestones-inner {
     width: 280px;
     padding: 1rem 1.2rem;
@@ -919,16 +922,19 @@
     width: 0;
     overflow: hidden;
     background: #1e1a10;
-    border: 1px solid var(--gold-dim);
+    border: 0px solid var(--gold-dim);
     border-right: none;
     border-radius: 6px 0 0 6px;
     transition: width 0.3s ease;
     display: flex;
     flex-direction: column;
-    box-shadow: -4px 0 20px rgba(0,0,0,0.6);
   }
   .shop-tab:hover .shop-panel,
-  .shop-tab.open .shop-panel { width: 260px; }
+  .shop-tab.open .shop-panel {
+    width: 260px;
+    border-width: 1px;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.6);
+  }
   .shop-inner {
     width: 260px;
     padding: 1rem 1.2rem;
