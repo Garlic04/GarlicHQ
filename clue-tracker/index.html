@@ -1,1 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clue Scroll Tracker — Garlic</title>
+<link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .item-img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; display: block; margin: 0 auto; }
+  .item-emoji { font-size: 1.6rem; line-height: 1; }
 
+  /* ── GARLIC THEME ── */
+  body.theme-garlic {
+    background-color: #0d0b08 !important;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,168,75,0.07) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E") !important;
+    color: #e8d5a3 !important;
+    font-family: 'IM Fell English', Georgia, serif !important;
+  }
+  body.theme-garlic .navbar {
+    background: rgba(20,17,9,0.9) !important;
+    border-bottom: 1px solid rgba(200,168,75,0.25) !important;
+  }
+  body.theme-garlic .navbar a,
+  body.theme-garlic .navbar span { color: #c8a84b !important; }
+  body.theme-garlic .card.bg-base-200 {
+    background: rgba(20,17,9,0.85) !important;
+    border: 1px solid rgba(200,168,75,0.2) !important;
+  }
+  body.theme-garlic h1,
+  body.theme-garlic h2 {
+    font-family: 'Cinzel', serif !important;
+    color: #f0cc6e !important;
+  }
+  body.theme-garlic h1 { font-size: 1.6rem !important; letter-spacing: 0.06em; }
+  body.theme-garlic h2 { font-size: 0.95rem !important; letter-spacing: 0.04em; font-weight: 600; }
+  body.theme-garlic p,
+  body.theme-garlic .text-sm { color: #e8d5a3 !important; }
+  body.theme-garlic .opacity-50,
+  body.theme-garlic .opacity-60 { color: #8a6f2e !important; opacity: 1 !important; }
+  body.theme-garlic .progress { background: rgba(200,168,75,0.15) !important; }
+  body.theme-garlic .progress::-webkit-progress-value { background: #c8a84b !important; }
+  body.theme-garlic .progress::-moz-progress-bar { background: #c8a84b !important; }
+  body.theme-garlic .btn-outline {
+    border-color: rgba(200,168,75,0.4) !important;
+    color: #c8a84b !important;
+  }
+  body.theme-garlic .btn-outline:hover {
+    background: rgba(200,168,75,0.1) !important;
+    border-color: #c8a84b !important;
+  }
+  body.theme-garlic .card.cursor-pointer { background: rgba(26,23,14,0.9) !important; border-color: transparent !important; }
+  body.theme-garlic .card.cursor-pointer.opacity-100 { opacity: 1 !important; }
+  body.theme-garlic .card.cursor-pointer.opacity-60 { opacity: 0.45 !important; }
+  body.theme-garlic .card.cursor-pointer:hover { border-color: rgba(200,168,75,0.3) !important; opacity: 1 !important; }
+  body.theme-garlic .text-xs { color: #c8a84b !important; font-size: 0.65rem !important; }
+  body.theme-garlic .badge-neutral { background: rgba(200,168,75,0.2) !important; color: #f0cc6e !important; border: none !important; }
+  body.theme-garlic .select {
+    background: rgba(20,17,9,0.9) !important;
+    border-color: rgba(200,168,75,0.4) !important;
+    color: #c8a84b !important;
+  }
+  body.theme-garlic .modal-box {
+    background: #141109 !important;
+    border: 1px solid rgba(200,168,75,0.3) !important;
+    color: #e8d5a3 !important;
+  }
+  body.theme-garlic .modal-box h3 { color: #f0cc6e !important; font-family: 'Cinzel', serif !important; }
+</style>
+</head>
+<body data-theme="dark" class="theme-garlic min-h-screen">
+
+<div class="navbar bg-base-200 px-4">
+  <div class="flex-1">
+    <a href="/" class="text-sm opacity-50 hover:opacity-100">← Garlic</a>
+    <span class="mx-2 opacity-30">/</span>
+    <span class="text-sm">Clue Scroll Tracker</span>
+  </div>
+  <div class="flex-none">
+    <select class="select select-sm select-bordered" onchange="setTheme(this.value)">
+      <option value="garlic" selected>Garlic</option>
+      <option value="retro">retro</option>
+      <option value="dark">dark</option>
+      <option value="light">light</option>
+      <option value="cupcake">cupcake</option>
+      <option value="bumblebee">bumblebee</option>
+      <option value="synthwave">synthwave</option>
+      <option value="cyberpunk">cyberpunk</option>
+      <option value="halloween">halloween</option>
+      <option value="forest">forest</option>
+      <option value="luxury">luxury</option>
+      <option value="dracula">dracula</option>
+      <option value="night">night</option>
+      <option value="coffee">coffee</option>
+    </select>
+  </div>
+</div>
+
+<div class="p-6 max-w-5xl mx-auto">
+  <h1 class="text-3xl font-bold text-center mb-1">Clue Scroll Tracker</h1>
+  <p class="text-center opacity-50 text-sm mb-6">Track your unique rewards from clue scrolls</p>
+
+
+
+  <!-- EASY -->
+  <!-- Clue Counter -->
+  <div class="card bg-base-200 shadow p-4 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Clues Completed</h2>
+    <div class="flex flex-wrap gap-6">
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Easy</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('easy', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-easy">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('easy', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Medium</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('medium', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-medium">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('medium', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Hard</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('hard', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-hard">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('hard', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px] ml-auto">
+        <span class="text-sm opacity-60">Total</span>
+        <span class="text-xl font-bold" id="count-total">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-easy">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Easy Clue Rewards</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-easy"><span>0</span> / 13</p>
+          <progress class="progress progress-accent w-48" id="bar-easy" value="0" max="13"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('easy')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-easy"></div>
+  </div>
+
+  <!-- MEDIUM -->
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-medium">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Medium Clue Rewards</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-medium"><span>0</span> / 12</p>
+          <progress class="progress progress-accent w-48" id="bar-medium" value="0" max="12"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('medium')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-medium"></div>
+  </div>
+
+  <!-- HARD -->
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-hard">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Hard Clue Rewards</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-hard"><span>0</span> / 25</p>
+          <progress class="progress progress-accent w-48" id="bar-hard" value="0" max="25"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('hard')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-hard"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast toast-bottom toast-center hidden">
+  <div class="alert alert-success text-sm" id="toast-msg"></div>
+</div>
+
+
+<dialog id="item-popup" class="modal">
+  <div class="modal-box text-center">
+    <h3 class="font-bold text-lg mb-1" id="popup-name"></h3>
+    <img class="item-img mx-auto my-2" id="popup-img" src="" alt="">
+    <div class="text-4xl font-bold my-2" id="popup-count">1</div>
+    <p class="text-sm opacity-50 mb-4">times obtained</p>
+    <div class="flex gap-3 justify-center mb-4">
+      <button class="btn btn-error btn-outline" onclick="popupAdjust(-1)">− Remove</button>
+      <button class="btn btn-success btn-outline" onclick="popupAdjust(1)">+ Add</button>
+    </div>
+    <div class="modal-action justify-center">
+      <button class="btn btn-sm btn-ghost" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button onclick="closePopup()">close</button></form>
+</dialog>
+
+<script>
+const REWARDS = {
+  easy: [
+    { id: 'black_platebody_t',  name: 'Black Platebody (t)',  img: 'Black_platebody_(t)' },
+    { id: 'black_platelegs_t',  name: 'Black Platelegs (t)',  img: 'Black_platelegs_(t)' },
+    { id: 'black_full_helm_t',  name: 'Black Full Helm (t)',  img: 'Black_full_helm_(t)' },
+    { id: 'black_kiteshield_t', name: 'Black Kiteshield (t)', img: 'Black_kiteshield_(t)' },
+    { id: 'black_platebody_g',  name: 'Black Platebody (g)',  img: 'Black_platebody_(g)' },
+    { id: 'black_platelegs_g',  name: 'Black Platelegs (g)',  img: 'Black_platelegs_(g)' },
+    { id: 'black_full_helm_g',  name: 'Black Full Helm (g)',  img: 'Black_full_helm_(g)' },
+    { id: 'black_kiteshield_g', name: 'Black Kiteshield (g)', img: 'Black_kiteshield_(g)' },
+    { id: 'highwayman_mask',    name: 'Highwayman Mask',      img: 'Highwayman_mask' },
+    { id: 'blue_beret',         name: 'Blue Beret',           img: 'Blue_beret' },
+    { id: 'black_beret',        name: 'Black Beret',          img: 'Black_beret' },
+    { id: 'white_beret',        name: 'White Beret',          img: 'White_beret' },
+    { id: 'wizard_boots',       name: 'Wizard Boots',         img: 'Wizard_boots' },
+  ],
+  medium: [
+    { id: 'ranger_boots',        name: 'Ranger Boots',         img: 'Ranger_boots' },
+    { id: 'adamant_full_helm_t', name: 'Adamant Full Helm (t)',img: 'Adamant_full_helm_(t)' },
+    { id: 'adamant_platebody_t', name: 'Adamant Platebody (t)',img: 'Adamant_platebody_(t)' },
+    { id: 'adamant_platelegs_t', name: 'Adamant Platelegs (t)',img: 'Adamant_platelegs_(t)' },
+    { id: 'adamant_kite_t',      name: 'Adamant Kiteshield (t)',img: 'Adamant_kiteshield_(t)' },
+    { id: 'adamant_full_helm_g', name: 'Adamant Full Helm (g)',img: 'Adamant_full_helm_(g)' },
+    { id: 'adamant_platebody_g', name: 'Adamant Platebody (g)',img: 'Adamant_platebody_(g)' },
+    { id: 'adamant_platelegs_g', name: 'Adamant Platelegs (g)',img: 'Adamant_platelegs_(g)' },
+    { id: 'adamant_kite_g',      name: 'Adamant Kiteshield (g)',img: 'Adamant_kiteshield_(g)' },
+    { id: 'red_headband',        name: 'Red Headband',          img: 'Red_headband' },
+    { id: 'black_headband',      name: 'Black Headband',        img: 'Black_headband' },
+    { id: 'brown_headband',      name: 'Brown Headband',        img: 'Brown_headband' },
+  ],
+  hard: [
+    { id: 'robin_hood_hat',      name: "Robin Hood Hat",        img: 'Robin_hood_hat' },
+    { id: 'rune_full_helm_t',    name: 'Rune Full Helm (t)',    img: 'Rune_full_helm_(t)' },
+    { id: 'rune_platebody_t',    name: 'Rune Platebody (t)',    img: 'Rune_platebody_(t)' },
+    { id: 'rune_platelegs_t',    name: 'Rune Platelegs (t)',    img: 'Rune_platelegs_(t)' },
+    { id: 'rune_kiteshield_t',   name: 'Rune Kiteshield (t)',   img: 'Rune_kiteshield_(t)' },
+    { id: 'rune_full_helm_g',    name: 'Rune Full Helm (g)',    img: 'Rune_full_helm_(g)' },
+    { id: 'rune_platebody_g',    name: 'Rune Platebody (g)',    img: 'Rune_platebody_(g)' },
+    { id: 'rune_platelegs_g',    name: 'Rune Platelegs (g)',    img: 'Rune_platelegs_(g)' },
+    { id: 'rune_kiteshield_g',   name: 'Rune Kiteshield (g)',   img: 'Rune_kiteshield_(g)' },
+    { id: 'pirates_hat',         name: "Pirate's Hat",          img: 'Pirates_hat', imgUrl: 'https://oldschool.runescape.wiki/w/Special:FilePath/Pirate%27s_hat.png' },
+    { id: 'tan_cavalier',        name: 'Tan Cavalier',          img: 'Tan_cavalier' },
+    { id: 'dark_cavalier',       name: 'Dark Cavalier',         img: 'Dark_cavalier' },
+    { id: 'black_cavalier',      name: 'Black Cavalier',        img: 'Black_cavalier' },
+    { id: 'zamorak_full_helm',   name: 'Zamorak Full Helm',     img: 'Zamorak_full_helm' },
+    { id: 'zamorak_platebody',   name: 'Zamorak Platebody',     img: 'Zamorak_platebody' },
+    { id: 'zamorak_platelegs',   name: 'Zamorak Platelegs',     img: 'Zamorak_platelegs' },
+    { id: 'zamorak_kiteshield',  name: 'Zamorak Kiteshield',    img: 'Zamorak_kiteshield' },
+    { id: 'guthix_full_helm',    name: 'Guthix Full Helm',      img: 'Guthix_full_helm' },
+    { id: 'guthix_platebody',    name: 'Guthix Platebody',      img: 'Guthix_platebody' },
+    { id: 'guthix_platelegs',    name: 'Guthix Platelegs',      img: 'Guthix_platelegs' },
+    { id: 'guthix_kiteshield',   name: 'Guthix Kiteshield',     img: 'Guthix_kiteshield' },
+    { id: 'saradomin_full_helm', name: 'Saradomin Full Helm',   img: 'Saradomin_full_helm' },
+    { id: 'saradomin_platebody', name: 'Saradomin Platebody',   img: 'Saradomin_platebody' },
+    { id: 'saradomin_platelegs', name: 'Saradomin Platelegs',   img: 'Saradomin_platelegs' },
+    { id: 'saradomin_kiteshield',name: 'Saradomin Kiteshield',  img: 'Saradomin_kiteshield' },
+  ],
+};
+
+// State: obtained = Set of obtained ids, counts = {id: number}
+const state = {
+  easy:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-easy-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-easy-cnt')   || '{}') },
+  medium: { obtained: new Set(JSON.parse(localStorage.getItem('clue-medium-obt') || '[]')), counts: JSON.parse(localStorage.getItem('clue-medium-cnt') || '{}') },
+  hard:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-hard-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-hard-cnt')   || '{}') },
+};
+
+
+// Clue completion counts
+const clueCounts = {
+  easy:   parseInt(localStorage.getItem('clue-done-easy')   || '0'),
+  medium: parseInt(localStorage.getItem('clue-done-medium') || '0'),
+  hard:   parseInt(localStorage.getItem('clue-done-hard')   || '0'),
+};
+
+function adjustCount(tier, delta) {
+  clueCounts[tier] = Math.max(0, clueCounts[tier] + delta);
+  localStorage.setItem('clue-done-' + tier, clueCounts[tier]);
+  updateCountDisplay();
+}
+
+function updateCountDisplay() {
+  ['easy', 'medium', 'hard'].forEach(tier => {
+    document.getElementById('count-' + tier).textContent = clueCounts[tier];
+  });
+  const total = clueCounts.easy + clueCounts.medium + clueCounts.hard;
+  document.getElementById('count-total').textContent = total;
+}
+
+function saveState() {
+  ['easy','medium','hard'].forEach(tier => {
+    localStorage.setItem('clue-' + tier + '-obt', JSON.stringify([...state[tier].obtained]));
+    localStorage.setItem('clue-' + tier + '-cnt', JSON.stringify(state[tier].counts));
+  });
+}
+
+function buildGrid(tier) {
+  const grid = document.getElementById('grid-' + tier);
+  grid.innerHTML = '';
+  for (const item of REWARDS[tier]) {
+    const card = document.createElement('div');
+    const isObtained = state[tier].obtained.has(item.id);
+    const count = state[tier].counts[item.id] || 1;
+    card.className = 'card card-compact bg-base-200 cursor-pointer border-2 border-transparent transition-all text-center p-2 relative ' + (isObtained ? 'opacity-100' : 'opacity-60 hover:opacity-100');
+    card.dataset.id = item.id;
+
+    const imgEl = document.createElement('img');
+    imgEl.className = 'item-img';
+    imgEl.alt = item.name;
+    imgEl.onerror = function() {
+      const em = document.createElement('span');
+      em.className = 'item-emoji';
+      em.textContent = '🗡️';
+      this.replaceWith(em);
+    };
+    imgEl.src = item.imgUrl || `https://oldschool.runescape.wiki/images/${item.img}.png`;
+
+    const name = document.createElement('div');
+    name.className = 'text-xs mt-1 leading-tight';
+    name.textContent = item.name;
+
+    card.appendChild(imgEl);
+    card.appendChild(name);
+    if (isObtained && count > 1) {
+      const countBadge = document.createElement('div');
+      countBadge.className = 'badge badge-neutral badge-sm absolute top-1 right-1';
+      countBadge.textContent = 'x' + count;
+      card.appendChild(countBadge);
+    }
+    card.onclick = () => toggleItem(tier, item.id, card);
+    grid.appendChild(card);
+  }
+  updateProgress(tier);
+}
+
+let popupTier = null;
+let popupId = null;
+
+function toggleItem(tier, id, card) {
+  if (state[tier].obtained.has(id)) {
+    // Already obtained — open popup
+    openPopup(tier, id);
+  } else {
+    // Not obtained — mark directly
+    state[tier].obtained.add(id);
+    state[tier].counts[id] = 1;
+    saveState();
+    buildGrid(tier);
+    showToast('Marked as obtained!');
+  }
+}
+
+function openPopup(tier, id) {
+  popupTier = tier;
+  popupId = id;
+  const item = REWARDS[tier].find(r => r.id === id);
+  const count = state[tier].counts[id] || 1;
+  document.getElementById('popup-name').textContent = item.name;
+  document.getElementById('popup-count').textContent = count;
+  const img = document.getElementById('popup-img');
+  img.src = item.imgUrl || `https://oldschool.runescape.wiki/images/${item.img}.png`;
+  img.onerror = function() { this.style.display = 'none'; };
+  img.style.display = 'block';
+  document.getElementById('item-popup').showModal();
+}
+
+function popupAdjust(delta) {
+  const tier = popupTier;
+  const id = popupId;
+  if (!tier || !id) return;
+
+  if (delta === -1) {
+    const current = state[tier].counts[id] || 1;
+    if (current <= 1) {
+      // Count would hit 0 — unmark entirely
+      state[tier].obtained.delete(id);
+      delete state[tier].counts[id];
+      saveState();
+      buildGrid(tier);
+      closePopup();
+      showToast('Unmarked.');
+    } else {
+      // Decrement count
+      state[tier].counts[id] = current - 1;
+      document.getElementById('popup-count').textContent = state[tier].counts[id];
+      saveState();
+      buildGrid(tier);
+      showToast('Count updated!');
+    }
+  } else {
+    // Plus: increment count
+    state[tier].counts[id] = (state[tier].counts[id] || 1) + 1;
+    document.getElementById('popup-count').textContent = state[tier].counts[id];
+    saveState();
+    buildGrid(tier);
+    showToast('Count updated!');
+  }
+}
+
+function closePopup() {
+  document.getElementById('item-popup').close();
+  popupTier = null;
+  popupId = null;
+}
+
+
+
+function updateProgress(tier) {
+  const count = state[tier].obtained.size;
+  const total = REWARDS[tier].length;
+  const el = document.querySelector(`#progress-${tier} span`);
+  if (el) el.textContent = count;
+  const bar = document.getElementById('bar-' + tier);
+  if (bar) bar.value = count;
+}
+
+function resetTier(tier) {
+  if (!confirm(`Reset all ${tier} clue data?`)) return;
+  state[tier].obtained.clear();
+  state[tier].counts = {};
+  saveState();
+  buildGrid(tier);
+  showToast('Reset.');
+}
+
+
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  const m = document.getElementById('toast-msg');
+  m.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2000);
+}
+
+// Init
+buildGrid('easy');
+buildGrid('medium');
+buildGrid('hard');
+
+function setTheme(val) {
+  if (val === 'garlic') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.body.classList.add('theme-garlic');
+  } else {
+    document.body.setAttribute('data-theme', val);
+    document.body.classList.remove('theme-garlic');
+  }
+  localStorage.setItem('clue-theme', val);
+}
+
+// Restore saved theme
+const savedTheme = localStorage.getItem('clue-theme') || 'garlic';
+updateCountDisplay();
+setTheme(savedTheme);
+const sel = document.querySelector('.select');
+if (sel) sel.value = savedTheme;
+
+</script>
+
+<dialog id="item-popup" class="modal">
+  <div class="modal-box text-center">
+    <h3 class="font-bold text-lg mb-1" id="popup-name"></h3>
+    <img class="item-img mx-auto my-2" id="popup-img" src="" alt="">
+    <div class="text-4xl font-bold my-2" id="popup-count">1</div>
+    <p class="text-sm opacity-50 mb-4">times obtained</p>
+    <div class="flex gap-3 justify-center mb-4">
+      <button class="btn btn-error btn-outline" onclick="popupAdjust(-1)">− Remove</button>
+      <button class="btn btn-success btn-outline" onclick="popupAdjust(1)">+ Add</button>
+    </div>
+    <div class="modal-action justify-center">
+      <button class="btn btn-sm btn-ghost" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button onclick="closePopup()">close</button></form>
+</dialog>
+</body>
+</html>
