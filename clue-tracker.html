@@ -193,7 +193,7 @@ function buildGrid(tier) {
     const card = document.createElement('div');
     const isObtained = state[tier].obtained.has(item.id);
     const count = state[tier].counts[item.id] || 1;
-    card.className = 'card card-compact bg-base-200 cursor-pointer border-2 transition-all text-center p-2 relative ' + (isObtained ? 'border-primary opacity-100' : 'border-transparent opacity-60 hover:opacity-100');
+    card.className = 'card card-compact bg-base-200 cursor-pointer border-2 border-transparent transition-all text-center p-2 relative ' + (isObtained ? 'opacity-100' : 'opacity-60 hover:opacity-100');
     card.dataset.id = item.id;
 
     const imgEl = document.createElement('img');
@@ -213,11 +213,11 @@ function buildGrid(tier) {
 
     card.appendChild(imgEl);
     card.appendChild(name);
-    if (isObtained) {
-      const check = document.createElement('div');
-      check.className = 'badge badge-primary badge-sm absolute top-1 right-1';
-      check.textContent = count > 1 ? 'x' + count : '✓';
-      card.appendChild(check);
+    if (isObtained && count > 1) {
+      const countBadge = document.createElement('div');
+      countBadge.className = 'badge badge-neutral badge-sm absolute top-1 right-1';
+      countBadge.textContent = 'x' + count;
+      card.appendChild(countBadge);
     }
     card.onclick = () => toggleItem(tier, item.id, card);
     grid.appendChild(card);
