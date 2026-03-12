@@ -1,1 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update Timeline – GarlicHQ</title>
+<link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
+<style>
+:root {
+  --bg: #1a1610;
+  --bg2: #221e12;
+  --bg3: #2a2416;
+  --gold: #c9a84b;
+  --gold-dim: #8a6f2e;
+  --gold-light: #e8c96a;
+  --text: #d4c89a;
+  --text-dim: #8a7d5a;
+  --text-muted: #5a5038;
+  --border: #3a3020;
+  --border-gold: #6a5520;
+  --released-col: #5aaa5a;
+  --upcoming-col: #c8902a;
+  --major-col: #c9a84b;
+  --line-col: #6a5520;
+  --radius: 4px;
 
+  --track-top: 420px;   /* px from top of the scroll area where the line sits */
+  --year-gap: 900px;    /* px per year */
+  --month-gap: 72px;    /* px per month (year-gap/12 ≈ 75) */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--bg2);
+  border-bottom: 2px solid var(--border-gold);
+  padding: 20px 24px 16px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+.header-deco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.deco-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-gold), transparent);
+  max-width: 220px;
+}
+.deco-gem {
+  width: 9px;
+  height: 9px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  box-shadow: 0 0 10px var(--gold);
+}
+header h1 {
+  font-family: 'MedievalSharp', 'Palatino Linotype', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--gold-light);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 24px rgba(201,162,39,0.4), 0 2px 4px rgba(0,0,0,0.8);
+  line-height: 1.1;
+  margin: 0;
+}
+header .subtitle {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
+/* ── TOP BAR (title + legend) ── */
+.top-bar {
+  padding: 18px 24px 12px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.page-title {
+  font-size: 1.5rem; color: var(--gold-light); letter-spacing: 0.06em;
+  text-shadow: 0 0 16px rgba(201,168,75,0.2);
+}
+.page-sub { font-size: 0.75rem; color: var(--text-dim); font-family: 'Courier New', monospace; margin-top: 2px; }
+.legend {
+  margin-left: auto; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.72rem; color: var(--text-dim); font-family: 'Courier New', monospace;
+}
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.legend-dot.released { background: var(--released-col); }
+.legend-dot.upcoming { background: var(--upcoming-col); }
+.legend-dot.major    { background: var(--major-col); box-shadow: 0 0 5px rgba(201,168,75,0.5); }
+
+/* ── ZOOM BAR ── */
+.zoom-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 20px 4px; justify-content: flex-end;
+}
+.zoom-btn {
+  background: var(--bg2); border: 1px solid var(--border-gold);
+  color: var(--gold); width: 28px; height: 28px; border-radius: var(--radius);
+  cursor: pointer; font-size: 1rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.zoom-btn:hover { background: var(--bg3); }
+.zoom-label {
+  font-size: 0.7rem; color: var(--text-muted); font-family: 'Courier New', monospace;
+  min-width: 38px; text-align: center;
+}
+
+/* ── SCROLL HINT ── */
+.scroll-hint {
+  text-align: center; font-size: 0.72rem; color: var(--text-muted);
+  font-family: 'Courier New', monospace; padding-bottom: 8px; letter-spacing: 0.06em;
+}
+
+/* ── TIMELINE OUTER ── */
+.tl-outer {
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  user-select: none;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.tl-outer:active { cursor: grabbing; }
+.tl-outer::-webkit-scrollbar { height: 6px; }
+.tl-outer::-webkit-scrollbar-track { background: var(--bg2); }
+.tl-outer::-webkit-scrollbar-thumb { background: var(--border-gold); border-radius: 3px; }
+
+/* ── TIMELINE CANVAS ── */
+.tl-canvas {
+  position: relative;
+  /* width set by JS */
+  min-height: 600px;
+  flex-shrink: 0;
+}
+
+/* ── TRACK LINE ── */
+.tl-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right, transparent 0px, var(--line-col) 60px, var(--gold-dim) 50%, var(--line-col) calc(100% - 60px), transparent 100%);
+}
+
+/* ── YEAR LABELS ── */
+.year-label {
+  position: absolute;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: rgba(201,168,75,0.15);
+  font-family: 'Georgia', serif;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  text-shadow: 0 0 30px rgba(201,168,75,0.1);
+}
+
+/* ── MONTH TICKS ── */
+.month-tick {
+  position: absolute;
+  width: 1px;
+  height: 20px;
+  background: var(--border-gold);
+  opacity: 0.5;
+}
+.month-label {
+  position: absolute;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* ── COMING SOON ARROW — removed, handled inline ── */
+
+/* ── CONNECTOR LINE ── */
+.connector {
+  position: absolute;
+  width: 2px;
+  background: var(--border-gold);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── EVENT NODE ── */
+.event-node {
+  position: absolute;
+  transform: translateX(-50%);
+  text-align: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.event-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.15s;
+}
+.event-dot.released { background: var(--released-col); }
+.event-dot.upcoming { background: var(--upcoming-col); box-shadow: 0 0 5px rgba(200,144,42,0.4); }
+.event-dot.major    { background: var(--major-col); width: 14px; height: 14px; box-shadow: 0 0 8px rgba(201,168,75,0.6); }
+
+.event-node:hover .event-dot { transform: scale(1.4); }
+
+.event-img {
+  display: block;
+  width: 42px; height: 42px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  margin: 0 auto 4px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+  transition: filter 0.15s, transform 0.15s;
+}
+.event-node.upcoming .event-img {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)) grayscale(0.5) brightness(0.7);
+}
+.event-node:hover .event-img {
+  filter: drop-shadow(0 2px 8px rgba(201,168,75,0.5));
+  transform: scale(1.1);
+}
+
+.event-title {
+  font-size: 0.62rem;
+  font-weight: bold;
+  line-height: 1.25;
+  max-width: 80px;
+  margin: 0 auto;
+  white-space: normal;
+  word-break: break-word;
+}
+.event-node.released .event-title { color: var(--text); }
+.event-node.upcoming .event-title { color: var(--upcoming-col); }
+.event-node.major    .event-title { color: var(--gold-light); }
+
+.event-date {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  margin-top: 2px;
+}
+
+
+
+.release-note {
+  font-size: 0.54rem;
+  color: #c0602a;
+  font-family: 'Courier New', monospace;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* ── TOOLTIP ── */
+.tooltip {
+  position: fixed;
+  background: var(--bg2);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  max-width: 240px;
+  font-size: 0.78rem;
+  color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  line-height: 1.5;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip-title { font-weight: bold; color: var(--gold-light); margin-bottom: 4px; font-size: 0.85rem; }
+.tooltip-date  { font-size: 0.65rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 6px; }
+.tooltip-desc  { color: var(--text-dim); }
+.tooltip-tag   {
+  display: inline-block; font-size: 0.6rem; padding: 1px 6px;
+  border-radius: 2px; font-family: 'Courier New', monospace; margin-top: 6px;
+}
+.tooltip-tag.quest    { background:#1a2a3a; color:#6ab0e8; border:1px solid #2a4060; }
+.tooltip-tag.skill    { background:#1a2e1a; color:#6ae86a; border:1px solid #2a502a; }
+.tooltip-tag.combat   { background:#2e1a1a; color:#e86a6a; border:1px solid #501a1a; }
+.tooltip-tag.minigame { background:#2a1a2e; color:#b06ae8; border:1px solid #3a1a50; }
+.tooltip-tag.content  { background:#2a2010; color:#c89040; border:1px solid #504020; }
+.tooltip-tag.major    { background:#2a1f0a; color:var(--gold); border:1px solid var(--gold-dim); }
+
+
+  .page-title { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-deco">
+    <div class="deco-line"></div>
+    <div class="deco-gem"></div>
+    <div class="deco-line"></div>
+  </div>
+  <h1>Update Timeline</h1>
+  <p class="subtitle">RS2 history as followed by Lost City &nbsp;&middot;&nbsp; 2004&ndash;2005</p>
+  <div class="header-deco" style="margin-top:12px">
+    <div class="deco-line"></div>
+    <div class="deco-gem"></div>
+    <div class="deco-line"></div>
+  </div>
+</header>
+
+<div style="padding: 8px 20px 0;">
+  <a href="../" style="
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text-dim); text-decoration: none;
+    font-size: 0.72rem; font-family: 'Courier New', monospace;
+    padding: 4px 10px; border: 1px solid var(--border);
+    border-radius: var(--radius); transition: all 0.15s;
+  " onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold-dim)'"
+     onmouseout="this.style.color='var(--text-dim)';this.style.borderColor='var(--border)'">
+    ← Back to Home
+  </a>
+</div>
+
+<div class="top-bar">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot released"></div>Released on Lost City</div>
+    <div class="legend-item"><div class="legend-dot upcoming"></div>Upcoming</div>
+    <div class="legend-item"><div class="legend-dot major"></div>Major update</div>
+  </div>
+</div>
+<div class="zoom-bar">
+  <button class="zoom-btn" onclick="zoom(-0.2)" title="Zoom out">−</button>
+  <span class="zoom-label" id="zoomLabel">100%</span>
+  <button class="zoom-btn" onclick="zoom(+0.2)" title="Zoom in">+</button>
+</div>
+<div class="scroll-hint">← drag to scroll &nbsp;·&nbsp; use +/− to zoom →</div>
+
+<div class="tl-outer" id="tlOuter">
+  <div class="tl-canvas" id="tlCanvas">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tt-title"></div>
+  <div class="tooltip-date"  id="tt-date"></div>
+  <div class="tooltip-desc"  id="tt-desc"></div>
+  <div id="tt-tag"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────
+const START_PX    = 80;  // left padding
+const YEAR_PX     = 900; // px per year
+const MONTH_PX    = YEAR_PX / 12;
+
+// "Current date" on Lost City: 7 Sep 2004
+const NOW_DATE = new Date(2004, 8, 7); // month is 0-indexed
+
+// RS2 start: 1 Jan 2004 (our timeline start)
+const TIMELINE_START = new Date(2004, 0, 1);
+// Timeline end: 31 Dec 2005
+const TIMELINE_END   = new Date(2005, 11, 31);
+
+function fmtDate(dateStr) {
+  // Format 'YYYY-MM-DD' using the user's locale (respects UK vs US date order)
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function dateToPx(dateStr) {
+  // Parse "DD Mon YYYY" or "Mon YYYY" or Date object
+  const d = typeof dateStr === 'string' ? parseDate(dateStr) : dateStr;
+  const ms = d - TIMELINE_START;
+  const totalMs = TIMELINE_END - TIMELINE_START;
+  const totalPx = YEAR_PX * 2;
+  return START_PX + (ms / totalMs) * totalPx;
+}
+
+function parseDate(s) {
+  // accepts "29 Mar 2004", "Mar 2004" (uses 15th), "2004-03-29"
+  if (s.includes('-')) return new Date(s);
+  const parts = s.trim().split(/\s+/);
+  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  if (parts.length === 3) {
+    return new Date(parseInt(parts[2]), months[parts[1]], parseInt(parts[0]));
+  } else {
+    return new Date(parseInt(parts[1]), months[parts[0]], 15);
+  }
+}
+
+// ─────────────────────────────────────────
+// WIKI IMAGE HELPER
+// ─────────────────────────────────────────
+function wikiImg(name) {
+  return `https://oldschool.runescape.wiki/images/${encodeURIComponent(name)}`;
+}
+function wikiFile(file) {
+  return `https://oldschool.runescape.wiki/w/Special:FilePath/${file}`;
+}
+
+// ─────────────────────────────────────────
+// EVENTS DATA  (keyed to Lost City roadmap revisions)
+// ─────────────────────────────────────────
+// rev: revision number | date: historical RS2 date (YYYY-MM-DD)
+// status: 'released' | 'upcoming' | 'major'
+const EVENTS = [
+  // ═══ RS2 LAUNCH ═══
+  {
+    date: '2004-03-29', title: 'RS2 Launch!', side: 'above', offset: 175,
+    status: 'major', rev: null,
+    img: wikiFile('Guthix_statuette.png'),
+    tag: 'major',
+    revColor: '#5a9e5a', desc: 'RuneScape 2 officially launches with full 3D graphics, new combat system, music, and the Runecrafting skill. Players transfer stats and items from Classic.',
+    newsUrl: 'https://secure.runescape.com/m=news/rs2-launched',
+  },
+
+  // ═══ REV 225 — 2004-05-18 ═══
+  {
+    date: '2004-05-18', title: 'Big Chompy Bird Hunting', side: 'below', offset: 110,
+    status: 'released', rev: 225,
+    revColor: '#b06adb',
+    img: wikiFile('Comp_ogre_bow.png'),
+    tag: 'quest', releaseNote: 'Rev 225', desc: 'Rev 225. Ranged quest in the Feldip Hills hunting chompy birds with the ogre bow. Rewards chompy bird hats based on kill count.',
+    newsUrl: 'https://secure.runescape.com/m=news/big-chompy-bird-hunting',
+  },
+
+  // ═══ REV 244 — 2004-06-28 ═══
+  {
+    date: '2004-06-01', title: 'New Game Update System', side: 'above', offset: 90,
+    status: 'released', rev: 244,
+    revColor: '#d4892a',
+    img: wikiFile('Papyrus.png'),
+    tag: 'content', releaseNote: 'Rev 244', desc: 'Rev 244. New in-game update system introduced alongside Player Moderators.',
+    newsUrl: 'https://secure.runescape.com/m=news/new-game-update-system',
+  },
+  {
+    date: '2004-06-02', title: 'Elemental Workshop', side: 'above', offset: 155,
+    status: 'released', rev: 244,
+    revColor: '#d4892a',
+    img: wikiFile('Elemental_shield.png'),
+    tag: 'quest', releaseNote: 'Rev 244', desc: 'Rev 244. Explore the ancient Elemental Workshop beneath Seers\' Village. Rewards the mind helmet.',
+    newsUrl: 'https://secure.runescape.com/m=news/elemental-workshop-quest',
+  },
+  {
+    date: '2004-06-08', title: 'Agility Improved', side: 'below', offset: 90,
+    status: 'released', rev: 244,
+    revColor: '#d4892a',
+    img: wikiFile('Agility_icon_(detail).png'),
+    tag: 'skill', releaseNote: 'Rev 244', desc: 'Rev 244. Agility improved — run energy restores faster based on Agility level.',
+    newsUrl: 'https://secure.runescape.com/m=news/agility-improved-and-bug-fixes',
+  },
+  {
+    date: '2004-06-14', title: 'Special Attacks & P-mods', side: 'above', offset: 118,
+    status: 'released', rev: 244,
+    revColor: '#d4892a',
+    img: wikiFile('Dragon_dagger.png'),
+    tag: 'combat', releaseNote: 'Rev 244', desc: 'Rev 244. Weapons gain unique special attacks draining the spec bar. Player Moderators introduced in-game.',
+    newsUrl: 'https://secure.runescape.com/m=news/special-attacks',
+  },
+  {
+    date: '2004-06-28', title: 'Various Tweaks & Easier Bank', side: 'below', offset: 75,
+    status: 'released', rev: 244,
+    revColor: '#d4892a',
+    img: wikiFile('Bank_icon.png'),
+    tag: 'content', releaseNote: 'Rev 244', desc: 'Rev 244. Various tweaks to the game. Bank rearranging made easier with improved interface.',
+    newsUrl: 'https://secure.runescape.com/m=news/easier-to-rearrange-bank',
+  },
+
+  // ═══ REV 245.2 — 2004-07-13 ═══
+  {
+    date: '2004-07-13', title: 'Priest in Peril', side: 'above', offset: 148,
+    status: 'released', rev: '245.2',
+    revColor: '#2ab8cc',
+    img: wikiFile('Wolfbane.png'),
+    tag: 'quest', releaseNote: 'Rev 245.2', desc: 'Rev 245.2. Unlocks Morytania. Help save a temple from a strange creature.',
+    newsUrl: 'https://secure.runescape.com/m=news/priest-in-peril-quest',
+  },
+  {
+    date: '2004-07-13', title: 'Nature Spirit', side: 'below', offset: 118,
+    status: 'released', rev: '245.2',
+    revColor: '#2ab8cc',
+    img: wikiFile('Druid_pouch.png'),
+    tag: 'quest', releaseNote: 'Rev 245.2', desc: 'Rev 245.2. Help the Nature Spirit in Mort Myre Swamp. Required for several later Morytania quests.',
+    newsUrl: 'https://secure.runescape.com/m=news/nature-spirit-quest',
+  },
+
+  // ═══ REV 254 — 2004-09-07 ═══
+  {
+    date: '2004-07-20', title: 'Quest Journals & Chompy Hats', side: 'above', offset: 100,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Quest_point_icon.png'),
+    tag: 'content', releaseNote: 'Rev 254', desc: 'Rev 254. Quest journals added tracking progress. Chompy hats awarded for Big Chompy Bird kills.',
+    newsUrl: 'https://secure.runescape.com/m=news/quest-journals-and-chompy-hats',
+  },
+  {
+    date: '2004-07-27', title: 'Agility, Potions & Parties!', side: 'below', offset: 128,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Ticket.png'),
+    tag: 'skill', releaseNote: 'Rev 254', desc: 'Rev 254. Brimhaven Agility Arena opens. New potions added. Birthday party event.',
+    newsUrl: 'https://secure.runescape.com/m=news/agility-potions-and-parties',
+  },
+  {
+    date: '2004-08-02', title: 'New Random Events', side: 'above', offset: 112,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Strange_box.png'),
+    tag: 'content', releaseNote: 'Rev 254', desc: 'Rev 254. New random events added: the Maze, Mine and Strange Box.',
+    newsUrl: 'https://secure.runescape.com/m=news/new-random-events',
+  },
+  {
+    date: '2004-08-09', title: 'Death Plateau Quest', side: 'below', offset: 100,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Climbing_boots.png'),
+    tag: 'quest', releaseNote: 'Rev 254', desc: 'Rev 254. Introduces Burthorpe and the Troll questline. Rewards climbing boots.',
+    newsUrl: 'https://secure.runescape.com/m=news/death-plateau-quest',
+  },
+  {
+    date: '2004-08-24', title: 'Troll Stronghold', side: 'above', offset: 133,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Troll_stronghold_map.png'),
+    tag: 'quest', releaseNote: 'Rev 254', desc: 'Rev 254. Rescue soldiers held in the Troll Stronghold. Required for Eadgar\'s Ruse.',
+    newsUrl: 'https://secure.runescape.com/m=news/troll-stronghold-quest',
+  },
+  {
+    date: '2004-09-01', title: 'Herblore Additions', side: 'below', offset: 90,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Energy_potion(4).png'),
+    tag: 'skill', releaseNote: 'Rev 254', desc: 'Rev 254. New potions added including energy potions that restore run energy.',
+    newsUrl: 'https://secure.runescape.com/m=news/herblore-additions',
+  },
+  {
+    date: '2004-09-07', title: 'Situation in the Sands', side: 'above', offset: 108,
+    status: 'released', rev: 254,
+    revColor: '#d45a5a',
+    img: wikiFile('Dragon_chainbody.png'),
+    tag: 'quest', releaseNote: 'Rev 254', desc: 'Rev 254. Continuation of the Desert quest series involving the Menaphites.',
+    newsUrl: 'https://secure.runescape.com/m=news/situation-in-the-sands',
+  },
+
+  // ─── CURRENT DATE: 7 Sep 2004 ───
+
+  // ═══ REV 274 — 2004-11-23 (PROJECT BOARD) ═══
+  {
+    date: '2004-09-14', title: 'Tai Bwo Wannai Trio', side: 'below', offset: 128,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Cooked_karambwan.png'),
+    tag: 'quest', desc: 'Rev 274. Help three brothers in Tai Bwo Wannai. Unlocks Karambwan fishing and cooking.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/tai-bwo-wannai-trio',
+  },
+  {
+    date: '2004-09-20', title: 'Plague City Pt 4', side: 'above', offset: 112,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Mourner_top.png'),
+    tag: 'quest', desc: 'Rev 274. Fourth chapter of the West Ardougne plague storyline.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/plague-city-part-4-released',
+  },
+  {
+    date: '2004-09-27', title: 'Skills, Duels & the Kalphite', side: 'below', offset: 98,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Kalphite_Queen_(historical).png'),
+    tag: 'combat', desc: 'Rev 274. Kalphite Queen expanded. Make-X added for Crafting & Fletching. Duel arena changes.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/skills-duels-and-the-kalphite',
+  },
+  {
+    date: '2004-10-05', title: "Eadgar\'s Ruse", side: 'above', offset: 130,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Ranarr_weed.png'),
+    tag: 'quest', desc: 'Rev 274. Infiltrate the Troll Stronghold to get goutweed. Unlocks Trollheim Teleport.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/eadgars-ruse',
+  },
+  {
+    date: '2004-10-14', title: 'Morytania Expansion', side: 'below', offset: 112,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Mort_myre_fungus.png'),
+    tag: 'content', desc: 'Rev 274. Deeper Morytania and Mort\'ton Shades open. Mage Armour updated.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/morytania-expansion',
+  },
+  {
+    date: '2004-10-26', title: 'Treasure Trails & Changes', side: 'above', offset: 125,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Clue_scroll_(hard).png'),
+    tag: 'content', desc: 'Rev 274. Treasure Trails expanded with new reward items.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/treasure-trails-and-changes',
+  },
+  {
+    date: '2004-11-02', title: 'Fremennik Trials', side: 'below', offset: 158,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Helm_of_neitiznot.png'),
+    tag: 'quest', desc: 'Rev 274. Prove yourself to the Fremennik people. Unlocks Rellekka and Dagannoth Kings cave.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/the-fremennik-trials',
+  },
+  {
+    date: '2004-11-17', title: 'Horror from the Deep', side: 'above', offset: 118,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Unholy_book.png'),
+    tag: 'quest', desc: 'Rev 274. Investigate the haunted Lighthouse. Rewards God books.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/horror-from-the-deep',
+  },
+  {
+    date: '2004-11-23', title: 'Burthorpe Games Room', side: 'below', offset: 108,
+    status: 'upcoming', rev: 274,
+    revColor: '#4a8fd4',
+    img: wikiFile('Games_necklace(8).png'),
+    tag: 'minigame', desc: 'Rev 274. Games Room opens in Burthorpe with board games including Draughts and Runelink.',
+    releaseNote: 'Rev 274',
+    newsUrl: 'https://secure.runescape.com/m=news/burthorpe-games-room',
+  },
+
+  // ═══ REV 289 — 2005-01-17 ═══
+  {
+    date: '2004-11-29', title: 'Throne of Miscellania', side: 'above', offset: 138,
+    status: 'upcoming', rev: 289,
+    revColor: '#e07840',
+    img: wikiFile('Maple_logs.png'),
+    tag: 'quest', desc: 'Rev 289. Rule Miscellania and gather passive resources. Requires Fremennik Trials.',
+    releaseNote: 'Rev 289',
+    newsUrl: 'https://secure.runescape.com/m=news/throne-of-miscellania',
+  },
+  {
+    date: '2004-12-06', title: 'Monkey Madness', side: 'below', offset: 188,
+    status: 'upcoming', rev: 289,
+    revColor: '#e07840',
+    img: wikiFile('Dragon_scimitar.png'),
+    tag: 'quest', desc: 'Rev 289. Iconic RS2 quest — travel to Ape Atoll to rescue the 10th Squad. Unlocks Dragon scimitar.',
+    releaseNote: 'Rev 289',
+    newsUrl: 'https://secure.runescape.com/m=news/monkey-madness',
+  },
+  {
+    date: '2004-12-13', title: 'Castle Wars', side: 'above', offset: 175,
+    status: 'upcoming', rev: 289,
+    revColor: '#e07840',
+    img: wikiFile('Castle_wars_ticket.png'),
+    tag: 'minigame', desc: 'Rev 289. Iconic team capture-the-flag minigame. Defend your castle, capture the enemy flag.',
+    releaseNote: 'Rev 289',
+    newsUrl: 'https://secure.runescape.com/m=news/castle-wars',
+  },
+  {
+    date: '2004-12-21', title: 'Haunted Mine', side: 'below', offset: 148,
+    status: 'upcoming', rev: 289,
+    revColor: '#e07840',
+    img: wikiFile('Salve_amulet.png'),
+    tag: 'quest', desc: 'Rev 289. Explore a Morytania mine for salve crystals. Rewards the Salve amulet.',
+    releaseNote: 'Rev 289',
+    newsUrl: 'https://secure.runescape.com/m=news/the-haunted-mine',
+  },
+  {
+    date: '2005-01-07', title: 'In Search of the Myreque', side: 'above', offset: 118,
+    status: 'upcoming', rev: 289,
+    revColor: '#e07840',
+    img: wikiFile('Ivandis_flail.png'),
+    tag: 'quest', desc: 'Rev 289. Venture into Mort Myre to find the Myreque resistance fighters.',
+    releaseNote: 'Rev 289',
+    newsUrl: 'https://secure.runescape.com/m=news/in-search-of-the-myreque',
+  },
+  {
+    date: '2005-01-17', title: 'Karamja Dungeon', side: 'below', offset: 108,
+    status: 'upcoming', rev: 289,
+    revColor: '#e07840',
+    img: wikiFile('Dragon_platelegs.png'),
+    tag: 'content', desc: 'Rev 289. Brimhaven Dungeon expands with Troll Romance and bank & chat updates.',
+    releaseNote: 'Rev 289',
+    newsUrl: 'https://secure.runescape.com/m=news/karamja-dungeon',
+  },
+
+  // ═══ REV 291 — 2005-01-31 ═══
+  {
+    date: '2005-01-24', title: 'Slayer', side: 'above', offset: 215,
+    status: 'upcoming', rev: 291,
+    revColor: '#3ab89a',
+    img: wikiFile('Slayer_helmet.png'),
+    tag: 'skill', desc: 'Rev 291. First new RS2 skill. Slayer masters assign creatures for XP and unique drops. Introduces Slayer-only monsters and gear.',
+    releaseNote: 'Rev 291',
+    newsUrl: 'https://secure.runescape.com/m=news/slayer-skill',
+  },
+  {
+    date: '2005-01-31', title: 'Creature of Fenkenstrain', side: 'below', offset: 108,
+    status: 'upcoming', rev: 291,
+    revColor: '#3ab89a',
+    img: wikiFile('Ring_of_charos.png'),
+    tag: 'quest', desc: 'Rev 291. Help Doctor Fenkenstrain in Morytania. Rewards the Ring of charos.',
+    releaseNote: 'Rev 291',
+    newsUrl: 'https://secure.runescape.com/m=news/creature-of-fenkenstrain',
+  },
+
+  // ═══ REV 295 — 2005-02-14 ═══
+  {
+    date: '2005-02-07', title: 'Roving Elves', side: 'above', offset: 128,
+    status: 'upcoming', rev: 295,
+    revColor: '#d4506a',
+    img: wikiFile('Crystal_bow.png'),
+    tag: 'quest', desc: 'Rev 295. Help Islwyn in Tirannwn. Grants access to recharging the Crystal bow.',
+    releaseNote: 'Rev 295',
+    newsUrl: 'https://secure.runescape.com/m=news/roving-elves',
+  },
+  {
+    date: '2005-02-14', title: 'Ghosts Ahoy & Slayer Update', side: 'below', offset: 112,
+    status: 'upcoming', rev: 295,
+    revColor: '#d4506a',
+    img: wikiFile('Ectophial.png'),
+    tag: 'quest', desc: 'Rev 295. Ghosts Ahoy opens Port Phasmatys with the Ectophial reward. Slayer updated with new monsters.',
+    releaseNote: 'Rev 295',
+    newsUrl: 'https://secure.runescape.com/m=news/ghosts-ahoy-and-slayer-update',
+  },
+
+  // ═══ REV 299 — 2005-03-01 ═══
+  {
+    date: '2005-03-01', title: 'Wilderness Capes & One Small Favour', side: 'above', offset: 138,
+    status: 'upcoming', rev: 299,
+    revColor: '#8ab43a',
+    img: wikiFile('Team-1_cape.png'),
+    tag: 'content', desc: 'Rev 299. Team capes added for Wilderness PvP identification. One Small Favour — a notorious long chain of tasks.',
+    releaseNote: 'Rev 299',
+    newsUrl: 'https://secure.runescape.com/m=news/one-small-favour',
+  },
+
+  // ═══ REV 304 — 2005-03-21 ═══
+  {
+    date: '2005-03-14', title: 'Mountain Daughter & Between a Rock', side: 'below', offset: 122,
+    status: 'upcoming', rev: 304,
+    revColor: '#9a60d4',
+    img: wikiFile('Bearhead.png'),
+    tag: 'quest', desc: 'Rev 304. Mountain Daughter in the Fremennik mountains. Between a Rock... rewards the Dwarven rock cake.',
+    releaseNote: 'Rev 304',
+    newsUrl: 'https://secure.runescape.com/m=news/mountain-daughter-and-changes',
+  },
+
+  // ═══ REV 308 — 2005-04-18 ═══
+  {
+    date: '2005-04-18', title: 'Desert Treasure', side: 'above', offset: 188,
+    status: 'upcoming', rev: 308,
+    revColor: '#d4aa30',
+    img: wikiFile('Ancient_staff.png'),
+    tag: 'quest', desc: 'Rev 308. Iconic quest unlocking the Ancient Magicks spellbook — Ice Barrage, Blood Blitz, and other powerful spells.',
+    releaseNote: 'Rev 308',
+    newsUrl: 'https://secure.runescape.com/m=news/desert-treasure',
+  },
+
+  // ═══ REV 316 — 2005-06-06 ═══
+  {
+    date: '2005-05-09', title: 'Barrows', side: 'below', offset: 205,
+    status: 'upcoming', rev: 316,
+    revColor: '#30b8cc',
+    img: wikiFile('Verac\'s_helm.png'),
+    tag: 'combat', desc: 'Rev 316. Fight the six Barrows brothers for iconic degradable armour — Dharok\'s, Torag\'s, Guthan\'s, Karil\'s, Ahrim\'s, Verac\'s.',
+    releaseNote: 'Rev 316',
+    newsUrl: 'https://secure.runescape.com/m=news/barrows',
+  },
+  {
+    date: '2005-06-06', title: 'Farming', side: 'above', offset: 225,
+    status: 'upcoming', rev: 316,
+    revColor: '#30b8cc',
+    img: wikiFile('Ranarr_seed.png'),
+    tag: 'skill', desc: 'Rev 316. Second new RS2 skill — grow crops, herbs, and trees across Gielinor. Crops grow in real time.',
+    releaseNote: 'Rev 316',
+    newsUrl: 'https://secure.runescape.com/m=news/farming',
+  },
+  {
+    date: '2005-06-06', title: 'Keldagrim Opens', side: 'below', offset: 128,
+    status: 'upcoming', rev: 316,
+    revColor: '#30b8cc',
+    img: wikiFile('Gold_ore.png'),
+    tag: 'content', desc: 'Rev 316. Keldagrim — The Dwarven City opens with the Giant Dwarf quest.',
+    releaseNote: 'Rev 316',
+    newsUrl: 'https://secure.runescape.com/m=news/keldagrim-the-dwarven-city',
+  },
+
+  // ═══ REV 317 — 2005-06-13 ═══
+  {
+    date: '2005-06-13', title: 'RuneCraft Update', side: 'above', offset: 102,
+    status: 'upcoming', rev: 317,
+    revColor: '#30b8cc',
+    img: wikiFile('Air_talisman.png'),
+    tag: 'skill', desc: 'Rev 317. Rune Shop changes and significant RuneCrafting update with new rune-making methods.',
+    releaseNote: 'Rev 317',
+    newsUrl: 'https://secure.runescape.com/m=news/runecraft-update-and-tweaks',
+  },
+
+  // ═══ REV 318 — 2005-06-22 ═══
+  {
+    date: '2005-06-22', title: "Rogues\' Den", side: 'below', offset: 128,
+    status: 'upcoming', rev: 318,
+    revColor: '#30b8cc',
+    img: wikiFile('Rogue_top.png'),
+    tag: 'minigame', desc: "Rev 318. Rogues\' Den Thieving/Agility maze opens beneath Burthorpe. Complete it to earn the Rogue outfit doubling pickpocket loot.",
+    releaseNote: 'Rev 318',
+    newsUrl: 'https://secure.runescape.com/m=news/rogues-den-tweaks',
+  },
+
+  // ═══ REV 327 — 2005-08-01 ═══
+  {
+    date: '2005-08-01', title: 'Waterbirth Island', side: 'above', offset: 152,
+    status: 'upcoming', rev: 327,
+    revColor: '#cc3a5a',
+    img: wikiFile('Dagannoth_Prime.png'),
+    tag: 'combat', desc: 'Rev 327. Waterbirth Island dungeon — home of the Dagannoth Kings (Rex, Supreme, Prime). Each drops a unique ring.',
+    releaseNote: 'Rev 327',
+    newsUrl: 'https://secure.runescape.com/m=news/waterbirth-island',
+  },
+
+  // ═══ REV 330 — 2005-08-22 ═══
+  {
+    date: '2005-08-22', title: 'Blast Furnace & Rogue Trader', side: 'below', offset: 118,
+    status: 'upcoming', rev: 330,
+    revColor: '#4ab87a',
+    img: wikiFile('Steel_bar.png'),
+    tag: 'minigame', desc: 'Rev 330. Blast Furnace smithing minigame added. Rogue Trader mini-quest. Tai Bwo Wannai Clean-Up.',
+    releaseNote: 'Rev 330',
+    newsUrl: 'https://secure.runescape.com/m=news/blast-furnace',
+  },
+
+  // ═══ REV 333 — 2005-09-06 ═══
+  {
+    date: '2005-09-06', title: 'New Shortcuts & Prayers', side: 'above', offset: 128,
+    status: 'upcoming', rev: 333,
+    revColor: '#7a40cc',
+    img: wikiFile('Smite.png'),
+    tag: 'combat', desc: 'Rev 333. New Agility shortcuts across Gielinor. Expanded prayer book including Smite.',
+    releaseNote: 'Rev 333',
+    newsUrl: 'https://secure.runescape.com/m=news/new-shortcuts-and-prayers',
+  },
+
+  // ═══ REV 339 — 2005-10-03 ═══
+  {
+    date: '2005-10-03', title: 'TzHaar Fight Caves', side: 'below', offset: 178,
+    status: 'upcoming', rev: 339,
+    revColor: '#cc40a0',
+    img: wikiFile('TzTok-Jad.png'),
+    tag: 'combat', desc: 'Rev 339. The iconic Fight Caves open — 63 waves ending in TzTok-Jad. Rewards the Fire cape.',
+    releaseNote: 'Rev 339',
+    newsUrl: 'https://secure.runescape.com/m=news/tzhaar-fight-caves',
+  },
+
+  // ═══ REV 340 — 2005-10-17 ═══
+  {
+    date: '2005-10-17', title: "Mourning\'s End Pt II & Wanted!", side: 'above', offset: 148,
+    status: 'upcoming', rev: 340,
+    revColor: '#cc40a0',
+    img: wikiFile('Death_talisman.png'),
+    tag: 'quest', desc: "Rev 340. Mourning\'s End Part II — the notorious Temple of Light puzzle. Rewards Death rune crafting. Wanted! introduces Temple Knights.",
+    releaseNote: 'Rev 340',
+    newsUrl: 'https://secure.runescape.com/m=news/mournings-ends-pt-ii',
+  },
+
+  // ═══ REV 343 — 2005-11-08 ═══
+  {
+    date: '2005-11-08', title: 'Waterbirth — Deeper, Darker', side: 'below', offset: 118,
+    status: 'upcoming', rev: 343,
+    revColor: '#40a0cc',
+    img: wikiFile('Dagannoth_Supreme.png'),
+    tag: 'combat', desc: 'Rev 343. Waterbirth Island dungeon expanded. Halloween event. New potions and Farming content.',
+    releaseNote: 'Rev 343',
+    newsUrl: 'https://secure.runescape.com/m=news/waterbirth-island-deeper-darker-deadlier',
+  },
+
+  // ═══ REV 349 — 2005-12-19 ═══
+  {
+    date: '2005-12-12', title: 'Skeletal Wyverns', side: 'above', offset: 138,
+    status: 'upcoming', rev: 349,
+    revColor: '#cc5030',
+    img: wikiFile('Skeletal_Wyvern.png'),
+    tag: 'combat', desc: 'Rev 349. Skeletal Wyverns added to Asgarnian Ice Dungeon as a high-level Slayer creature. Drops the Elemental shield.',
+    releaseNote: 'Rev 349',
+    newsUrl: 'https://secure.runescape.com/m=news/champions-wyverns-and-granite',
+  },
+  {
+    date: '2005-12-19', title: 'Devious Minds', side: 'below', offset: 102,
+    status: 'upcoming', rev: 349,
+    revColor: '#cc5030',
+    img: wikiFile('Bow-sword.png'),
+    tag: 'quest', desc: 'Rev 349. Short members quest involving a mysterious monk and a strange weapon.',
+    releaseNote: 'Rev 349',
+    newsUrl: 'https://secure.runescape.com/m=news/devious-minds',
+  },
+];
+
+// ─────────────────────────────────────────
+// BUILD
+// ─────────────────────────────────────────
+const canvas = document.getElementById('tlCanvas');
+const outer  = document.getElementById('tlOuter');
+// Canvas is 2x outer height. Line sits at the 3/4 mark so above-cards
+// have a full outer-height of space and below-cards have a quarter.
+// Fixed canvas layout: 500px above track line for tallest above-cards,
+// 420px below for tallest below-cards (max offset 225 + NODE_H 105 = 330px + breathing room)
+// Extra padding lets you pan so the topmost/bottommost nodes reach the screen edge
+const EXTRA_PAD  = outer.clientHeight;
+const ABOVE_ROOM = 500 + EXTRA_PAD;
+const BELOW_ROOM = 420 + EXTRA_PAD;
+const CANVAS_H   = ABOVE_ROOM + BELOW_ROOM;
+const TRACK_TOP  = ABOVE_ROOM;
+
+const TOTAL_PX = START_PX + YEAR_PX * 2 + 80;
+canvas.style.width  = TOTAL_PX + 'px';
+canvas.style.height = CANVAS_H + 'px';
+
+// Track line — created in JS so the extraAbove shift can move it via style.top
+const tlLine = document.createElement('div');
+tlLine.className = 'tl-line';
+tlLine.style.top = TRACK_TOP + 'px';
+canvas.appendChild(tlLine);
+
+// Year labels
+function addYearLabel(year, x) {
+  const el = document.createElement('div');
+  el.className = 'year-label';
+  el.textContent = year;
+  el.style.left = x + 'px';
+  el.style.top  = (TRACK_TOP - 48) + 'px';
+  canvas.appendChild(el);
+}
+addYearLabel('2004', START_PX + 10);
+addYearLabel('2005', START_PX + YEAR_PX + 10);
+
+// Month ticks + labels
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+for (let year = 2004; year <= 2005; year++) {
+  for (let m = 0; m < 12; m++) {
+    const d = new Date(year, m, 1);
+    const x = dateToPx(d);
+    const tick = document.createElement('div');
+    tick.className = 'month-tick';
+    tick.style.left = x + 'px';
+    tick.style.top  = (TRACK_TOP - 10) + 'px';
+    canvas.appendChild(tick);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'month-label';
+    lbl.textContent = months[m];
+    lbl.style.left = x + 'px';
+    lbl.style.top  = (TRACK_TOP + 14) + 'px';
+    canvas.appendChild(lbl);
+  }
+}
+
+// Revision boundary markers
+
+const nowX = dateToPx(NOW_DATE);
+
+// vertical stem above the line
+const nowStem = document.createElement('div');
+nowStem.style.cssText = `
+  position:absolute; left:${nowX}px; top:${TRACK_TOP - 54}px;
+  width:2px; height:54px;
+  background:var(--released-col);
+  box-shadow: 0 0 6px rgba(90,170,90,0.4);
+  z-index:200;
+`;
+canvas.appendChild(nowStem);
+
+// downward arrowhead sitting on the line
+const nowArrow = document.createElement('div');
+nowArrow.style.cssText = `
+  position:absolute;
+  left:${nowX}px; top:${TRACK_TOP - 2}px;
+  transform:translateX(-50%);
+  font-size:1.1rem; line-height:1;
+  color:var(--released-col);
+  filter: drop-shadow(0 0 4px rgba(90,170,90,0.6));
+  z-index:200;
+`;
+nowArrow.textContent = '▼';
+canvas.appendChild(nowArrow);
+
+// label above the stem
+const nowLbl = document.createElement('div');
+nowLbl.style.cssText = `
+  position:absolute;
+  left:${nowX}px; top:${TRACK_TOP - 76}px;
+  transform:translateX(-50%);
+  background:rgba(26,46,26,0.95);
+  border:1px solid var(--released-col);
+  color:var(--released-col);
+  font-size:0.63rem; padding:3px 8px;
+  border-radius:3px;
+  font-family:'Courier New',monospace;
+  white-space:nowrap;
+  box-shadow:0 0 8px rgba(90,170,90,0.2);
+  z-index:200;
+`;
+nowLbl.textContent = 'We are here — ' + fmtDate('2004-09-07');
+canvas.appendChild(nowLbl);
+
+// (future progress marker removed)
+
+// ─────────────────────────────────────────
+// AUTO-STAGGER: bounding-box collision avoidance
+//
+// Each card has an estimated size. We track every placed card's
+// full bounding box and bump a new card further from the track
+// until it no longer overlaps anything already placed on that side.
+// ─────────────────────────────────────────
+
+// Estimated card dimensions (px).
+// Nodes are centred on x; height measured from dot outward.
+const NODE_W    = 90;   // card width
+const NODE_H    = 105;  // card height (img + title + date + rn)
+const MIN_STEM  = 60;   // shortest allowed stem
+const STEP      = 70;   // how far to push out per attempt
+const MAX_TRIES = 8;
+const X_PAD     = 6;    // extra horizontal breathing room
+
+// Placed bounding boxes, keyed by side.
+// Each box: { x1, x2, y1, y2 } in canvas absolute coords.
+// above cards: dot at bottom of card (y2 = TRACK_TOP - stem),
+//              card body extends upward  (y1 = y2 - NODE_H)
+// below cards: dot at top of card    (y1 = TRACK_TOP + stem),
+//              card body extends down  (y2 = y1 + NODE_H)
+const boxes = { above: [], below: [] };
+
+function assignOffset(x, side, preferredOff) {
+  const half = NODE_W / 2 + X_PAD;
+  let off = Math.max(MIN_STEM, preferredOff);
+
+  for (let t = 0; t < MAX_TRIES; t++) {
+    let y1, y2;
+    if (side === 'above') {
+      y2 = TRACK_TOP - off;          // dot sits here
+      y1 = y2 - NODE_H;              // card extends upward
+    } else {
+      y1 = TRACK_TOP + off;          // dot sits here
+      y2 = y1 + NODE_H;              // card extends downward
+    }
+    const x1 = x - half;
+    const x2 = x + half;
+
+    const clash = boxes[side].some(b =>
+      x2 > b.x1 && x1 < b.x2 &&     // X overlap
+      y2 > b.y1 && y1 < b.y2         // Y overlap
+    );
+
+    if (!clash) {
+      boxes[side].push({ x1, x2, y1, y2 });
+      return off;
+    }
+    off += STEP;
+  }
+
+  // Give up — just register and return whatever offset we ended on
+  const y1f = side === 'above' ? TRACK_TOP - off - NODE_H : TRACK_TOP + off;
+  const y2f = side === 'above' ? TRACK_TOP - off           : TRACK_TOP + off + NODE_H;
+  boxes[side].push({ x1: x - half, x2: x + half, y1: y1f, y2: y2f });
+  return off;
+}
+
+// Sort left-to-right so nearby events are processed together
+const sortedEvents = [...EVENTS].sort((a, b) => dateToPx(a.date) - dateToPx(b.date));
+
+sortedEvents.forEach(ev => {
+  const x     = dateToPx(ev.date);
+  const above = ev.side === 'above';
+  const off   = assignOffset(x, ev.side, ev.offset || 100);
+
+  // stem connector
+  const conn = document.createElement('div');
+  conn.className = 'connector';
+  conn.style.left = x + 'px';
+  if (above) {
+    conn.style.top    = (TRACK_TOP - off) + 'px';
+    conn.style.height = off + 'px';
+  } else {
+    conn.style.top    = TRACK_TOP + 'px';
+    conn.style.height = off + 'px';
+  }
+  canvas.appendChild(conn);
+
+  // colour connector stem only for upcoming events
+  const isUpcoming = ev.status === 'upcoming';
+  if (isUpcoming && ev.revColor) {
+    conn.style.width = '2px';
+    conn.style.background = ev.revColor;
+  }
+
+  // card node
+  const node = document.createElement('div');
+  node.className = `event-node ${ev.status}`;
+  node.style.left = x + 'px';
+  // No left border — removed per design
+
+  const title = `<div class="event-title">${ev.title}</div>`;
+  const date  = `<div class="event-date">${fmtDate(ev.date)}</div>`;
+  const rn    = ev.releaseNote ? `<div class="release-note" style="${isUpcoming && ev.revColor ? `color:${ev.revColor}` : ''}">${ev.releaseNote}</div>` : '';
+  const img   = ev.img ? `<img class="event-img" src="${ev.img}" alt="" onerror="this.style.display='none'">` : '';
+  const dot   = `<div class="event-dot ${ev.status}" style="${isUpcoming && ev.revColor ? `background:${ev.revColor};box-shadow:0 0 6px ${ev.revColor}` : ''}"></div>`;
+
+  if (above) {
+    // dot at bottom, card body above — position top edge, grow downward via transform
+    node.style.top       = (TRACK_TOP - off) + 'px';
+    node.style.transform = 'translate(-50%, -100%)';
+    node.innerHTML = dot + img + title + date + rn;
+  } else {
+    // dot at top, card body below
+    node.style.top       = (TRACK_TOP + off) + 'px';
+    node.style.transform = 'translate(-50%, 0%)';
+    node.innerHTML = img + title + date + rn + dot;
+  }
+
+  node.addEventListener('mouseenter', (e) => showTip(e, ev));
+  node.addEventListener('mousemove',  (e) => moveTip(e));
+  node.addEventListener('mouseleave', hideTip);
+  if (ev.newsUrl) {
+    node.style.cursor = 'pointer';
+    node.addEventListener('click', () => window.open(ev.newsUrl, '_blank'));
+  }
+
+  canvas.appendChild(node);
+});
+
+// Canvas is sized to outer.clientHeight — no resize needed.
+
+// ─────────────────────────────────────────
+// TOOLTIP
+// ─────────────────────────────────────────
+const tip  = document.getElementById('tooltip');
+const ttT  = document.getElementById('tt-title');
+const ttD  = document.getElementById('tt-date');
+const ttDe = document.getElementById('tt-desc');
+const ttTg = document.getElementById('tt-tag');
+
+function showTip(e, ev) {
+  ttT.textContent  = ev.title;
+  ttD.textContent  = fmtDate(ev.date) + (ev.rev ? `  ·  Rev ${ev.rev}` : '');
+  ttDe.textContent = ev.desc || '';
+  ttTg.innerHTML   = `<span class="tooltip-tag ${ev.tag}">${ev.tag}</span>` +
+    (ev.status === 'major' ? ' <span class="tooltip-tag major">major</span>' : '') +
+    (ev.status === 'upcoming' ? ' <span class="tooltip-tag" style="background:#2a1a0a;color:#c8801a;border:1px solid #503010;">upcoming</span>' : '') +
+    (ev.newsUrl ? ' <span class="tooltip-tag" style="background:#0a1a2a;color:#6ab0e8;border:1px solid #1a4060;">↗ click to open news post</span>' : '');
+  tip.classList.add('visible');
+  moveTip(e);
+}
+function moveTip(e) {
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + 260 > window.innerWidth)  x = e.clientX - 260;
+  if (y + 150 > window.innerHeight) y = e.clientY - 150;
+  tip.style.left = x + 'px';
+  tip.style.top  = y + 'px';
+}
+function hideTip() { tip.classList.remove('visible'); }
+
+// ─────────────────────────────────────────
+// DRAG TO SCROLL
+// ─────────────────────────────────────────
+let isDown = false, startX, startY, scrollLeft, panY = 0;
+
+function applyPanY() {
+  // Allow panning into the extra padding so nodes can reach the screen edge
+  const maxPan =  EXTRA_PAD * zoomLevel;
+  const minPan = -(canvas.offsetHeight * zoomLevel - outer.clientHeight) - EXTRA_PAD * zoomLevel;
+  panY = Math.min(maxPan, Math.max(minPan, panY));
+  canvas.style.marginTop = panY + 'px';
+}
+
+outer.addEventListener('mousedown', e => {
+  isDown = true; outer.style.cursor = 'grabbing';
+  startX     = e.pageX - outer.offsetLeft;
+  startY     = e.pageY;
+  scrollLeft = outer.scrollLeft;
+});
+outer.addEventListener('mouseleave', () => { isDown = false; outer.style.cursor = 'grab'; });
+outer.addEventListener('mouseup',    () => { isDown = false; outer.style.cursor = 'grab'; });
+outer.addEventListener('mousemove',  e => {
+  if (!isDown) return;
+  e.preventDefault();
+  const walkX = (e.pageX - outer.offsetLeft - startX) * 1.2;
+  outer.scrollLeft = scrollLeft - walkX;
+  panY += e.pageY - startY;
+  startY = e.pageY;
+  applyPanY();
+});
+
+// ─────────────────────────────────────────
+// ZOOM
+// ─────────────────────────────────────────
+let zoomLevel = 1.0;
+const ZOOM_MIN = 0.3;
+const ZOOM_MAX = 2.5;
+
+canvas.style.transformOrigin = 'top left';
+
+// A spacer div that stretches the scrollable area to match scaled canvas width
+const spacer = document.createElement('div');
+spacer.style.cssText = 'position:absolute;top:0;left:0;height:1px;pointer-events:none;';
+outer.appendChild(spacer);
+
+function applyZoom() {
+  canvas.style.transform = `scale(${zoomLevel})`;
+  spacer.style.width = Math.ceil(TOTAL_PX * zoomLevel) + 'px';
+  document.getElementById('zoomLabel').textContent = Math.round(zoomLevel * 100) + '%';
+  applyPanY();
+}
+
+function zoom(delta, anchorX) {
+  const prev = zoomLevel;
+  zoomLevel = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomLevel + delta));
+  if (zoomLevel === prev) return;
+  const ax = anchorX !== undefined ? anchorX : outer.clientWidth / 2;
+  const contentX = (outer.scrollLeft + ax) / prev;
+  applyZoom();
+  outer.scrollLeft = contentX * zoomLevel - ax;
+}
+
+// On load: pan so track line sits at ~45% down the viewport (room for below-cards)
+panY = -(TRACK_TOP - Math.round(outer.clientHeight * 0.45));
+applyZoom();
+
+// Scroll to show RS2 launch area on load
+outer.scrollLeft = dateToPx(new Date(2004, 2, 1)) * zoomLevel - 60;
+
+// Mouse wheel zoom
+outer.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY < 0 ? 0.12 : -0.12;
+  const rect = outer.getBoundingClientRect();
+  zoom(delta, e.clientX - rect.left);
+}, { passive: false });
+</script>
+
+</body>
+</html>
