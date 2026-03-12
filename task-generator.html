@@ -758,6 +758,26 @@
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
     .task-actions { flex-direction: column; }
   }
+  .lookup-bar {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 1rem;
+    background: rgba(20,17,9,0.85); border: 1px solid rgba(200,168,75,0.25);
+    border-radius: 3px; padding: 0.5rem 0.75rem;
+  }
+  .lookup-bar input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #e8d5a3; font-family: 'IM Fell English', serif; font-size: 0.95rem;
+  }
+  .lookup-bar input::placeholder { color: #8a6f2e; opacity: 0.6; }
+  .lookup-bar button {
+    background: rgba(200,168,75,0.12); border: 1px solid rgba(200,168,75,0.25);
+    border-radius: 2px; color: #c8a84b; font-family: 'Cinzel', serif;
+    font-size: 0.72rem; letter-spacing: 0.1em; padding: 0.35rem 0.8rem;
+    cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .lookup-bar button:hover { background: rgba(200,168,75,0.22); border-color: #c8a84b; }
+  .lookup-status { font-size: 0.8rem; font-style: italic; color: #8a6f2e; margin-bottom: 0.75rem; min-height: 1.2em; }
 </style>
 </head>
 <body>
@@ -781,6 +801,11 @@
 
   <!-- Stats Panel -->
   <div class="panel">
+    <div class="lookup-bar">
+      <input type="text" id="username-input" placeholder="Enter username to autofill stats..." onkeydown="if(event.key==='Enter')lookupUser()">
+      <button onclick="lookupUser()">Look Up</button>
+    </div>
+    <div class="lookup-status" id="lookup-status"></div>
     <div class="panel-title">⚔ Your Stats</div>
 
     <div class="stats-grid" id="combat-stats">
@@ -1012,7 +1037,7 @@ const COMBAT_TASKS = [
   { name: 'Ogres',             icon: '👹', min: 40, max: 126,  loc: "Gu'Tanoth",                        countMin: 50, countMax: 120, prayer: false , npcImage: 'Ogre' },
 
   // High tier
-  { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon — no quest required, but bring PK awareness' , npcImage: 'Fire_giant' },
+  { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon (level 5-12 Wilderness) — no quest required, but bring PK awareness' , npcImage: 'Fire_giant' },
   { name: 'Lesser Demons',     icon: '😈', min: 65, max: 126,  loc: 'Karamja Volcano or Taverley Dungeon', countMin: 50, countMax: 150, prayer: false , npcImage: 'Lesser_demon' },
   { name: 'Greater Demons',    icon: '👿', min: 75, max: 126,  loc: 'Brimhaven Dungeon',                countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Greater_demon' },
   { name: 'Blue Dragons',      icon: '🐉', min: 85, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: 'Anti-dragon shield required; <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> prayer recommended' , npcImage: 'Blue_dragon' },
@@ -1103,7 +1128,7 @@ const SKILL_TASKS = [
   { skill: 'rc', name: 'Earth runes',  icon: '🌍', req: 9,  unitMin: 250, unitMax: 600, unit: 'earth runes',  loc: 'Earth Altar, east of Varrock',    note: 'Earth talisman: dropped by Men, Al-Kharid Warriors, Rogues, and Farmers', itemImage: 'Earth_rune'  },
   { skill: 'rc', name: 'Fire runes',   icon: '🔥', req: 14, unitMin: 200, unitMax: 500, unit: 'fire runes',   loc: 'Fire Altar, north of Al-Kharid',  note: 'Fire talisman: dropped by Dark Wizards and Skeletons', itemImage: 'Fire_rune'  },
   { skill: 'rc', name: 'Body runes',   icon: '🌀', req: 20, unitMin: 200, unitMax: 500, unit: 'body runes',   loc: 'Body Altar',                      note: 'Body talisman: dropped by Guards and Giants', itemImage: 'Body_rune'  },
-  { skill: 'rc', name: 'Cosmic runes', icon: '⭐', req: 27, unitMin: 150, unitMax: 400, unit: 'cosmic runes', loc: 'Cosmic Altar, Zanaris',            note: 'Requires Lost City quest. Cosmic talisman: on the rare drop table', itemImage: 'Cosmic_rune'  },
+  { skill: 'rc', name: 'Cosmic runes', icon: '⭐', req: 27, unitMin: 150, unitMax: 400, unit: 'cosmic runes', loc: 'Cosmic Altar, Zanaris',            note: 'Requires Lost City quest', itemImage: 'Cosmic_rune'  },
   { skill: 'rc', name: 'Chaos runes',  icon: '💥', req: 35, unitMin: 150, unitMax: 400, unit: 'chaos runes',  loc: 'Chaos Altar',                     note: 'Chaos talisman: on the rare drop table (from monsters in underground areas)', itemImage: 'Chaos_rune'  },
   { skill: 'rc', name: 'Nature runes', icon: '🍃', req: 44, unitMin: 100, unitMax: 250, unit: 'nature runes', loc: 'Nature Altar, Karamja',            note: 'Nature talisman: on the rare drop table (from monsters above ground)', itemImage: 'Nature_rune'  },
   { skill: 'rc', name: 'Law runes',    icon: '⚖️', req: 54, unitMin: 100, unitMax: 250, unit: 'law runes',    loc: 'Law Altar, Entrana',               note: 'Requires Troll Stronghold quest. Law talisman: rewarded upon completing Troll Stronghold (given by Dunstan)', itemImage: 'Law_rune'  },
@@ -1730,6 +1755,50 @@ openDB().then(async () => {
     renderTask(currentTask);
   }
 });
+
+const HISCORE_MAP_TASK = {
+  'Attack':      'stat-attack',
+  'Strength':    'stat-strength',
+  'Defence':     'stat-defence',
+  'Hitpoints':   'stat-hp',
+  'Prayer':      'stat-prayer',
+  'Ranged':      'stat-ranged',
+  'Magic':       'stat-magic',
+  'Agility':     'stat-agility',
+  'Woodcutting': 'stat-wc',
+  'Mining':      'stat-mining',
+  'Fishing':     'stat-fishing',
+  'Firemaking':  'stat-fm',
+  'Cooking':     'stat-cooking',
+  'Fletching':   'stat-fletching',
+  'Runecrafting':'stat-rc',
+};
+
+async function lookupUser() {
+  const username = document.getElementById('username-input').value.trim();
+  if (!username) return;
+  const status = document.getElementById('lookup-status');
+  status.textContent = 'Looking up ' + username + '...';
+  try {
+    const res = await fetch('https://lostcity-hiscores.nehughes97.workers.dev/?username=' + encodeURIComponent(username));
+    const data = await res.json();
+    if (!data.skills || data.skills.length === 0) {
+      status.textContent = 'Player not found.';
+      return;
+    }
+    for (const s of data.skills) {
+      const inputId = HISCORE_MAP_TASK[s.skill];
+      if (inputId) {
+        const el = document.getElementById(inputId);
+        if (el) el.value = s.level;
+      }
+    }
+    document.getElementById('combat-level-value').textContent = calcCombatLevel();
+    status.textContent = '✓ Loaded stats for ' + data.username;
+  } catch(e) {
+    status.textContent = 'Error fetching stats. Try again.';
+  }
+}
 </script>
 </body>
 </html>
