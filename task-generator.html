@@ -883,6 +883,131 @@
   }
   .milestone-label { flex: 1; color: #e8d89a; }
   .milestone-reward { font-size: 0.72rem; color: var(--gold); }
+
+  .shop-tab {
+    position: fixed;
+    top: calc(50% + 120px);
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: stretch;
+  }
+  .shop-trigger {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    background: #2a2210;
+    border: 1px solid var(--gold-dim);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    padding: 1rem 0.6rem;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    user-select: none;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: -3px 0 12px rgba(0,0,0,0.5);
+  }
+  .shop-tab:hover .shop-trigger,
+  .shop-tab.open .shop-trigger {
+    background: #3a3015;
+    color: #f0d060;
+  }
+  .shop-panel {
+    width: 0;
+    overflow: hidden;
+    background: #1e1a10;
+    border: 1px solid var(--gold-dim);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.6);
+  }
+  .shop-tab:hover .shop-panel,
+  .shop-tab.open .shop-panel { width: 260px; }
+  .shop-inner {
+    width: 260px;
+    padding: 1rem 1.2rem;
+    flex-shrink: 0;
+  }
+  .shop-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+    white-space: nowrap;
+  }
+  .shop-item {
+    background: rgba(200,168,75,0.06);
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .shop-item-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    color: #e8d89a;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+  }
+  .shop-item-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+  }
+  .shop-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .shop-cost {
+    font-size: 0.78rem;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .shop-stock {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .shop-buy-btn {
+    background: rgba(200,168,75,0.15);
+    border: 1px solid var(--gold-dim);
+    border-radius: 3px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .shop-buy-btn:hover { background: rgba(200,168,75,0.3); }
+  .shop-buy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .safe-reroll-btn {
+    display: none;
+    background: rgba(75,200,100,0.15);
+    border: 1px solid rgba(75,200,100,0.4);
+    border-radius: 4px;
+    color: #7be89a;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 0.5rem;
+  }
+  .safe-reroll-btn.visible { display: inline-block; }
+  .safe-reroll-btn:hover { background: rgba(75,200,100,0.3); }
 </style>
 </head>
 <body>
@@ -1063,7 +1188,7 @@
     </div>
     <div class="task-actions">
       <button class="action-btn complete" onclick="completeTask()">✓ Mark Complete</button>
-      <button class="action-btn reroll" onclick="rerollTask()">↺ Reroll</button>
+      <button class="action-btn reroll" onclick="rerollTask()">↺ Reroll</button><button class="safe-reroll-btn" id="safe-reroll-btn" onclick="safeRerollTask()">🛡 Safe Reroll (<span id="safe-reroll-count">0</span>)</button>
     </div>
   </div>
 
@@ -1077,6 +1202,24 @@
     </div>
   </div>
   <div class="milestones-trigger" onclick="document.getElementById('milestones-tab').classList.toggle('open')">Milestones</div>
+</div>
+
+<div class="shop-tab" id="shop-tab">
+  <div class="shop-panel" id="shop-panel">
+    <div class="shop-inner">
+      <div class="shop-title">⚜ Shop</div>
+      <div class="shop-item">
+        <div class="shop-item-name">🛡 Safe Reroll</div>
+        <div class="shop-item-desc">Skip your current task without breaking your streak.</div>
+        <div class="shop-item-footer">
+          <span class="shop-cost">25 pts</span>
+          <span class="shop-stock">Held: <span id="shop-safe-reroll-count">0</span> / 5</span>
+          <button class="shop-buy-btn" id="shop-buy-btn" onclick="buyReroll()">Buy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="shop-trigger" onclick="document.getElementById('shop-tab').classList.toggle('open')">Shop</div>
 </div>
 
 <div class="toast" id="toast">Task complete! Well done, adventurer.</div>
@@ -1269,7 +1412,7 @@ const BASE_POINTS = {
 const BONUS_MULTIPLIER = 2;   // every 10th streak task doubles points
 const STREAK_BONUS_AT  = 10;  // milestone interval
 
-let tracker = { total: 0, streak: 0, points: 0, bossKills: 0 };
+let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0 };
 let currentTask = null;  // track whether a task is pending completion
 
 function promptReset() {
@@ -1281,7 +1424,7 @@ function cancelReset() {
 }
 
 function confirmReset() {
-  tracker = { total: 0, streak: 0, points: 0, bossKills: 0 };
+  tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0 };
   saveTracker();
   renderTracker();
   dbClear('tasklog').then(() => loadTaskLog());
@@ -1381,10 +1524,54 @@ function renderMilestones() {
   }
 }
 
+
+const SAFE_REROLL_COST = 25;
+const SAFE_REROLL_MAX  = 5;
+
+function renderShop() {
+  const count = tracker.safeRerolls || 0;
+  const pts   = tracker.points || 0;
+  // Shop panel counts
+  const stockEl = document.getElementById('shop-safe-reroll-count');
+  if (stockEl) stockEl.textContent = count;
+  const buyBtn = document.getElementById('shop-buy-btn');
+  if (buyBtn) buyBtn.disabled = pts < SAFE_REROLL_COST || count >= SAFE_REROLL_MAX;
+  // Safe reroll button on task card
+  const srBtn = document.getElementById('safe-reroll-btn');
+  if (srBtn) {
+    const countEl = document.getElementById('safe-reroll-count');
+    if (countEl) countEl.textContent = count;
+    if (count > 0 && currentTask) {
+      srBtn.classList.add('visible');
+    } else {
+      srBtn.classList.remove('visible');
+    }
+  }
+}
+
+function buyReroll() {
+  if (tracker.points < SAFE_REROLL_COST || tracker.safeRerolls >= SAFE_REROLL_MAX) return;
+  tracker.points -= SAFE_REROLL_COST;
+  tracker.safeRerolls++;
+  saveTracker();
+  renderTracker();
+  showToast('Safe Reroll purchased!');
+}
+
+function safeRerollTask() {
+  if (!tracker.safeRerolls || tracker.safeRerolls <= 0) return;
+  tracker.safeRerolls--;
+  saveTracker();
+  generateTask(true); // true = isReroll, skips streak reset
+  renderTracker();
+  showToast('Safe Reroll used — streak preserved!');
+}
+
 function renderTracker() {
   document.getElementById('tracker-total').textContent  = tracker.total;
   renderTitle();
   renderMilestones();
+  renderShop();
   document.getElementById('tracker-points').textContent = tracker.points;
 
   const streakEl  = document.getElementById('tracker-streak');
@@ -1819,7 +2006,8 @@ async function loadTracker() {
     tracker.total     = d.total     || 0;
     tracker.streak    = d.streak    || 0;
     tracker.points    = d.points    || 0;
-    tracker.bossKills = d.bossKills || 0;
+    tracker.bossKills   = d.bossKills   || 0;
+    tracker.safeRerolls = d.safeRerolls || 0;
   } catch(e) {}
   renderTracker();
 }
