@@ -808,7 +808,7 @@
   .milestones-trigger {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    background: var(--card-bg);
+    background: #1e1a10;
     border: 1px solid var(--border);
     border-right: none;
     border-radius: 6px 0 0 6px;
@@ -823,13 +823,13 @@
   }
   .milestones-tab:hover .milestones-trigger,
   .milestones-tab.open .milestones-trigger {
-    background: rgba(200,168,75,0.12);
+    background: #2a2210;
     color: var(--gold);
   }
   .milestones-panel {
     width: 0;
     overflow: hidden;
-    background: var(--card-bg);
+    background: #1e1a10;
     border: 1px solid var(--border);
     border-right: none;
     border-radius: 6px 0 0 6px;
@@ -1065,6 +1065,16 @@
     </div>
   </div>
 
+</div>
+
+<div class="milestones-tab" id="milestones-tab">
+  <div class="milestones-panel" id="milestones-panel">
+    <div class="milestones-inner">
+      <div class="milestones-title">⚔ Milestones</div>
+      <div id="milestones-list"></div>
+    </div>
+  </div>
+  <div class="milestones-trigger" onclick="document.getElementById('milestones-tab').classList.toggle('open')">Milestones</div>
 </div>
 
 <div class="toast" id="toast">Task complete! Well done, adventurer.</div>
