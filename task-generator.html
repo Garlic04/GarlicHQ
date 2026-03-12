@@ -1323,17 +1323,17 @@ const TITLES = [
 ];
 
 const MILESTONES = [
-  { id: 'tasks5',    label: 'Complete 5 tasks',       check: () => tracker.total >= 5,   reward: 'Milestone unlocked' },
-  { id: 'tasks25',   label: 'Complete 25 tasks',      check: () => tracker.total >= 25,  reward: 'Milestone unlocked' },
-  { id: 'tasks100',  label: 'Complete 100 tasks',     check: () => tracker.total >= 100, reward: 'Milestone unlocked' },
-  { id: 'streak5',   label: 'Reach a 5 streak',       check: () => tracker.streak > 5,  reward: 'Streak bonus unlocked' },
-  { id: 'streak10',  label: 'Reach a 10 streak',      check: () => tracker.streak > 10, reward: 'Double points!' },
-  { id: 'streak25',  label: 'Reach a 25 streak',      check: () => tracker.streak > 25, reward: 'Title: Champion' },
-  { id: 'points50',  label: 'Earn 50 points',         check: () => tracker.points >= 50,  reward: 'Title: Adventurer' },
-  { id: 'points350', label: 'Earn 350 points',        check: () => tracker.points >= 350, reward: 'Title: Hero' },
-  { id: 'points1500',label: 'Earn 1500 points',       check: () => tracker.points >= 1500,reward: 'Title: Legend' },
-  { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Milestone unlocked' },
-  { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Milestone unlocked' },
+  { id: 'tasks5',    label: 'Complete 5 tasks',       check: () => tracker.total >= 5,   reward: 'Getting started' },
+  { id: 'tasks25',   label: 'Complete 25 tasks',      check: () => tracker.total >= 25,  reward: 'Seasoned tasker' },
+  { id: 'tasks100',  label: 'Complete 100 tasks',     check: () => tracker.total >= 100, reward: 'Century complete' },
+  { id: 'streak5',   label: 'Reach a 5 streak',       check: () => tracker.streak > 5,   reward: 'On a roll' },
+  { id: 'streak10',  label: 'Reach a 10 streak',      check: () => tracker.streak > 10,  reward: 'Bonus points active' },
+  { id: 'streak25',  label: 'Reach a 25 streak',      check: () => tracker.streak > 25,  reward: 'Unstoppable' },
+  { id: 'points50',  label: 'Earn 50 points',         check: () => tracker.points >= 50,   reward: 'Adventurer rank' },
+  { id: 'points350', label: 'Earn 350 points',        check: () => tracker.points >= 350,  reward: 'Champion rank' },
+  { id: 'points1500',label: 'Earn 1500 points',       check: () => tracker.points >= 1500, reward: 'Legend rank' },
+  { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Proven in battle' },
+  { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Boss Hunter' },
 ];
 
 let milestonesUnlocked = new Set();
