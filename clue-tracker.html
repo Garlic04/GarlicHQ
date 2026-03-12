@@ -198,7 +198,7 @@ function buildGrid(tier) {
 
     const imgEl = document.createElement('img');
     imgEl.className = 'item-img';
-    imgEl.src = `images/${item.img}.png`;
+    imgEl.src = `https://oldschool.runescape.wiki/w/Special:FilePath/${item.img}.png`;
     imgEl.alt = item.name;
     imgEl.onerror = function() {
       this.style.display = 'none';
@@ -251,7 +251,7 @@ function openPopup(tier, id) {
   document.getElementById('popup-name').textContent = item.name;
   document.getElementById('popup-count').textContent = count;
   const img = document.getElementById('popup-img');
-  img.src = `images/${item.img}.png`;
+  img.src = `https://oldschool.runescape.wiki/w/Special:FilePath/${item.img}.png`;
   img.onerror = function() { this.style.display = 'none'; };
   img.style.display = 'block';
   document.getElementById('item-popup').showModal();
