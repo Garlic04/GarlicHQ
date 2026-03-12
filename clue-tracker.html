@@ -198,15 +198,14 @@ function buildGrid(tier) {
 
     const imgEl = document.createElement('img');
     imgEl.className = 'item-img';
-    imgEl.src = `https://oldschool.runescape.wiki/images/${item.img}.png`;
     imgEl.alt = item.name;
     imgEl.onerror = function() {
-      this.style.display = 'none';
       const em = document.createElement('span');
       em.className = 'item-emoji';
       em.textContent = '🗡️';
-      card.insertBefore(em, card.firstChild);
+      this.replaceWith(em);
     };
+    imgEl.src = `https://oldschool.runescape.wiki/images/${item.img}.png`;
 
     const name = document.createElement('div');
     name.className = 'text-xs mt-1 leading-tight';
