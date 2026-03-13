@@ -428,6 +428,80 @@
     border-color: var(--border);
   }
 
+  .challenge-freq-btn {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Crimson Pro', serif;
+    font-size: 13px;
+    padding: 5px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .challenge-freq-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .challenge-freq-btn.active { border-color: var(--gold); color: var(--gold-light); background: rgba(201,162,39,0.1); }
+
+  .chain-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .chain-step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(201,162,39,0.15);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .chain-step-text { font-size: 14px; color: var(--text-bright); line-height: 1.4; }
+  .chain-step-sub  { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .chain-arrow {
+    text-align: center;
+    color: var(--gold-dim);
+    font-size: 14px;
+    margin: 2px 0 4px;
+    letter-spacing: 2px;
+  }
+
+  .contract-option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .contract-option:hover { border-color: var(--gold-dim); background: rgba(201,162,39,0.05); }
+  .contract-option-left { flex: 1; }
+  .contract-option-name { font-size: 15px; color: var(--text-bright); font-weight: 600; margin-bottom: 3px; }
+  .contract-option-desc { font-size: 12px; color: var(--text-dim); }
+  .contract-option-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .contract-difficulty {
+    font-size: 11px; border-radius: 10px; padding: 1px 8px; font-weight: 600;
+  }
+  .contract-difficulty.easy   { background: rgba(74,170,74,0.15);  color: #4aaa4a; border: 1px solid #2a6b2a; }
+  .contract-difficulty.medium { background: rgba(201,162,39,0.15); color: var(--gold); border: 1px solid var(--gold-dim); }
+  .contract-difficulty.hard   { background: rgba(196,75,75,0.15);  color: #e07070; border: 1px solid #6b2020; }
+  .contract-reward { font-size: 12px; color: var(--gold); }
+
   .option-toggle-text { font-family: 'Crimson Pro', serif; }
 
   .reset-btn {
@@ -1225,6 +1299,33 @@
     </label>
   </div>
 
+  <!-- Challenge Mode -->
+  <div class="panel" id="challenge-mode-panel" style="padding:14px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0;" id="challenge-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="challenge-lock-icon" style="font-size:15px;">🔒</span>
+        <span style="color:var(--text-bright);font-weight:600;font-size:15px;">Challenge Mode</span>
+        <span id="challenge-unlock-badge" style="display:none;font-size:11px;background:rgba(74,170,74,0.15);color:#4aaa4a;border:1px solid #2a6b2a;border-radius:10px;padding:1px 7px;">Veteran</span>
+      </div>
+      <label id="challenge-toggle-label" style="display:flex;align-items:center;gap:7px;cursor:not-allowed;opacity:0.45;" onclick="toggleChallengeMode()">
+        <span class="option-toggle-box" id="challenge-toggle-box"></span>
+        <span style="font-size:14px;color:var(--text-dim);">Enable</span>
+      </label>
+    </div>
+    <div id="challenge-locked-msg" style="font-size:13px;color:var(--text-dim);margin-top:8px;">
+      Reach <span style="color:var(--gold);">Veteran</span> rank (50 tasks) to unlock multi-step chained tasks.
+    </div>
+    <div id="challenge-options" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">Tasks chain two skilling steps together for <span style="color:var(--gold);font-weight:600;">1.75× points</span>.</div>
+      <div style="font-size:13px;color:var(--text-bright);margin-bottom:6px;">Chain frequency:</div>
+      <div style="display:flex;gap:8px;">
+        <button class="challenge-freq-btn active" id="freq-always"   onclick="setChainFreq('always')">Always</button>
+        <button class="challenge-freq-btn"         id="freq-sometimes" onclick="setChainFreq('sometimes')">Sometimes <span style="font-size:11px;color:var(--text-dim);">(50%)</span></button>
+        <button class="challenge-freq-btn"         id="freq-rarely"    onclick="setChainFreq('rarely')">Rarely <span style="font-size:11px;color:var(--text-dim);">(25%)</span></button>
+      </div>
+    </div>
+  </div>
+
   <!-- Skill Filters (shown when skilling or mix mode active) -->
   <div class="panel" id="skill-filter-panel" style="display:none;">
     <div class="panel-title" style="margin-bottom:12px;">🛠 Active Skills</div>
@@ -1271,11 +1372,129 @@
       <span class="task-monster-icon" id="task-icon">⚔️</span>
       <div class="task-title" id="task-title">Kill 80 Cows</div>
       <div class="task-desc" id="task-desc">Head to Lumbridge and slay some cattle.</div>
+      <div id="task-chain-steps" style="display:none;margin-top:10px;width:100%;"></div>
       <div class="task-notes" id="task-notes" style="display:none"></div>
     </div>
     <div class="task-actions">
       <button class="action-btn complete" onclick="completeTask()">✓ Mark Complete</button>
       <button class="action-btn reroll" onclick="rerollTask()">↺ Reroll</button><button class="safe-reroll-btn" id="safe-reroll-btn" onclick="safeRerollTask()">🛡 Safe Reroll (<span id="safe-reroll-count">0</span>)</button>
+    </div>
+  </div>
+
+  <!-- Daily Task -->
+  <div class="panel" id="daily-task-panel" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="daily-lock-icon" style="font-size:15px;">🔒</span>
+        <span style="color:var(--text-bright);font-weight:600;font-size:15px;">Daily Task</span>
+        <span id="daily-unlock-badge" style="display:none;font-size:11px;background:rgba(74,122,204,0.15);color:#7aaaee;border:1px solid #2a4a8b;border-radius:10px;padding:1px 7px;">Champion</span>
+      </div>
+      <span id="daily-points-badge" style="display:none;font-size:12px;color:var(--gold);background:rgba(201,162,39,0.1);border:1px solid var(--gold-dim);border-radius:10px;padding:2px 8px;">3× Points</span>
+    </div>
+    <div id="daily-locked-msg" style="font-size:13px;color:var(--text-dim);margin-top:8px;">
+      Reach <span style="color:var(--gold);">Champion</span> rank (150 tasks) to unlock a daily bonus task.
+    </div>
+    <div id="daily-contents" style="display:none;margin-top:10px;">
+      <div id="daily-countdown-wrap" style="display:none;text-align:center;padding:12px 0;">
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">Next daily task in</div>
+        <div id="daily-countdown" style="font-size:22px;color:var(--gold);font-family:'Share Tech Mono',monospace;letter-spacing:2px;">00:00:00</div>
+      </div>
+      <div id="daily-task-card" style="display:none;">
+        <div class="task-card" style="margin-bottom:10px;">
+          <div class="task-type-badge" id="daily-badge" style="background:rgba(74,122,204,0.2);border-color:#4a7acc;color:#7aaaee;">☀ Daily Task</div>
+          <img id="daily-npc-img" src="" alt="" style="display:none;">
+          <span class="task-monster-icon" id="daily-icon" style="display:none;"></span>
+          <div class="task-title" id="daily-title"></div>
+          <div class="task-desc" id="daily-desc"></div>
+          <div id="daily-chain-steps" style="display:none;margin-top:10px;width:100%;"></div>
+          <div class="task-notes" id="daily-notes" style="display:none;"></div>
+        </div>
+        <div class="task-actions">
+          <button class="action-btn complete" onclick="completeDailyTask()" style="background:rgba(74,122,204,0.15);border-color:#4a7acc;">✓ Complete Daily</button>
+        </div>
+      </div>
+      <button class="generate-btn" id="daily-generate-btn" onclick="generateDailyTask()" style="display:none;margin-top:8px;font-size:14px;padding:10px 20px;">☀ Roll Daily Task</button>
+    </div>
+  </div>
+
+  <!-- Task Contracts -->
+  <div class="panel" id="contracts-panel" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="contracts-lock-icon" style="font-size:15px;">🔒</span>
+        <span style="color:var(--text-bright);font-weight:600;font-size:15px;">Task Contract</span>
+        <span id="contracts-unlock-badge" style="display:none;font-size:11px;background:rgba(196,75,75,0.15);color:#e07070;border:1px solid #6b2020;border-radius:10px;padding:1px 7px;">Hero</span>
+      </div>
+    </div>
+    <div id="contracts-locked-msg" style="font-size:13px;color:var(--text-dim);margin-top:8px;">
+      Reach <span style="color:var(--gold);">Hero</span> rank (350 tasks) to unlock long-term task contracts.
+    </div>
+    <div id="contracts-contents" style="display:none;margin-top:12px;">
+
+      <!-- Contract selection -->
+      <div id="contracts-pick-wrap" style="display:none;">
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Choose a contract — complete it for a big point reward:</div>
+        <div id="contracts-pick-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- Active contract -->
+      <div id="contracts-active-wrap" style="display:none;">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Active Contract</div>
+        <div id="contracts-active-card" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div id="contract-active-name" style="color:var(--text-bright);font-size:15px;font-weight:600;"></div>
+            <div id="contract-active-reward" style="font-size:12px;color:var(--gold);background:rgba(201,162,39,0.1);border:1px solid var(--gold-dim);border-radius:10px;padding:2px 8px;"></div>
+          </div>
+          <div id="contract-active-desc" style="font-size:13px;color:var(--text-dim);margin-bottom:10px;"></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div id="contract-progress-bar" style="height:100%;background:var(--gold);border-radius:3px;width:0%;transition:width 0.4s ease;"></div>
+            </div>
+            <div id="contract-progress-text" style="font-size:12px;color:var(--gold);font-family:'Share Tech Mono',monospace;white-space:nowrap;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Prestige -->
+  <div class="panel" id="prestige-panel" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="prestige-lock-icon" style="font-size:15px;">🔒</span>
+        <span style="color:var(--text-bright);font-weight:600;font-size:15px;">Prestige</span>
+        <span id="prestige-unlock-badge" style="display:none;font-size:11px;background:rgba(200,75,200,0.15);color:#d07ad0;border:1px solid #6b206b;border-radius:10px;padding:1px 7px;">Legend</span>
+      </div>
+      <span id="prestige-count-badge" style="display:none;font-size:13px;color:#d07ad0;font-weight:600;"></span>
+    </div>
+    <div id="prestige-locked-msg" style="font-size:13px;color:var(--text-dim);margin-top:8px;">
+      Reach <span style="color:var(--gold);">Legend</span> rank (750 tasks) to unlock Prestige — reset your task count for a permanent points multiplier.
+    </div>
+    <div id="prestige-contents" style="display:none;margin-top:12px;">
+      <div id="prestige-not-ready" style="display:none;">
+        <div style="font-size:13px;color:var(--text-dim);">Keep grinding — reach <span style="color:var(--gold);">750 tasks</span> to prestige again.</div>
+        <div style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:4px;">
+            <span>Progress to next prestige</span><span id="prestige-progress-txt"></span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div id="prestige-progress-bar" style="height:100%;background:#c84bc8;border-radius:3px;width:0%;transition:width 0.4s ease;"></div>
+          </div>
+        </div>
+      </div>
+      <div id="prestige-ready" style="display:none;">
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">You've reached <span style="color:#d07ad0;font-weight:600;">750 tasks</span> — you can prestige!</div>
+        <div id="prestige-multiplier-preview" style="font-size:13px;color:var(--gold);margin-bottom:12px;"></div>
+        <div id="prestige-confirm-wrap" style="display:none;background:rgba(200,75,200,0.08);border:1px solid #6b206b;border-radius:8px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:14px;color:var(--text-bright);margin-bottom:8px;">⚠ Are you sure? Your task count resets to 0.<br><span style="font-size:12px;color:var(--text-dim);">Streak, points, unlocks and prestige count are kept.</span></div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="confirmPrestige()" style="flex:1;padding:8px;background:rgba(200,75,200,0.2);border:1px solid #c84bc8;border-radius:6px;color:#d07ad0;font-size:13px;cursor:pointer;font-family:inherit;">✦ Yes, Prestige</button>
+            <button onclick="cancelPrestige()" style="flex:1;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+          </div>
+        </div>
+        <button id="prestige-btn" onclick="promptPrestige()" style="width:100%;padding:10px;background:rgba(200,75,200,0.15);border:1px solid #c84bc8;border-radius:8px;color:#d07ad0;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.03em;">✦ Prestige</button>
+      </div>
     </div>
   </div>
 
@@ -1295,6 +1514,12 @@
   <div class="shop-panel" id="shop-panel">
     <div class="shop-inner">
       <div class="shop-title">⚜ Shop</div>
+      <div id="shop-locked-msg" style="display:none;text-align:center;padding:18px 12px;">
+        <div style="font-size:28px;margin-bottom:8px;">🔒</div>
+        <div style="color:var(--text-bright);font-size:15px;margin-bottom:6px;">Shop is locked</div>
+        <div style="color:var(--text-dim);font-size:13px;">Reach <span style="color:var(--gold);font-weight:600;">Adventurer</span> rank<br>by completing 10 tasks to unlock.</div>
+      </div>
+      <div id="shop-contents">
       <div class="shop-item">
         <div class="shop-item-name">🛡 Safe Reroll</div>
         <div class="shop-item-desc">Skip your current task without breaking your streak.</div>
@@ -1304,9 +1529,10 @@
           <button class="shop-buy-btn" id="shop-buy-btn" onclick="buyReroll()">Buy</button>
         </div>
       </div>
+      </div><!-- /shop-contents -->
     </div>
   </div>
-  <div class="shop-trigger" onclick="document.getElementById('shop-tab').classList.toggle('open')">Shop</div>
+  <div class="shop-trigger" id="shop-trigger" onclick="toggleShop()">Shop</div>
 </div>
 
 <div class="toast" id="toast">Task complete! Well done, adventurer.</div>
@@ -1428,7 +1654,7 @@ const QUEST_TASKS = [
 const CLUE_TASKS = [
   { name: 'Easy Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
   { name: 'Medium Clue', icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
-  { name: 'Hard Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Hard Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   combatReq: 50, note: 'Some hard clue steps require defeating a Zamorak Wizard (level 65). <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
 ];
 
 const COMBAT_TASKS = [
@@ -1492,6 +1718,7 @@ const SKILL_TASKS = [
   { skill: 'mining', name: 'Mithril ore',    icon: '🔷', req: 55, unitMin: 50,  unitMax: 120, unit: 'mithril ore',    loc: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABCElEQVR4nL2VvRGDMAyFn3PZhwWo2YgKyqTKOOnocscCTKQ0NicJ+ReSV2GQ9FmykIE/yBXY0AnfqKEIOk6z6fh6PnQMvRl3eAiGsaAxMRiGvgMALOsm4nOIAHBnrlRmAcJAArIDjDJoUQzGQRxy00b+Q+pQHQBnZTpOM5Z14+U67JYywS2ZZ8g2C0BmUg0Y+g7b5501vGUtEoAgXTqf3d7SLRCyuijWjS0QE+CXAsSzqYGkAEk1nUkCYJbtXhiXhr47jItSlUA4oLbNAeTLdRqQDO4BhPh9EvUdp1n4WeUia8idkS6XaNMGmbOMQ5r/g5wC5AqAvpPMKfwTAF+Q8a5WIcblrV6kL2wugQEZUDPSAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Mining Guild or Falador' , itemImage: 'Mithril_ore'  },
   { skill: 'mining', name: 'Adamantite ore', icon: '🟢', req: 70, unitMin: 30,  unitMax: 80,  unit: 'adamantite ore', loc: 'Wilderness or Trollheim' , itemImage: 'Adamantite_ore'  },
   { skill: 'mining', name: 'Runite ore',     icon: '🔴', req: 85, unitMin: 20,  unitMax: 50,  unit: 'runite ore',     loc: 'Heroes\' Guild or Wilderness' , itemImage: 'Runite_ore'  },
+  { skill: 'mining', name: 'Rune essence',   icon: '🪨', req: 1,  unitMin: 200, unitMax: 500, unit: 'rune essence',   loc: 'Rune essence mine (via teleport)', itemImage: 'Rune_essence', questReq: 'Rune Mysteries', note: 'Requires completion of <strong>Rune Mysteries</strong> to access the essence mine.' },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABZ0lEQVR4nMVVsW3EMAykHxlE8AJZIHU2UCPN4coukypz/De/gWsv4AUMbaIUMfUkTcp6BEgOMGBT1B1JUxTAH6Br9Mu/2S+dLDJ4f3tl3/OyUo5qEChSnJBsXlaTmNrnZQUfw4H9fr0VIZrJQUhEfAANiAJFdyG1pFl5WvyY3cdQ7C/K5tZmMP1k+VoJnwXNrNMy0Rw1aAGqe1oyycM4McPX54fprPk+dRglAZJodrpeK5dKntJW3u/Xmxo57kHfM5Fu35gBeNdQgZQ2cK4vaz4GFsxZucqPFAcMfAyFGAmd6w+ZtoiYYlJAwrkeS1dtYQZaqpoAIQfYk0CR2hQta7TuUoAMRCZAX6pnweouKoD/CEukqWWtHBIpbVrEAPBTTjre6doFjeigCaS0SYGOPKzTpICGMrp9DHkYJzqyrbGfh3GqXguyu9hNKepvRii7SeKiGQEe3WL9HyFeSmc51MDuhTO1f8U38tm2Q55K5qUAAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Fishing — stat(fishing) checks from fishing_spots scripts
   { skill: 'fishing', name: 'Shrimps',   icon: '🦐', req: 1,  unitMin: 40, unitMax: 100, unit: 'shrimps',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_shrimps' , maxReq: 14 },
@@ -1579,7 +1806,7 @@ const BASE_POINTS = {
 const BONUS_MULTIPLIER = 2;   // every 10th streak task doubles points
 const STREAK_BONUS_AT  = 10;  // milestone interval
 
-let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0 };
+let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0, prestige: 0, highWater: 0 };
 let currentTask = null;  // track whether a task is pending completion
 let completedQuests = new Set(); // set of quest names the player has finished
 
@@ -1602,14 +1829,18 @@ function confirmReset() {
 
 
 function taskPointValue(task) {
+  let base;
   if (task.type === 'skill') {
     // High tier skilling
     const skillHigh = ['Sharks','Runite ore','Magic trees','Magic logs','Law runes','Yew trees','Yew logs','Adamantite ore','Magic shortbows','Magic longbows','Yew shortbows','Yew longbows'];
-    if (skillHigh.includes(task.name)) return BASE_POINTS.skill_high;
-    // Mid tier skilling
-    const skillMid = ['Lobsters','Swordfish','Coal','Gold ore','Mithril ore','Willow trees','Willow logs','Maple trees','Maple logs','Chaos runes','Nature runes','Maple shortbows','Maple longbows','Tuna','Salmon'];
-    if (skillMid.includes(task.name)) return BASE_POINTS.skill_mid;
-    return BASE_POINTS.skill_low;
+    if (skillHigh.includes(task.name)) base = BASE_POINTS.skill_high;
+    else {
+      // Mid tier skilling
+      const skillMid = ['Lobsters','Swordfish','Coal','Gold ore','Mithril ore','Willow trees','Willow logs','Maple trees','Maple logs','Chaos runes','Nature runes','Maple shortbows','Maple longbows','Tuna','Salmon'];
+      base = skillMid.includes(task.name) ? BASE_POINTS.skill_mid : BASE_POINTS.skill_low;
+    }
+    if (task.chain) base = Math.round(base * (task.chain.threeStep ? CHALLENGE_MULTIPLIER * 1.5 : CHALLENGE_MULTIPLIER));
+    return base;
   }
   const name = task.name || '';
   // Boss tier
@@ -1635,19 +1866,11 @@ const TITLES = [
 
 const MILESTONES = [
   // Rank milestones — match TITLES thresholds
-  { id: 'tasks10',   label: '10 tasks',  rankLabel: 'Adventurer', rankColor: '#c8a84b', check: () => tracker.total >= 10,  reward: 'Rank up!' },
-  { id: 'tasks50',   label: '50 tasks',  rankLabel: 'Veteran',    rankColor: '#4bc8a0', check: () => tracker.total >= 50,  reward: 'Rank up!' },
-  { id: 'tasks150',  label: '150 tasks', rankLabel: 'Champion',   rankColor: '#4b8ec8', check: () => tracker.total >= 150, reward: 'Rank up!' },
-  { id: 'tasks350',  label: '350 tasks', rankLabel: 'Hero',       rankColor: '#c84b4b', check: () => tracker.total >= 350, reward: 'Rank up!' },
-  { id: 'tasks750',  label: '750 tasks', rankLabel: 'Legend',     rankColor: '#c84bc8', check: () => tracker.total >= 750, reward: 'Rank up!' },
-  // Streak milestones
-  { id: 'streak5',   label: 'Reach a 5 streak',       check: () => tracker.streak > 5,   reward: 'On a roll' },
-  { id: 'streak10',  label: 'Reach a 10 streak',      check: () => tracker.streak > 10,  reward: 'Bonus points active' },
-  { id: 'streak25',  label: 'Reach a 25 streak',      check: () => tracker.streak > 25,  reward: 'Unstoppable' },
-  // Points milestones
-  { id: 'points50',  label: 'Earn 50 points',         check: () => tracker.points >= 50,   reward: 'Points milestone' },
-  { id: 'points350', label: 'Earn 350 points',        check: () => tracker.points >= 350,  reward: 'Points milestone' },
-  { id: 'points1500',label: 'Earn 1500 points',       check: () => tracker.points >= 1500, reward: 'Points milestone' },
+  { id: 'tasks10',   label: '10 tasks',  rankLabel: 'Adventurer', rankColor: '#c8a84b', check: () => (tracker.highWater||tracker.total) >= 10,  reward: 'Shop unlocked!' },
+  { id: 'tasks50',   label: '50 tasks',  rankLabel: 'Veteran',    rankColor: '#4bc8a0', check: () => (tracker.highWater||tracker.total) >= 50,  reward: 'Challenge Mode unlocked!' },
+  { id: 'tasks150',  label: '150 tasks', rankLabel: 'Champion',   rankColor: '#4b8ec8', check: () => (tracker.highWater||tracker.total) >= 150, reward: 'Daily Task unlocked!' },
+  { id: 'tasks350',  label: '350 tasks', rankLabel: 'Hero',       rankColor: '#c84b4b', check: () => (tracker.highWater||tracker.total) >= 350, reward: 'Task Contracts unlocked!' },
+  { id: 'tasks750',  label: '750 tasks', rankLabel: 'Legend',     rankColor: '#c84bc8', check: () => (tracker.highWater||tracker.total) >= 750, reward: 'Prestige unlocked!' },
   // Boss milestones
   { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Proven in battle' },
   { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Boss Hunter' },
@@ -1667,7 +1890,9 @@ function renderTitle() {
   const t = getTitle();
   const el = document.getElementById('player-title');
   if (!el) return;
-  el.textContent = t.label;
+  const p = tracker.prestige || 0;
+  const prestigeSuffix = p > 0 ? ` <span style="color:#d07ad0;font-size:0.85em;">${prestigeLabel(p)}</span>` : '';
+  el.innerHTML = t.label + prestigeSuffix;
   el.className = 'player-title ' + t.cls;
 }
 
@@ -1698,21 +1923,765 @@ function renderMilestones() {
 
 const SAFE_REROLL_COST = 25;
 const SAFE_REROLL_MAX  = 5;
+const CHALLENGE_MULTIPLIER = 1.75;
+
+// Chain pairs: [step1 skill, step1 task name pattern, step2 skill, step2 task name pattern]
+// Each entry: { req, step1: {skill, unit, verb, loc}, step2: {skill, unit, verb, loc} }
+const CHAIN_PAIRS = [
+  // Woodcutting → Firemaking
+  { skills: ['wc','fm'], matches: [
+    { wcName: 'Normal trees',  fmName: 'Normal logs', req: 1  },
+    { wcName: 'Oak trees',     fmName: 'Oak logs',    req: 15 },
+    { wcName: 'Willow trees',  fmName: 'Willow logs', req: 30 },
+    { wcName: 'Maple trees',   fmName: 'Maple logs',  req: 45 },
+    { wcName: 'Yew trees',     fmName: 'Yew logs',    req: 60 },
+    { wcName: 'Magic trees',   fmName: 'Magic logs',  req: 75 },
+  ]},
+  // Woodcutting → Fletching
+  { skills: ['wc','fletching'], matches: [
+    { wcName: 'Normal trees',  flName: 'Shortbows (u)',    req: 5  },
+    { wcName: 'Normal trees',  flName: 'Longbows (u)',     req: 10 },
+    { wcName: 'Oak trees',     flName: 'Oak shortbows',    req: 20 },
+    { wcName: 'Oak trees',     flName: 'Oak longbows',     req: 25 },
+    { wcName: 'Willow trees',  flName: 'Willow shortbows', req: 35 },
+    { wcName: 'Willow trees',  flName: 'Willow longbows',  req: 40 },
+    { wcName: 'Maple trees',   flName: 'Maple shortbows',  req: 50 },
+    { wcName: 'Maple trees',   flName: 'Maple longbows',   req: 55 },
+    { wcName: 'Yew trees',     flName: 'Yew shortbows',    req: 65 },
+    { wcName: 'Yew trees',     flName: 'Yew longbows',     req: 70 },
+    { wcName: 'Magic trees',   flName: 'Magic shortbows',  req: 80 },
+    { wcName: 'Magic trees',   flName: 'Magic longbows',   req: 85 },
+  ]},
+  // Fishing → Cooking
+  { skills: ['fishing','cooking'], matches: [
+    { fishName: 'Trout',     cookName: 'Trout',     req: 20 },
+    { fishName: 'Salmon',    cookName: 'Salmon',    req: 30 },
+    { fishName: 'Tuna',      cookName: 'Tuna',      req: 35 },
+    { fishName: 'Lobsters',  cookName: 'Lobsters',  req: 40 },
+    { fishName: 'Swordfish', cookName: 'Swordfish', req: 50 },
+    { fishName: 'Sharks',    cookName: 'Sharks',    req: 80 },
+  ]},
+  // Mining → Smithing (flavour only — smithing has no tasks yet but can show the chain)
+  { skills: ['mining','smithing'], matches: [
+    { mineName: 'Copper ore', smName: 'smelt into bronze bars', req: 1  },
+    { mineName: 'Iron ore',   smName: 'smelt into iron bars',   req: 15 },
+    { mineName: 'Coal',       smName: 'smelt into steel bars',  req: 30 },
+    { mineName: 'Gold ore',   smName: 'smelt into gold bars',   req: 40 },
+    { mineName: 'Mithril ore',smName: 'smelt into mithril bars',req: 55 },
+  ]},
+];
+
+let challengeEnabled  = false;
+let challengeFreq     = 'always'; // 'always' | 'sometimes' | 'rarely'
+
+function isShopUnlocked()      { return (tracker.highWater || tracker.total) >= 10; }
+function isChallengeUnlocked() { return (tracker.highWater || tracker.total) >= 50; }
+function isDailyUnlocked()     { return (tracker.highWater || tracker.total) >= 150; }
+function isContractsUnlocked() { return (tracker.highWater || tracker.total) >= 350; }
+
+// ─── Daily Task ───────────────────────────────────────────────────────────────
+
+const DAILY_MULTIPLIER = 3;
+
+let dailyTask    = null;  // current daily task object
+let dailyDateKey = null;  // 'YYYY-MM-DD' string of when it was generated
+let dailyDone    = false; // completed today?
+
+function isDailyUnlocked() { return tracker.total >= 150; }
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function msUntilMidnight() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  return midnight - now;
+}
+
+function generateDailyTask() {
+  if (!isDailyUnlocked()) return;
+  // Generate using the same pool as normal tasks but always mix mode weights
+  const mode = 'mix'; // daily tasks always use mix pool
+  const cb   = calcCombatLevel();
+  const agility = getStat('stat-agility');
+  const stats = {
+    wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'),
+    fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'),
+    rc: getStat('stat-rc'), agility, smithing: getStat('stat-smithing'),
+    crafting: getStat('stat-crafting'), thieving: getStat('stat-thieving'), herblore: getStat('stat-herblore'),
+  };
+
+  const types = ['combat','combat','combat','skill','skill','skill','clue','quest'];
+  let pickType = types[randInt(0, 7)];
+
+  // Resolve to a task the same way generateTask does
+  let task = null;
+  const maxAttempts = 10;
+  for (let i = 0; i < maxAttempts && !task; i++) {
+    pickType = types[randInt(0, 7)];
+    if (pickType === 'combat') {
+      const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+      if (!eligible.length) continue;
+      const t = eligible[randInt(0, eligible.length - 1)];
+      const count = randInt(t.countMin, t.countMax);
+      task = { type:'combat', name:t.name, icon:t.icon, npcImage:t.npcImage, title:`Kill ${count} ${t.name}`, desc:`Head to ${t.loc} and begin your hunt.`, note: t.note||null };
+    } else if (pickType === 'skill') {
+      const allEl = SKILL_TASKS.filter(t => {
+        if (!enabledSkills.has(t.skill)) return false;
+        if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq||99)) return false;
+        if (t.questReq && !completedQuests.has(t.questReq)) return false;
+        return true;
+      });
+      if (!allEl.length) continue;
+      const t = allEl[randInt(0, allEl.length - 1)];
+      const count = randInt(t.unitMin, t.unitMax);
+      task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title:`${skillLabel(t.skill)} ${count} ${t.unit}`, desc:`Location: ${t.loc}.`, note:t.note||null };
+    } else if (pickType === 'clue') {
+      const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
+      if (!eligibleClues.length) continue;
+      const t = eligibleClues[randInt(0, eligibleClues.length - 1)];
+      task = { type:'clue', name:t.name, icon:t.icon, itemImage:t.itemImage||null, title:t.title, desc:t.desc, note:t.note||null };
+    } else if (pickType === 'quest') {
+      const eligible = QUEST_TASKS.filter(isQuestEligible);
+      if (!eligible.length) continue;
+      const t = eligible[randInt(0, eligible.length - 1)];
+      const reqParts = [];
+      for (const [sk, lvl] of Object.entries(t.skillReqs)) reqParts.push(`${lvl} ${sk.charAt(0).toUpperCase()+sk.slice(1)}`);
+      if (t.qpReq > 0) reqParts.push(`${t.qpReq} QP`);
+      const reqStr = reqParts.length ? `Requires: ${reqParts.join(', ')}. ` : '';
+      const prereqStr = t.questReqs.length ? `Complete first: ${t.questReqs.join(', ')}. ` : '';
+      task = { type:'quest', name:t.name, icon:'📜', itemImage:'Quest_point_icon', title:`Complete: ${t.name}`, desc:`${reqStr}${prereqStr}Start this quest in-game!`, note:null, questName:t.name };
+    }
+  }
+  if (!task) { showToast('Could not generate a daily task — check your stats!'); return; }
+
+  dailyTask    = task;
+  dailyDateKey = todayKey();
+  dailyDone    = false;
+  saveDailyTask();
+  renderDailyTask();
+}
+
+function completeDailyTask() {
+  if (!dailyTask || dailyDone) return;
+  dailyDone = true;
+
+  tracker.total++;
+  tracker.streak++;
+  if (tracker.total > (tracker.highWater || 0)) tracker.highWater = tracker.total;
+  const earned = Math.round(base * DAILY_MULTIPLIER);
+  const isBonus = tracker.streak % STREAK_BONUS_AT === 0;
+  const finalEarned = applyPrestigeMultiplier(isBonus ? earned * BONUS_MULTIPLIER : earned);
+  tracker.points += finalEarned;
+
+  if (dailyTask.type === 'quest' && dailyTask.questName) {
+    completedQuests.add(dailyTask.questName);
+    saveCompletedQuests();
+    updateQuestChecklist();
+  }
+
+  saveTracker();
+  renderTracker();
+  saveDailyTask();
+  logTask({ ...dailyTask, title: '☀ [Daily] ' + dailyTask.title }, finalEarned, isBonus).then(() => loadTaskLog());
+
+  // Contract progress — daily tasks count as their underlying type + also as 'daily'
+  progressContract('daily', dailyTask.name, extractKillCount(dailyTask));
+  progressContract(dailyTask.type, dailyTask.name, extractKillCount(dailyTask));
+
+  showToast(`☀ Daily complete! +${finalEarned} points (${DAILY_MULTIPLIER}× bonus)${isBonus ? ` + streak bonus!` : '!'}`);
+  renderDailyTask();
+}
+
+function renderDailyTask() {
+  const unlocked     = isDailyUnlocked();
+  const lockIcon     = document.getElementById('daily-lock-icon');
+  const badge        = document.getElementById('daily-unlock-badge');
+  const ptsBadge     = document.getElementById('daily-points-badge');
+  const lockedMsg    = document.getElementById('daily-locked-msg');
+  const contents     = document.getElementById('daily-contents');
+  const countdownWrap= document.getElementById('daily-countdown-wrap');
+  const taskCard     = document.getElementById('daily-task-card');
+  const genBtn       = document.getElementById('daily-generate-btn');
+
+  if (lockIcon) lockIcon.textContent = unlocked ? '☀' : '🔒';
+  if (badge)    badge.style.display  = unlocked ? 'inline' : 'none';
+  if (ptsBadge) ptsBadge.style.display = unlocked ? 'inline' : 'none';
+  if (lockedMsg) lockedMsg.style.display = unlocked ? 'none' : 'block';
+  if (contents)  contents.style.display  = unlocked ? 'block' : 'none';
+  if (!unlocked) return;
+
+  const today = todayKey();
+  const hasToday = dailyDateKey === today;
+  const completed = hasToday && dailyDone;
+
+  if (completed) {
+    // Show countdown to reset
+    if (countdownWrap) countdownWrap.style.display = 'block';
+    if (taskCard)      taskCard.style.display       = 'none';
+    if (genBtn)        genBtn.style.display          = 'none';
+    startDailyCountdown();
+  } else if (hasToday && dailyTask) {
+    // Show active daily task
+    if (countdownWrap) countdownWrap.style.display = 'none';
+    if (taskCard)      taskCard.style.display       = 'block';
+    if (genBtn)        genBtn.style.display          = 'none';
+    renderDailyTaskCard(dailyTask);
+  } else {
+    // Not yet rolled today
+    if (countdownWrap) countdownWrap.style.display = 'none';
+    if (taskCard)      taskCard.style.display       = 'none';
+    if (genBtn)        genBtn.style.display          = 'block';
+  }
+}
+
+function renderDailyTaskCard(task) {
+  document.getElementById('daily-title').textContent = task.title;
+  document.getElementById('daily-desc').innerHTML = task.desc;
+
+  const notesEl = document.getElementById('daily-notes');
+  if (task.note) { notesEl.innerHTML = '📌 ' + task.note; notesEl.style.display = 'inline-block'; }
+  else           { notesEl.style.display = 'none'; }
+
+  const iconEl = document.getElementById('daily-icon');
+  const imgEl  = document.getElementById('daily-npc-img');
+  const wikiKey = task.npcImage || task.itemImage;
+  if (wikiKey) {
+    imgEl.style.display = 'none'; imgEl.src = '';
+    imgEl.className = task.itemImage ? 'item-img' : '';
+    iconEl.style.display = 'none';
+    const localSrc = NPC_IMAGES[wikiKey];
+    if (localSrc) { imgEl.src = localSrc; imgEl.style.display = 'block'; }
+    else {
+      const url = `https://oldschool.runescape.wiki/images/${wikiKey}.png`;
+      const tmp = new Image();
+      tmp.onload = () => { imgEl.src = url; imgEl.style.display = 'block'; };
+      tmp.onerror = () => { iconEl.textContent = task.icon; iconEl.style.display = 'block'; };
+      tmp.src = url;
+    }
+  } else {
+    imgEl.style.display = 'none';
+    iconEl.textContent = task.icon;
+    iconEl.style.display = 'block';
+  }
+
+  const chainEl = document.getElementById('daily-chain-steps');
+  if (chainEl) chainEl.style.display = 'none';
+}
+
+let dailyCountdownInterval = null;
+function startDailyCountdown() {
+  if (dailyCountdownInterval) clearInterval(dailyCountdownInterval);
+  const tick = () => {
+    const ms  = msUntilMidnight();
+    const h   = Math.floor(ms / 3600000);
+    const m   = Math.floor((ms % 3600000) / 60000);
+    const s   = Math.floor((ms % 60000) / 1000);
+    const el  = document.getElementById('daily-countdown');
+    if (el) el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (ms <= 1000) { clearInterval(dailyCountdownInterval); renderDailyTask(); }
+  };
+  tick();
+  dailyCountdownInterval = setInterval(tick, 1000);
+}
+
+async function saveDailyTask() {
+  await dbPut('settings', 'dailyTask',    dailyTask);
+  await dbPut('settings', 'dailyDateKey', dailyDateKey);
+  await dbPut('settings', 'dailyDone',    dailyDone);
+}
+
+async function loadDailyTask() {
+  try {
+    const t = await dbGet('settings', 'dailyTask');
+    const d = await dbGet('settings', 'dailyDateKey');
+    const done = await dbGet('settings', 'dailyDone');
+    if (t)    dailyTask    = t;
+    if (d)    dailyDateKey = d;
+    if (done !== null && done !== undefined) dailyDone = done;
+    // If it's a new day, clear the stored task so the roll button shows
+    if (dailyDateKey !== todayKey()) { dailyTask = null; dailyDone = false; }
+  } catch(e) {}
+}
+
+// ─── Task Contracts ───────────────────────────────────────────────────────────
+
+const CONTRACT_POOL = [
+  // Easy
+  { id: 'kills250',    diff: 'easy',   name: 'Slaughter',        desc: 'Kill 250 enemies across any combat tasks.',        reward: 150, type: 'kills',    target: 250  },
+  { id: 'combat5',     diff: 'easy',   name: 'Fighter',          desc: 'Complete 5 combat tasks.',                         reward: 150, type: 'combatTasks', target: 5  },
+  { id: 'skill5',      diff: 'easy',   name: 'Grind',            desc: 'Complete 5 skilling tasks.',                       reward: 150, type: 'skillTasks',  target: 5  },
+  { id: 'any10',       diff: 'easy',   name: 'Busy Work',        desc: 'Complete 10 tasks of any type.',                   reward: 150, type: 'anyTasks',    target: 10 },
+  // Medium
+  { id: 'kills500',    diff: 'medium', name: 'Warmonger',        desc: 'Kill 500 enemies across any combat tasks.',        reward: 300, type: 'kills',       target: 500 },
+  { id: 'combat10',    diff: 'medium', name: 'Veteran Fighter',  desc: 'Complete 10 combat tasks.',                        reward: 300, type: 'combatTasks', target: 10  },
+  { id: 'skill10',     diff: 'medium', name: 'Skiller',          desc: 'Complete 10 skilling tasks.',                      reward: 300, type: 'skillTasks',  target: 10  },
+  { id: 'daily3',      diff: 'medium', name: 'Daily Devotion',   desc: 'Complete 3 daily tasks.',                          reward: 300, type: 'dailyTasks',  target: 3   },
+  { id: 'any25',       diff: 'medium', name: 'Prolific',         desc: 'Complete 25 tasks of any type.',                   reward: 300, type: 'anyTasks',    target: 25  },
+  // Hard
+  { id: 'kills1000',   diff: 'hard',   name: 'Executioner',      desc: 'Kill 1,000 enemies across any combat tasks.',      reward: 500, type: 'kills',       target: 1000 },
+  { id: 'boss2',       diff: 'hard',   name: 'Boss Hunter',      desc: 'Complete 2 boss tasks (KBD or Kalphite Queen).',   reward: 500, type: 'bossTasks',   target: 2    },
+  { id: 'chain5',      diff: 'hard',   name: 'Chain Reaction',   desc: 'Complete 5 chained challenge tasks.',              reward: 500, type: 'chainTasks',  target: 5    },
+  { id: 'hardclue1',   diff: 'hard',   name: 'Elite Scout',      desc: 'Complete a hard clue scroll.',                     reward: 500, type: 'hardClue',    target: 1    },
+  { id: 'any50',       diff: 'hard',   name: 'Unstoppable',      desc: 'Complete 50 tasks of any type.',                   reward: 500, type: 'anyTasks',    target: 50   },
+];
+
+let activeContract  = null; // { ...contract, progress: 0 }
+let contractOptions = [];   // the 3 shown to player
+
+function isContractsUnlocked() { return tracker.total >= 350; }
+
+function pickContractOptions() {
+  const easy   = CONTRACT_POOL.filter(c => c.diff === 'easy');
+  const medium = CONTRACT_POOL.filter(c => c.diff === 'medium');
+  const hard   = CONTRACT_POOL.filter(c => c.diff === 'hard');
+  const pick = arr => arr[randInt(0, arr.length - 1)];
+  // Ensure one of each difficulty, no duplicates
+  const e = pick(easy);
+  let m = pick(medium);
+  let h = pick(hard);
+  contractOptions = [e, m, h];
+  saveContracts();
+  renderContracts();
+}
+
+function acceptContract(id) {
+  const c = contractOptions.find(o => o.id === id);
+  if (!c) return;
+  activeContract = { ...c, progress: 0 };
+  contractOptions = [];
+  saveContracts();
+  renderContracts();
+}
+
+function progressContract(taskType, taskName, killCount) {
+  if (!activeContract) return;
+  const c = activeContract;
+  let gained = 0;
+  if      (c.type === 'kills'       && taskType === 'combat') gained = killCount || 0;
+  else if (c.type === 'combatTasks' && taskType === 'combat') gained = 1;
+  else if (c.type === 'skillTasks'  && taskType === 'skill')  gained = 1;
+  else if (c.type === 'anyTasks')                             gained = 1;
+  else if (c.type === 'bossTasks'   && taskType === 'combat' && BOSSES.includes(taskName)) gained = 1;
+  else if (c.type === 'chainTasks'  && taskType === 'chain')  gained = 1;
+  else if (c.type === 'hardClue'    && taskType === 'clue' && taskName === 'Hard Clue')    gained = 1;
+  else if (c.type === 'dailyTasks'  && taskType === 'daily')  gained = 1;
+  if (!gained) return;
+  c.progress = Math.min(c.target, (c.progress || 0) + gained);
+  saveContracts();
+  if (c.progress >= c.target) {
+    // Contract complete!
+    const reward = c.reward;
+    tracker.points += reward;
+    saveTracker();
+    renderTracker();
+    activeContract = null;
+    saveContracts();
+    showToast(`📜 Contract complete! "${c.name}" — +${reward} pts! Pick a new contract.`);
+    pickContractOptions();
+  } else {
+    renderContracts();
+  }
+}
+
+function renderContracts() {
+  const unlocked   = isContractsUnlocked();
+  const lockIcon   = document.getElementById('contracts-lock-icon');
+  const badge      = document.getElementById('contracts-unlock-badge');
+  const lockedMsg  = document.getElementById('contracts-locked-msg');
+  const contents   = document.getElementById('contracts-contents');
+  const pickWrap   = document.getElementById('contracts-pick-wrap');
+  const activeWrap = document.getElementById('contracts-active-wrap');
+
+  if (lockIcon)  lockIcon.textContent       = unlocked ? '📜' : '🔒';
+  if (badge)     badge.style.display        = unlocked ? 'inline' : 'none';
+  if (lockedMsg) lockedMsg.style.display    = unlocked ? 'none'   : 'block';
+  if (contents)  contents.style.display     = unlocked ? 'block'  : 'none';
+  if (!unlocked) return;
+
+  if (activeContract) {
+    if (pickWrap)   pickWrap.style.display   = 'none';
+    if (activeWrap) activeWrap.style.display = 'block';
+    const pct = Math.min(100, Math.round((activeContract.progress / activeContract.target) * 100));
+    const nameEl = document.getElementById('contract-active-name');
+    const descEl = document.getElementById('contract-active-desc');
+    const rewEl  = document.getElementById('contract-active-reward');
+    const barEl  = document.getElementById('contract-progress-bar');
+    const txtEl  = document.getElementById('contract-progress-text');
+    if (nameEl) nameEl.textContent = activeContract.name;
+    if (descEl) descEl.textContent = activeContract.desc;
+    if (rewEl)  rewEl.textContent  = `+${activeContract.reward} pts`;
+    if (barEl)  barEl.style.width  = pct + '%';
+    if (txtEl)  txtEl.textContent  = `${activeContract.progress} / ${activeContract.target}`;
+  } else if (contractOptions.length > 0) {
+    if (pickWrap)   pickWrap.style.display   = 'block';
+    if (activeWrap) activeWrap.style.display = 'none';
+    const list = document.getElementById('contracts-pick-list');
+    if (!list) return;
+    list.innerHTML = '';
+    contractOptions.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'contract-option';
+      div.innerHTML = `
+        <div class="contract-option-left">
+          <div class="contract-option-name">${c.name}</div>
+          <div class="contract-option-desc">${c.desc}</div>
+        </div>
+        <div class="contract-option-right">
+          <span class="contract-difficulty ${c.diff}">${c.diff.charAt(0).toUpperCase()+c.diff.slice(1)}</span>
+          <span class="contract-reward">+${c.reward} pts</span>
+        </div>`;
+      div.onclick = () => acceptContract(c.id);
+      list.appendChild(div);
+    });
+  } else {
+    // Neither active nor options — show pick button
+    if (pickWrap)   pickWrap.style.display   = 'none';
+    if (activeWrap) activeWrap.style.display = 'none';
+    // Auto-generate options first time
+    pickContractOptions();
+  }
+}
+
+async function saveContracts() {
+  await dbPut('settings', 'activeContract',  activeContract);
+  await dbPut('settings', 'contractOptions', contractOptions);
+}
+
+async function loadContracts() {
+  try {
+    const ac = await dbGet('settings', 'activeContract');
+    const co = await dbGet('settings', 'contractOptions');
+    if (ac) activeContract  = ac;
+    if (co && Array.isArray(co) && co.length) contractOptions = co;
+  } catch(e) {}
+}
+
+// ─── Prestige ─────────────────────────────────────────────────────────────────
+
+const PRESTIGE_THRESHOLD    = 750;
+const PRESTIGE_MULTIPLIER   = 0.25; // +25% per prestige, additive
+
+function isPrestigeUnlocked() { return tracker.total >= PRESTIGE_THRESHOLD || (tracker.prestige || 0) > 0; }
+function prestigeMultiplier() { return 1 + (tracker.prestige || 0) * PRESTIGE_MULTIPLIER; }
+function prestigeLabel(n) {
+  const numerals = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+  return n <= 10 ? `✦ Prestige ${numerals[n-1]}` : `✦ Prestige ${n}`;
+}
+
+function applyPrestigeMultiplier(base) {
+  const mult = prestigeMultiplier();
+  return mult === 1 ? base : Math.round(base * mult);
+}
+
+function promptPrestige() {
+  document.getElementById('prestige-confirm-wrap').style.display = 'block';
+  document.getElementById('prestige-btn').style.display = 'none';
+}
+
+function cancelPrestige() {
+  document.getElementById('prestige-confirm-wrap').style.display = 'none';
+  document.getElementById('prestige-btn').style.display = 'block';
+}
+
+function confirmPrestige() {
+  tracker.prestige = (tracker.prestige || 0) + 1;
+  tracker.total    = 0;
+  // streak kept, points kept, safeRerolls kept, bossKills kept
+  saveTracker();
+  renderTracker();
+  dbPut('settings', 'prestigeMilestones', null); // reset prestige milestone tracker
+  showToast(`✦ Prestige ${tracker.prestige}! Your tasks reset. Points multiplier: ${prestigeMultiplier().toFixed(2)}×`);
+}
+
+function renderPrestige() {
+  const unlocked   = isPrestigeUnlocked();
+  const lockIcon   = document.getElementById('prestige-lock-icon');
+  const badge      = document.getElementById('prestige-unlock-badge');
+  const lockedMsg  = document.getElementById('prestige-locked-msg');
+  const contents   = document.getElementById('prestige-contents');
+  const countBadge = document.getElementById('prestige-count-badge');
+  const notReady   = document.getElementById('prestige-not-ready');
+  const ready      = document.getElementById('prestige-ready');
+
+  if (lockIcon)  lockIcon.textContent    = unlocked ? '✦' : '🔒';
+  if (badge)     badge.style.display     = unlocked ? 'inline' : 'none';
+  if (lockedMsg) lockedMsg.style.display = unlocked ? 'none' : 'block';
+  if (contents)  contents.style.display  = unlocked ? 'block' : 'none';
+  if (!unlocked) return;
+
+  const p = tracker.prestige || 0;
+  if (countBadge) {
+    countBadge.style.display = p > 0 ? 'inline' : 'none';
+    countBadge.textContent   = p > 0 ? prestigeLabel(p) : '';
+  }
+
+  const canPrestige = tracker.total >= PRESTIGE_THRESHOLD;
+  if (notReady) notReady.style.display = canPrestige ? 'none' : 'block';
+  if (ready)    ready.style.display    = canPrestige ? 'block' : 'none';
+
+  if (!canPrestige && notReady) {
+    const pct = Math.min(100, Math.round((tracker.total / PRESTIGE_THRESHOLD) * 100));
+    const bar = document.getElementById('prestige-progress-bar');
+    const txt = document.getElementById('prestige-progress-txt');
+    if (bar) bar.style.width   = pct + '%';
+    if (txt) txt.textContent   = `${tracker.total} / ${PRESTIGE_THRESHOLD}`;
+  }
+
+  if (canPrestige && ready) {
+    const nextMult = 1 + (p + 1) * PRESTIGE_MULTIPLIER;
+    const preview  = document.getElementById('prestige-multiplier-preview');
+    if (preview) preview.textContent = `Prestige ${p + 1} will grant a permanent ${nextMult.toFixed(2)}× points multiplier.`;
+    // Reset confirm state
+    const confirmWrap = document.getElementById('prestige-confirm-wrap');
+    const btn         = document.getElementById('prestige-btn');
+    if (confirmWrap) confirmWrap.style.display = 'none';
+    if (btn)         btn.style.display         = 'block';
+  }
+}
+
+async function loadPrestige() {
+  // prestige count is stored on tracker object — loaded via loadTracker
+  // Nothing extra to load
+}
+
+function toggleChallengeMode() {
+  if (!isChallengeUnlocked()) return;
+  challengeEnabled = !challengeEnabled;
+  dbPut('settings', 'challengeEnabled', challengeEnabled);
+  renderChallengeMode();
+}
+
+function setChainFreq(freq) {
+  challengeFreq = freq;
+  dbPut('settings', 'challengeFreq', freq);
+  renderChallengeMode();
+}
+
+function renderChallengeMode() {
+  const unlocked    = isChallengeUnlocked();
+  const lockIcon    = document.getElementById('challenge-lock-icon');
+  const badge       = document.getElementById('challenge-unlock-badge');
+  const toggleLabel = document.getElementById('challenge-toggle-label');
+  const toggleBox   = document.getElementById('challenge-toggle-box');
+  const lockedMsg   = document.getElementById('challenge-locked-msg');
+  const options     = document.getElementById('challenge-options');
+
+  if (lockIcon)    lockIcon.textContent  = unlocked ? '⚔' : '🔒';
+  if (badge)       badge.style.display   = unlocked ? 'inline' : 'none';
+  if (toggleLabel) { toggleLabel.style.opacity = unlocked ? '1' : '0.45'; toggleLabel.style.cursor = unlocked ? 'pointer' : 'not-allowed'; }
+  if (toggleBox)   toggleBox.textContent = challengeEnabled && unlocked ? '✓' : '';
+  if (lockedMsg)   lockedMsg.style.display = unlocked ? 'none' : 'block';
+  if (options)     options.style.display   = (unlocked && challengeEnabled) ? 'block' : 'none';
+
+  // Freq buttons
+  ['always','sometimes','rarely'].forEach(f => {
+    const btn = document.getElementById('freq-' + f);
+    if (btn) btn.classList.toggle('active', challengeFreq === f);
+  });
+}
+
+function shouldChain() {
+  if (!challengeEnabled || !isChallengeUnlocked()) return false;
+  if (challengeFreq === 'always')    return true;
+  if (challengeFreq === 'sometimes') return Math.random() < 0.5;
+  if (challengeFreq === 'rarely')    return Math.random() < 0.25;
+  return false;
+}
+
+function buildChainTask(primaryTask, stats) {
+  // Try to find a valid chain for this primary task
+  const wcLog = { 'Normal trees':'Normal logs','Oak trees':'Oak logs','Willow trees':'Willow logs','Maple trees':'Maple logs','Yew trees':'Yew logs','Magic trees':'Magic logs' };
+
+  if (primaryTask.skill === 'wc') {
+    const logName = wcLog[primaryTask.name];
+    // Try fletching first (if enabled and levelled)
+    const flTask = SKILL_TASKS.find(t => t.skill === 'fletching' && t.name.toLowerCase().startsWith(primaryTask.name.split(' ')[0].toLowerCase()) && stats['fletching'] >= t.req);
+    if (flTask && enabledSkills.has('fletching') && stats['fletching'] >= flTask.req) {
+      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      return {
+        step1: { title: `Chop ${count} ${primaryTask.unit}`, loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'wc' },
+        step2: { title: `Fletch them into ${flTask.unit}`,   loc: 'Anywhere',       itemImage: flTask.itemImage,      skill: 'fletching' },
+        count,
+      };
+    }
+    // Try firemaking
+    if (logName && enabledSkills.has('fm') && stats['fm'] >= (primaryTask.req || 1)) {
+      const fmTask = SKILL_TASKS.find(t => t.skill === 'fm' && t.name === logName);
+      if (fmTask) {
+        const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+        return {
+          step1: { title: `Chop ${count} ${primaryTask.unit}`, loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'wc' },
+          step2: { title: `Burn them all`,                     loc: 'Anywhere',      itemImage: fmTask.itemImage,      skill: 'fm' },
+          count,
+        };
+      }
+    }
+  }
+
+  if (primaryTask.skill === 'fishing') {
+    const cookTask = SKILL_TASKS.find(t => t.skill === 'cooking' && t.name === primaryTask.name);
+    if (cookTask && enabledSkills.has('cooking') && stats['cooking'] >= cookTask.req) {
+      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      return {
+        step1: { title: `Catch ${count} ${primaryTask.unit}`,  loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'fishing' },
+        step2: { title: `Cook them all`,                        loc: 'Any fire or range', itemImage: cookTask.itemImage, skill: 'cooking' },
+        count,
+      };
+    }
+  }
+
+  if (primaryTask.skill === 'mining') {
+    // Mining chain definitions — each entry defines a smelting recipe
+    const miningChains = [
+      { barName: 'bronze bars', barImage: 'Bronze_bar', smithReq: 1,  mineReq: 1,
+        ores: 'copper ore + tin ore', mineNote: 'Mine equal amounts of copper and tin ore.',
+        smithItems: 'bronze items (e.g. bronze swords, platelegs)', smithReq2: 1 },
+      { barName: 'iron bars',   barImage: 'Iron_bar',   smithReq: 15, mineReq: 15,
+        ores: 'iron ore', mineNote: 'Mine iron ore.',
+        smithItems: 'iron items (e.g. iron swords, chainbody)', smithReq2: 15 },
+      { barName: 'steel bars',  barImage: 'Steel_bar',  smithReq: 30, mineReq: 30,
+        ores: 'iron ore + coal (1:2 ratio)', mineNote: 'Mine iron ore and coal in a 1:2 ratio.',
+        smithItems: 'steel items (e.g. steel swords, platebody)', smithReq2: 30 },
+      { barName: 'gold bars',   barImage: 'Gold_bar',   smithReq: 40, mineReq: 40,
+        ores: 'gold ore', mineNote: 'Mine gold ore.',
+        smithItems: 'gold jewellery at a furnace', smithReq2: 40 },
+      { barName: 'mithril bars',barImage: 'Mithril_bar',smithReq: 50, mineReq: 55,
+        ores: 'mithril ore + coal (1:4 ratio)', mineNote: 'Mine mithril ore and coal in a 1:4 ratio.',
+        smithItems: 'mithril items (e.g. mithril swords, platebody)', smithReq2: 55 },
+      { barName: 'adamant bars',barImage: 'Adamantite_bar',smithReq: 70, mineReq: 70,
+        ores: 'adamantite ore + coal (1:6 ratio)', mineNote: 'Mine adamantite ore and coal in a 1:6 ratio.',
+        smithItems: 'adamant items (e.g. adamant swords, platebody)', smithReq2: 70 },
+    ];
+
+    // Find chains the player can do
+    const eligible = miningChains.filter(c => stats['mining'] >= c.mineReq && stats['smithing'] >= c.smithReq);
+    if (eligible.length === 0) return null;
+
+    const chain = eligible[randInt(0, eligible.length - 1)];
+    const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+
+    // 3-step (mine → smelt → smith) ~33% of the time
+    const doThreeStep = Math.random() < 0.33 && stats['smithing'] >= chain.smithReq2;
+
+    if (doThreeStep) {
+      return {
+        step1: { title: `Mine the ores`,               loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'mining',   note: chain.mineNote },
+        step2: { title: `Smelt into ${chain.barName}`, loc: 'Any furnace',   itemImage: chain.barImage,        skill: 'smithing',  note: `Requires: ${chain.ores}` },
+        step3: { title: `Smith ${chain.smithItems}`,   loc: 'Any anvil',     itemImage: chain.barImage,        skill: 'smithing',  note: null },
+        barName: chain.barName,
+        count,
+        threeStep: true,
+      };
+    }
+
+    return {
+      step1: { title: `Mine the ores`,               loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'mining',  note: chain.mineNote },
+      step2: { title: `Smelt into ${chain.barName}`, loc: 'Any furnace',   itemImage: chain.barImage,        skill: 'smithing', note: `Requires: ${chain.ores}` },
+      barName: chain.barName,
+      count,
+      threeStep: false,
+    };
+  }
+
+  if (primaryTask.name === 'Rune essence' && completedQuests.has('Rune Mysteries')) {
+    // Pick a rune the player can craft based on RC level
+    const rcLevel = stats['rc'] || 1;
+    const runeOptions = [
+      { name: 'air runes',    req: 1,  altar: 'Air Altar, south of Falador',    itemImage: 'Air_rune'    },
+      { name: 'mind runes',   req: 2,  altar: 'Mind Altar',                      itemImage: 'Mind_rune'   },
+      { name: 'water runes',  req: 5,  altar: 'Water Altar, south of Lumbridge', itemImage: 'Water_rune'  },
+      { name: 'earth runes',  req: 9,  altar: 'Earth Altar, east of Varrock',    itemImage: 'Earth_rune'  },
+      { name: 'fire runes',   req: 14, altar: 'Fire Altar, north of Al-Kharid',  itemImage: 'Fire_rune'   },
+      { name: 'body runes',   req: 20, altar: 'Body Altar',                       itemImage: 'Body_rune'   },
+      { name: 'cosmic runes', req: 27, altar: 'Cosmic Altar, Zanaris',            itemImage: 'Cosmic_rune' },
+      { name: 'chaos runes',  req: 35, altar: 'Chaos Altar',                      itemImage: 'Chaos_rune'  },
+      { name: 'nature runes', req: 44, altar: 'Nature Altar, Karamja',            itemImage: 'Nature_rune' },
+      { name: 'law runes',    req: 54, altar: 'Law Altar, Entrana',               itemImage: 'Law_rune'    },
+    ].filter(r => rcLevel >= r.req);
+
+    if (runeOptions.length > 0) {
+      const rune = runeOptions[randInt(0, runeOptions.length - 1)];
+      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      return {
+        step1: { title: `Mine ${count} rune essence`, loc: primaryTask.loc, itemImage: 'Rune_essence', skill: 'mining', note: 'Requires Rune Mysteries quest' },
+        step2: { title: `Craft them into ${rune.name}`, loc: rune.altar, itemImage: rune.itemImage, skill: 'rc', note: null },
+        runeName: rune.name,
+        count,
+        threeStep: false,
+      };
+    }
+  }
+
+  if (primaryTask.skill === 'combat' && (primaryTask.name === 'Green Dragons' || primaryTask.name === 'Blue Dragons')) {
+    const isBlue = primaryTask.name === 'Blue Dragons';
+    const craftingLevel = stats['crafting'] || 1;
+
+    const dhideOptions = isBlue ? [
+      { item: 'blue d\'hide vambraces', req: 66, itemImage: 'Blue_d\'hide_vambraces' },
+      { item: 'blue d\'hide chaps',     req: 68, itemImage: 'Blue_d\'hide_chaps'     },
+      { item: 'blue d\'hide body',      req: 71, itemImage: 'Blue_d\'hide_body'      },
+    ].filter(o => craftingLevel >= o.req) : [
+      { item: 'green d\'hide vambraces', req: 57, itemImage: 'Green_d\'hide_vambraces' },
+      { item: 'green d\'hide chaps',     req: 60, itemImage: 'Green_d\'hide_chaps'     },
+      { item: 'green d\'hide body',      req: 63, itemImage: 'Green_d\'hide_body'      },
+    ].filter(o => craftingLevel >= o.req);
+
+    if (dhideOptions.length > 0) {
+      const picked = dhideOptions[randInt(0, dhideOptions.length - 1)];
+      const count = randInt(primaryTask.countMin, primaryTask.countMax);
+      const colour = isBlue ? 'Blue' : 'Green';
+      const hideImage = isBlue ? 'Blue_dragonhide' : 'Green_dragonhide';
+      return {
+        step1: { title: `Kill ${count} ${colour} Dragons & collect their hides`, loc: primaryTask.loc, itemImage: hideImage, skill: 'combat', note: isBlue ? 'Anti-dragon shield required' : '⚠️ Wilderness — bring only what you can afford to lose' },
+        step2: { title: `Tan the hides, then craft ${picked.item}`, loc: 'Al-Kharid tannery, then anywhere', itemImage: picked.itemImage, skill: 'crafting', note: `Requires ${picked.req} Crafting` },
+        count,
+        threeStep: false,
+        combatChain: true,
+        colour,
+      };
+    }
+  }
+
+  return null; // no valid chain found
+}
+
+
+function toggleShop() {
+  const tab = document.getElementById('shop-tab');
+  tab.classList.toggle('open');
+}
 
 function renderShop() {
-  const count = tracker.safeRerolls || 0;
-  const pts   = tracker.points || 0;
+  const count    = tracker.safeRerolls || 0;
+  const pts      = tracker.points || 0;
+  const unlocked = isShopUnlocked();
+
+  // Trigger label — show lock icon when locked
+  const trigger = document.getElementById('shop-trigger');
+  if (trigger) trigger.textContent = unlocked ? 'Shop' : '🔒 Shop';
+
+  // Show locked msg or contents
+  const lockedMsg  = document.getElementById('shop-locked-msg');
+  const shopConts  = document.getElementById('shop-contents');
+  if (lockedMsg) lockedMsg.style.display  = unlocked ? 'none' : 'block';
+  if (shopConts) shopConts.style.display  = unlocked ? 'block' : 'none';
+
   // Shop panel counts
   const stockEl = document.getElementById('shop-safe-reroll-count');
   if (stockEl) stockEl.textContent = count;
   const buyBtn = document.getElementById('shop-buy-btn');
   if (buyBtn) buyBtn.disabled = pts < SAFE_REROLL_COST || count >= SAFE_REROLL_MAX;
+
   // Safe reroll button on task card
   const srBtn = document.getElementById('safe-reroll-btn');
   if (srBtn) {
     const countEl = document.getElementById('safe-reroll-count');
     if (countEl) countEl.textContent = count;
-    if (count > 0 && currentTask) {
+    if (count > 0 && currentTask && unlocked) {
       srBtn.classList.add('visible');
     } else {
       srBtn.classList.remove('visible');
@@ -1743,6 +2712,10 @@ function renderTracker() {
   renderTitle();
   renderMilestones();
   renderShop();
+  renderChallengeMode();
+  renderDailyTask();
+  renderContracts();
+  renderPrestige();
   document.getElementById('tracker-points').textContent = tracker.points;
 
   const streakEl  = document.getElementById('tracker-streak');
@@ -1921,9 +2894,9 @@ function generateTask(isReroll = false) {
 
   let task = null;
 
-  // In mix mode: combat 2/8, skill 2/8, clue 1/8, quest 3/8
+  // In mix mode: combat 3/8, skill 3/8, clue 1/8, quest 1/8
   let pickType = doMix
-    ? (['combat', 'combat', 'skill', 'skill', 'clue', 'quest', 'quest', 'quest'][randInt(0, 7)])
+    ? (['combat', 'combat', 'combat', 'skill', 'skill', 'skill', 'clue', 'quest'][randInt(0, 7)])
     : (doCombat ? 'combat' : 'skill');
 
   const agility = getStat('stat-agility');
@@ -1943,14 +2916,21 @@ function generateTask(isReroll = false) {
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
+
+    const combatStats = { crafting: getStat('stat-crafting') };
+    const combatChain = (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons')) ? buildChainTask({ ...t, skill: 'combat' }, combatStats) : null;
+    const chainColour = combatChain?.colour || '';
+
     task = {
       type: 'combat',
       name: t.name,
       icon: t.icon,
-      npcImage: t.npcImage,
-      title: `Kill ${count} ${t.name}`,
+      npcImage: combatChain ? null : t.npcImage,
+      itemImage: combatChain ? (chainColour === 'Blue' ? 'Blue_dragonhide' : 'Green_dragonhide') : null,
+      title: combatChain ? `Kill & Craft ${chainColour} Dragons` : `Kill ${count} ${t.name}`,
       desc: `Head to ${t.loc} and begin your hunt.`,
-      note: t.prayer ? (t.note || '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended for this task.') : (t.note || null),
+      note: combatChain ? null : (t.prayer ? (t.note || '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended for this task.') : (t.note || null)),
+      chain: combatChain || null,
     };
   } else if (pickType === 'skill') {
     const stats = {
@@ -1962,23 +2942,64 @@ function generateTask(isReroll = false) {
       fletching: getStat('stat-fletching'),
       rc: getStat('stat-rc'),
       agility: getStat('stat-agility'),
+      smithing: getStat('stat-smithing'),
+      crafting: getStat('stat-crafting'),
+      thieving: getStat('stat-thieving'),
+      herblore: getStat('stat-herblore'),
     };
 
-    const eligible = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && stats[t.skill] >= t.req && stats[t.skill] <= (t.maxReq || 99));
-    if (eligible.length === 0) { showError(); return; }
+    const allEligible = SKILL_TASKS.filter(t => {
+      if (!enabledSkills.has(t.skill)) return false;
+      if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq || 99)) return false;
+      if (t.questReq && !completedQuests.has(t.questReq)) return false;
+      return true;
+    });
+    if (allEligible.length === 0) { showError(); return; }
+
+    // Challenge Mode: if shouldChain, try to pick only from chainable skills first
+    const wantChain = shouldChain();
+    const chainableSkills = new Set(['wc','fishing','mining','essence']);
+    const chainableEligible = wantChain ? allEligible.filter(t => chainableSkills.has(t.skill)) : [];
+    const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligible;
+
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.unitMin, t.unitMax);
+
+    const chain = (wantChain && (chainableSkills.has(t.skill) || t.name === 'Rune essence')) ? buildChainTask(t, stats) : null;
+
+    // Build combined title
+    const chainVerb2Map = { fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', smithing: 'Smelt' };
+    let chainedTitle, chainedDesc;
+    if (chain && chain.barName) {
+      chainedTitle = chain.threeStep
+        ? `Mine, Smelt & Smith ${chain.barName}`
+        : `Mine & Smelt ${chain.barName}`;
+      chainedDesc = `Location: ${t.loc}.`;
+    } else if (chain && chain.runeName) {
+      chainedTitle = `Mine ${chain.count} essence & Craft into ${chain.runeName}`;
+      chainedDesc = `Location: ${t.loc}.`;
+    } else if (chain) {
+      chainedTitle = `${skillLabel(t.skill)} & ${chainVerb2Map[chain.step2.skill] || 'Use'} ${chain.count} ${t.unit}`;
+      chainedDesc = `Location: ${t.loc}.`;
+    } else {
+      chainedTitle = `${skillLabel(t.skill)} ${count} ${t.unit}`;
+      chainedDesc = `Location: ${t.loc}.`;
+    }
+
     task = {
       type: 'skill',
       name: t.name,
       icon: t.icon,
       itemImage: t.itemImage,
-      title: `${skillLabel(t.skill)} ${count} ${t.unit}`,
-      desc: `Location: ${t.loc}.`,
+      title: chainedTitle,
+      desc: chainedDesc,
       note: t.note || null,
+      chain: chain || null,
     };
   } else if (pickType === 'clue') {
-    const t = CLUE_TASKS[randInt(0, CLUE_TASKS.length - 1)];
+    const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
+    if (eligibleClues.length === 0) { showError(); return; }
+    const t = eligibleClues[randInt(0, eligibleClues.length - 1)];
     task = {
       type: 'clue',
       name: t.name,
@@ -2067,7 +3088,36 @@ function renderTask(task) {
     iconEl.style.display = 'block';
   }
 
-  document.getElementById('task-display').style.animation = 'none';
+  const chainEl = document.getElementById('task-chain-steps');
+  if (task.chain && chainEl) {
+    const c = task.chain;
+    chainEl.style.display = 'block';
+
+    const stepHtml = (num, step) => `
+      <div class="chain-step">
+        <div class="chain-step-num">${num}</div>
+        <div>
+          <div class="chain-step-text">${step.title}</div>
+          <div class="chain-step-sub">📍 ${step.loc}${step.note ? ` — ${step.note}` : ''}</div>
+        </div>
+      </div>`;
+
+    let html = stepHtml(1, c.step1) + `<div class="chain-arrow">↓ then ↓</div>` + stepHtml(2, c.step2);
+    if (c.step3) html += `<div class="chain-arrow">↓ then ↓</div>` + stepHtml(3, c.step3);
+    chainEl.innerHTML = html;
+
+    // Override badge for chained tasks
+    badge.textContent = c.step3 ? '⚔ Challenge Task (3-step)' : '⚔ Challenge Task';
+    badge.className = 'task-type-badge skill';
+    badge.style.background = 'rgba(74,122,204,0.2)';
+    badge.style.borderColor = '#4a7acc';
+    badge.style.color = '#7aaaee';
+  } else if (chainEl) {
+    chainEl.style.display = 'none';
+    badge.style.background = '';
+    badge.style.borderColor = '';
+    badge.style.color = '';
+  }
   requestAnimationFrame(() => {
     document.getElementById('task-display').style.animation = 'fadeIn 0.35s ease';
   });
@@ -2078,6 +3128,7 @@ function completeTask() {
 
   tracker.total++;
   tracker.streak++;
+  if (tracker.total > (tracker.highWater || 0)) tracker.highWater = tracker.total;
   if (currentTask && currentTask.type === 'combat' && ['King Black Dragon','Kalphite Queen'].includes(currentTask.name)) tracker.bossKills = (tracker.bossKills || 0) + 1;
 
   // Mark quest as completed so it won't appear again
@@ -2089,12 +3140,17 @@ function completeTask() {
 
   const base    = taskPointValue(currentTask);
   const isBonus = tracker.streak % STREAK_BONUS_AT === 0;
-  const earned  = isBonus ? base * BONUS_MULTIPLIER : base;
+  const earned  = applyPrestigeMultiplier(isBonus ? base * BONUS_MULTIPLIER : base);
   tracker.points += earned;
 
   saveTracker();
   renderTracker();
   logTask(currentTask, earned, isBonus).then(() => loadTaskLog());
+
+  // Contract progress
+  const contractType = currentTask.chain ? 'chain' : currentTask.type;
+  const killCount = extractKillCount(currentTask);
+  progressContract(contractType, currentTask.name, killCount);
 
   const msg = isBonus
     ? `🔥 ${tracker.streak}-task streak! BONUS: +${earned} points (${base} × ${BONUS_MULTIPLIER})!`
@@ -2104,6 +3160,19 @@ function completeTask() {
   currentTask = null;
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
+}
+
+function extractKillCount(task) {
+  if (task.type !== 'combat' && !task.chain) return 0;
+  // Title format: "Kill 80 Cows" or "Kill & Craft Green Dragons"
+  const m = task.title.match(/Kill\s+(\d+)/i);
+  if (m) return parseInt(m[1]);
+  // Chain combat: try step 1 count if available
+  if (task.chain && task.chain.step1) {
+    const m2 = task.chain.step1.match(/(\d+)/);
+    if (m2) return parseInt(m2[1]);
+  }
+  return 1;
 }
 
 function rerollTask() {
@@ -2367,6 +3436,23 @@ openDB().then(async () => {
   await loadCompletedQuests();
   await loadLogCollapsed();
   loadTaskLog();
+
+  // Load challenge mode settings
+  try {
+    const ce = await dbGet('settings', 'challengeEnabled');
+    if (ce === true) challengeEnabled = true;
+    const cf = await dbGet('settings', 'challengeFreq');
+    if (cf && ['always','sometimes','rarely'].includes(cf)) challengeFreq = cf;
+  } catch(e) {}
+  renderChallengeMode();
+
+  await loadDailyTask();
+  renderDailyTask();
+
+  await loadContracts();
+  renderContracts();
+
+  renderPrestige();
 
   // Restore any task that was active when the user navigated away
   const saved = await dbGet('settings', 'currentTask');
