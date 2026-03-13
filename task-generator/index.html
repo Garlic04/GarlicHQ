@@ -1118,10 +1118,6 @@
         <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABQUlEQVR4nL2WT2rCQBTGfxOC4Bm8huDKq7QHsHXTRcEDFLropq0HaK/SleA1cgQpDNJxoWYm8/eNhH4QJCR5v3zfezMR/kFKeJ+58TkAWnHxyd/5Vzc19UUQZpN3ADoXphtDhZvcaw0imvGZvX4rpHcB0PFgL1yjEyoVV/CWrpMBUKCkE9dFRqLIYhBZ1hWR+RADoYtOr+n0uj+PDEFWQU8Gzb4ULkRXHOfiysoChJEFTtxYxpLvRDlHVl5fssMiXoxJ2ciSoBRENMZXN5vl1H/OOEcfS1B0s5zytXtNAj6+nwDYb21bX35+7Q3Ort3irQ238feL5yhgvjqy37bMV0cL2B2AJjpxCjCl7H2YW/zx7i2/l+lGBsmpBICLExBviHU78BmiWhc0CiDyeQ6mqya6HhoWVskTKj6pEVX9gxldJ0pkX/QakqN5AAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Magic</label>
         <input type="number" id="stat-magic" min="1" max="99" value="" placeholder="1">
       </div>
-      <div class="stat-field">
-        <label><img src="https://oldschool.runescape.wiki/images/Quest_point_icon.png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Quest Points</label>
-        <input type="number" id="stat-qp" min="0" max="250" value="" placeholder="0">
-      </div>
     </div>
 
     <div class="combat-level-display">
@@ -1160,30 +1156,37 @@
         <input type="number" id="stat-fletching" min="1" max="99" value="" placeholder="1">
       </div>
       <div class="stat-field">
-        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABeklEQVR4nJ2Wsa3CMBRFTxAUjMAAfwbEFjRUWSINygwWDUukomELxAxIVJEyAsVHmOpZ9ovj2Nwu2L7nXT8nBsplSxcsSgHX3bIYVAIRAKWgXIgDiEpAORALsL+9eXxW7sf97R2Mp7RMjFmA8/kMQNM0ownemICqXEhgrgGPz4rj/eWeh2GgbVsAjDFRmIZY31xMpqTHFMyB/J4EgGEYnIksFp2260mwN9/1SpKMACJjTGDgb1VKdX2g6y4WqEY9iW2Prlwnm9OCSB+0dPU63ZTq+gBgg/cklkKqPt5fHO8vl8oYMwnr+2fwHEA2m010Udu2Aey0XQewFEAgVdM0yaOao75/jgBddwGoZrdLJBVLAulTXR+i1fvy30wbOzV9/5SKooApSQoIe1IZY4LYfoX6GOcCdBKR1Sa5SWSe9o1+NWOwrrtw2q75W/y7j6Q/lvJLQQIY4CAQ3CezPjkQiNyMHmjWI/f6rVTl2YBfZK+7peWHv0XFoNIFXxdG0fzbO+GzAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Runecrafting</label>
+        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABF0lEQVR4nN2VPcrDMAyGX2cz5ESB3CMXyeJk/NqlF+k9Cj1RoaO62K5iy7/t8NEXAsGR9ESWZAO/ItXpRy1xBubkniqt245121PQCEIAsEwjlmksOkiwEmgIF3pBFibuxgC7n9f7owl0Of2JMKuDr8ukCyRJAoVd4evjZMEqtEkE9mKZqrAmpYwIAMysYWZ9CChtX0kEgJZp9I9bM7MmM2up5QkArdsefYu6q5CRaMff+TZJRqmMpBrV+HqlMvGAIHAqoy5IVOBP2luCeEAoB+LAGolzwgHn25Pb5v4+WaNoyDIASRyahPCjvhUAoHw4Okg3AHjPRe7Iz7VwzRwcBlA6w3ggcpm0ZMGUvY5VjdE31XTH/zu9AHRwiEKge267AAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Runecrafting</label>
         <input type="number" id="stat-rc" min="1" max="99" value="" placeholder="1">
       </div>
       <div class="stat-field">
-        <label><img src="https://oldschool.runescape.wiki/images/Crafting_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Crafting</label>
+        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABF0lEQVR4nN2VPcrDMAyGX2cz5ESB3CMXyeJk/NqlF+k9Cj1RoaO62K5iy7/t8NEXAsGR9ESWZAO/ItXpRy1xBubkniqt245121PQCEIAsEwjlmksOkiwEmgIF3pBFibuxgC7n9f7owl0Of2JMKuDr8ukCyRJAoVd4evjZMEqtEkE9mKZqrAmpYwIAMysYWZ9CChtX0kEgJZp9I9bM7MmM2up5QkArdsefYu6q5CRaMff+TZJRqmMpBrV+HqlMvGAIHAqoy5IVOBP2luCeEAoB+LAGolzwgHn25Pb5v4+WaNoyDIASRyahPCjvhUAoHw4Okg3AHjPRe7Iz7VwzRwcBlA6w3ggcpm0ZMGUvY5VjdE31XTH/zu9AHRwiEKge267AAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Crafting</label>
         <input type="number" id="stat-crafting" min="1" max="99" value="" placeholder="1">
       </div>
       <div class="stat-field">
-        <label><img src="https://oldschool.runescape.wiki/images/Smithing_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Smithing</label>
+        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABBElEQVR4nO2UPQ7CMAyFXxG3YKmYkZiYOQULnIMJRpg4B104BXOnSsxVlp6jXZLKTfxDOvdJGRo7+fJip8CiDBXRd2/EZ2kdT1xvdwDA6/nQ4LHUwyROAoSC6BwnnyeCVvoBgcN+A+daMweKWxHiXBsWj9+aTpezCDKd5MhfawKSnfy+6Zx341w7jjjOgbKdWNfGxZMWpkl1003qounzrsRY0sJ007rpAMAE+TyxhRMn3MK66XoOFg6hAVgIWUhVgBSz3B19bmUCgLTwRTRYcZ2XA5E0qVVwIr2LORAWUJbbv0HWfY6AsDkFUGk/SQ3Sc62rwSRQ/ovPLDpLJTILOmPPRbYGZzBnQ9vuPBwAAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Smithing</label>
         <input type="number" id="stat-smithing" min="1" max="99" value="" placeholder="1">
       </div>
       <div class="stat-field">
-        <label><img src="https://oldschool.runescape.wiki/images/Thieving_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Thieving</label>
+        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAaUlEQVR4nO2TMQ7AIAhFgfvfuR0ahyIgIgwmvBHxv4gK0DRXg8bak5XHi5HgpZCKBL884oUKESoCabbhPhKarMfgYdrPJacCMYdLtLs5qmt3kgpB3og0cIyrSoTecM84zZydE3j/SdN8vPxxEBOevlwyAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Thieving</label>
         <input type="number" id="stat-thieving" min="1" max="99" value="" placeholder="1">
       </div>
       <div class="stat-field">
-        <label><img src="https://oldschool.runescape.wiki/images/Herblore_icon_(detail).png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Herblore</label>
+        <label><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAA9ElEQVR4nO1UsRGDMAx8uDTs4Q1SM0eWyDhZInOkZoPsQWenMMKWLQlMGgr+jsOW//WS4AxcOBu6Rn44om0xCcOzXzfzy+/W36RkQhFB4FFc4jBzqZKA97J6pGDeBWHpJoJrWF6pE01ocwz0iG3SU8MysM/XvHEGX3YQhRujquJcE/K8aVzJKMKZVXIQr8yxQC7REBzhdwCCSpiA4aPXQZhHD9yVQ0cmZSUT51lG8+h5IDdz8dWD/mmnEFsgGADoqMTa6B9kBil5gjo6aWTrqJQOaFEqU0cO1bdRMWWawqDaFGA3wObdZeTbe9Vrt3BLjgsnwg80lzvXU7V84gAAAABJRU5ErkJggg==" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Herblore</label>
         <input type="number" id="stat-herblore" min="1" max="99" value="" placeholder="1">
       </div>
     </div>
   </div>
 
   <div class="panel" style="margin-top:16px;" id="quest-tracker-panel">
-    <div class="panel-title">📜 Completed Quests</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div class="panel-title" style="margin-bottom:0;">📜 Completed Quests</div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <img src="https://oldschool.runescape.wiki/images/Quest_point_icon.png" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;">
+        <input type="number" id="stat-qp" min="0" max="250" value="" placeholder="0" style="width:54px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:14px;padding:2px 6px;text-align:center;">
+        <span style="font-size:12px;color:var(--text-dim);">QP</span>
+      </div>
+    </div>
     <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Tick off quests you've already done — they won't be assigned as tasks. Already done all your quests? Tick them here! <span style="color:var(--gold)">💡 Tip: if you've already done a quest that's assigned, just mark it complete.</span></div>
     <div id="quest-checklist" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;max-height:320px;overflow-y:auto;padding-right:4px;"></div>
     <div style="margin-top:10px;display:flex;gap:8px;">
@@ -1335,12 +1338,12 @@ const SKILL_ICONS = {
   'magic': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAsklEQVR4nMWRsRHCMAxFX3JHkRkyhKuUyTEASzBDLo2TEmg4loKhKFKIxjaKsUOoUGPr9N+XLMO/onCnqLsOWeMKQGxbcXk8dUEAbFslSa8NsC7koOzY37ro8Fr9TrFtxdz17O63GFrovEGpBR6Yu15D8SJDXsaF6/kEwDBOoUsuUt8DIA7GmcU6SXXePEFj6rWhwgQyjJMoA2lMrfPtBr+AC4MYzC3sA25Mzf5wBN5LfAHvqEtA8F80+AAAAABJRU5ErkJggg==',
   'hp': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAmklEQVR4nGNgGJKAEY3/n4A8CmBC11Bly8lQZctJlM1MUIX/YYb8tismSiPMJpjG/6XVNXA2uovwajbVlyZOA7KzGRgYGEz1pRlOX3wKEyPaAEZTfen/rnzvUATbDn9nYCAQ0gwMDAxMSDbCAVIg4gUsSDYha8QH4IZiTSQwA7A4//+6FayoNiMBRgLOZQyK+A2XR9dMDIC7BAAjfjGf3QqhCQAAAABJRU5ErkJggg==',
   'agility': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAbklEQVR4nGNgoCH4j0+SCZ/GdStY8RqATzNBQBPN6E7F6nScNlfmcjAwMDAwQP1NtM3/YRphAFfAUc3P/7HZisV2uAsYYRxsmkyt/2I1KCjiN0RzZS4H1pDEpREZsBCjCBegKMDgfsYXn+gA5mcAPeghCk/I6qkAAAAASUVORK5CYII=',
-  'herblore': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAbUlEQVR4nGNgGCDwn5EcTTAGCzlWSrNNYmBgYGBgItdWcjTDbSVV8390AZJsRraVFM0YthKr+T82W5/+yiMuqpA1Pv2VBxdjQXMSUYkGZhjLuhWscMGgiN//sRkAsw0dMJJoM4r/SU3b/5H9DwDE4htKON9t/QAAAABJRU5ErkJggg==',
-  'thieving': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAeElEQVR4nKVQ2w2AIAw8GtMlWNEwjHFFluAD/CBBQIoV74uW3qMFfsAASF2tBoEjwHHJmcorCyRxckS2OPueWsCAYzscKPcV2Gpnj11rCqDeuYUq+pP84fLkgyvF4HhzsuVD+nuNPt5ZGV062Bq523saXXa+o4sCF0mnFzw6To5FAAAAAElFTkSuQmCC',
-  'crafting': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAxklEQVR4nN2QMQrCMBiFv7YKnbyEg2MnJwU3N/Ek3XQoOioOjl7CSRC3bkI7FZEewHs4VOKgCWkSLa4+CITk/15ensdLAofmiyUA5flENJoAsF2vADyAlhxM4pD+4KHAIg+ovoD6RiRxqEBpUuQBVWfmBGuwnsA02OzuFgjgGyZcrj0FNUnCAmA8jH4y8E0QIM1KGbX5Zb2sNCsbIV3isG+LJA7FO4UsTxjLkue4sFr9M5n/cxbzYbZ2IABuU7uv7rHmqUp+AgQKQ3wgZ1gMAAAAAElFTkSuQmCC',
+  'herblore': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAA9ElEQVR4nO1UsRGDMAx8uDTs4Q1SM0eWyDhZInOkZoPsQWenMMKWLQlMGgr+jsOW//WS4AxcOBu6Rn44om0xCcOzXzfzy+/W36RkQhFB4FFc4jBzqZKA97J6pGDeBWHpJoJrWF6pE01ocwz0iG3SU8MysM/XvHEGX3YQhRujquJcE/K8aVzJKMKZVXIQr8yxQC7REBzhdwCCSpiA4aPXQZhHD9yVQ0cmZSUT51lG8+h5IDdz8dWD/mmnEFsgGADoqMTa6B9kBil5gjo6aWTrqJQOaFEqU0cO1bdRMWWawqDaFGA3wObdZeTbe9Vrt3BLjgsnwg80lzvXU7V84gAAAABJRU5ErkJggg==',
+  'thieving': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAaUlEQVR4nO2TMQ7AIAhFgfvfuR0ahyIgIgwmvBHxv4gK0DRXg8bak5XHi5HgpZCKBL884oUKESoCabbhPhKarMfgYdrPJacCMYdLtLs5qmt3kgpB3og0cIyrSoTecM84zZydE3j/SdN8vPxxEBOevlwyAAAAAElFTkSuQmCC',
+  'crafting': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABF0lEQVR4nN2VPcrDMAyGX2cz5ESB3CMXyeJk/NqlF+k9Cj1RoaO62K5iy7/t8NEXAsGR9ESWZAO/ItXpRy1xBubkniqt245121PQCEIAsEwjlmksOkiwEmgIF3pBFibuxgC7n9f7owl0Of2JMKuDr8ukCyRJAoVd4evjZMEqtEkE9mKZqrAmpYwIAMysYWZ9CChtX0kEgJZp9I9bM7MmM2up5QkArdsefYu6q5CRaMff+TZJRqmMpBrV+HqlMvGAIHAqoy5IVOBP2luCeEAoB+LAGolzwgHn25Pb5v4+WaNoyDIASRyahPCjvhUAoHw4Okg3AHjPRe7Iz7VwzRwcBlA6w3ggcpm0ZMGUvY5VjdE31XTH/zu9AHRwiEKge267AAAAAElFTkSuQmCC',
   'fletching': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAJElEQVR4nGNgGAWjYBRgAEYGBob/BOTxa66y5cSQaDv8naABACsdBQN+/n/YAAAAAElFTkSuQmCC',
   'mining': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAZUlEQVR4nGNkQAX/L2xqgXMuPvjGsHTVVgYGBgaG6DBvBn0FLgYDvxoGBgYGRgYGBgYmBiJAdJg3AwMDA0wjHBDUDNOor8AFE2IkWjOaRhTAQo4mkmymieaRCBhxiP8nQs1QjSoAlksPEwY06GMAAAAASUVORK5CYII=',
-  'smithing': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAPElEQVR4nGNkIA78D42OQhFQUFBiYCJSM1ZAF82Mq5cuo8hmDAMYSdAMA/DAI8fPWL1AsgsoNmEU0AsAAF5QC2X1WfV9AAAAAElFTkSuQmCC',
+  'smithing': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABBElEQVR4nO2UPQ7CMAyFXxG3YKmYkZiYOQULnIMJRpg4B104BXOnSsxVlp6jXZLKTfxDOvdJGRo7+fJip8CiDBXRd2/EZ2kdT1xvdwDA6/nQ4LHUwyROAoSC6BwnnyeCVvoBgcN+A+daMweKWxHiXBsWj9+aTpezCDKd5MhfawKSnfy+6Zx341w7jjjOgbKdWNfGxZMWpkl1003qounzrsRY0sJ007rpAMAE+TyxhRMn3MK66XoOFg6hAVgIWUhVgBSz3B19bmUCgLTwRTRYcZ2XA5E0qVVwIr2LORAWUJbbv0HWfY6AsDkFUGk/SQ3Sc62rwSRQ/ovPLDpLJTILOmPPRbYGZzBnQ9vuPBwAAAAASUVORK5CYII=',
   'fishing': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAYUlEQVR4nGMsra75393awgADpdU1DAwMDAw64v8YkEF8XhsDAwMDI7IYEwMFgPaasTmZgYGBgYWBAeFPUjTitBkWWPg0MjAwMDA9eHCPLI0wyf945EbBoAGw6PiPRYwgAADC4hXulTj0bAAAAABJRU5ErkJggg==',
   'cooking': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAhUlEQVR4nGNgwA7+I2NTfWk4u7S65n9pdc1/BgaG/4zYNHLmMME5OoclGU5ffMrAwMAAU/u/tLqGgYGBgYGJkMYrts/RDWfsbm1hQDYNr8bvU/6hq2VgYGD4z4LMgypiMNWXxmYjhguw+pmBgYEB5goctjIwMGD6GUUhPo34ACxqRsHwAABW7DBYcndz6QAAAABJRU5ErkJggg==',
   'firemaking': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAkUlEQVR4nNXRMQoCMRCF4S8LFoInEvQc3kNs1FJtxHt4DgVPJFhYxCa7rHFls3a+bpj3v5lkgk/F9WwMDtcHhA4PqBDb4DdjJ7zabN+gemoRDHkA/SvXzZhgo8tpEFwhHPc78Jwvi8HcENvvLZ3cBCWgWFVWNwFpi0GnqxV/Bf9AvbfM1P6HMASOsJhOwPl29wJkLSqnXuRkAQAAAABJRU5ErkJggg==',
@@ -2389,6 +2392,10 @@ const HISCORE_MAP_TASK = {
   'Cooking':     'stat-cooking',
   'Fletching':   'stat-fletching',
   'Runecrafting':'stat-rc',
+  'Crafting':    'stat-crafting',
+  'Smithing':    'stat-smithing',
+  'Thieving':    'stat-thieving',
+  'Herblore':    'stat-herblore',
 };
 
 async function lookupUser() {
