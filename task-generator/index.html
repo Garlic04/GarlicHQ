@@ -1764,7 +1764,7 @@
 
 </div>
 
-<div style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:clamp(4px,0.5vh,8px);max-height:95vh;justify-content:center;">
+<div id="side-tabs-wrapper" style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:8px;transform-origin:right center;">
 
 <div class="milestones-tab" id="milestones-tab">
   <div class="milestones-panel" id="milestones-panel">
@@ -3378,6 +3378,24 @@ function toggleShop() {
   tab.classList.toggle('open');
 }
 
+function scaleSideTabs() {
+  const wrapper = document.getElementById('side-tabs-wrapper');
+  if (!wrapper) return;
+  const vh = window.innerHeight;
+  // Measure natural height
+  wrapper.style.transform = 'translateY(-50%)';
+  const naturalH = wrapper.scrollHeight;
+  if (naturalH > vh * 0.92) {
+    const scale = (vh * 0.92) / naturalH;
+    wrapper.style.transform = `translateY(-50%) scale(${scale.toFixed(3)})`;
+    wrapper.style.transformOrigin = 'right center';
+  } else {
+    wrapper.style.transform = 'translateY(-50%)';
+  }
+}
+
+window.addEventListener('resize', scaleSideTabs);
+
 function renderShop() {
   const pts      = tracker.points || 0;
   const unlocked = isShopUnlocked();
@@ -4214,6 +4232,8 @@ openDB().then(async () => {
     currentTask = saved;
     renderTask(currentTask);
   }
+
+  scaleSideTabs();
 });
 
 const HISCORE_MAP_TASK = {
