@@ -851,6 +851,18 @@
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
     .task-actions { flex-direction: column; }
   }
+  @media (max-height: 700px) {
+    .milestones-tab:hover .milestones-panel,
+    .milestones-tab.open .milestones-panel { width: 280px; }
+    .milestones-inner { width: 280px; font-size: 0.75rem; }
+    .shop-tab:hover .shop-panel,
+    .shop-tab.open .shop-panel { width: 220px; }
+    .shop-inner { width: 220px; }
+    .collection-tab:hover .collection-panel,
+    .collection-tab.open .collection-panel { width: 240px; }
+    .collection-inner { width: 240px; }
+    .collection-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  }
   .lookup-bar {
     display: flex; align-items: center; gap: 0.6rem;
     margin-bottom: 1rem;
@@ -912,10 +924,10 @@
     border: 1px solid var(--gold-dim);
     border-right: none;
     border-radius: 6px 0 0 6px;
-    padding: 1rem 0.6rem;
+    padding: clamp(0.5rem,1.5vh,1rem) 0.6rem;
     cursor: pointer;
     font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
+    font-size: clamp(0.6rem,1.2vh,0.75rem);
     letter-spacing: 0.15em;
     color: var(--gold);
     user-select: none;
@@ -1003,10 +1015,10 @@
     border: 1px solid var(--gold-dim);
     border-right: none;
     border-radius: 6px 0 0 6px;
-    padding: 1rem 0.6rem;
+    padding: clamp(0.5rem,1.5vh,1rem) 0.6rem;
     cursor: pointer;
     font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
+    font-size: clamp(0.6rem,1.2vh,0.75rem);
     letter-spacing: 0.15em;
     color: var(--gold);
     user-select: none;
@@ -1106,7 +1118,7 @@
   .collection-trigger {
     writing-mode: vertical-rl; text-orientation: mixed;
     background: #2a2210; border: 1px solid var(--gold-dim); border-right: none;
-    border-radius: 6px 0 0 6px; padding: 1rem 0.6rem; cursor: pointer;
+    border-radius: 6px 0 0 6px; padding: clamp(0.5rem,1.5vh,1rem) 0.6rem; cursor: pointer;
     font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.15em;
     color: var(--gold); user-select: none;
     transition: background 0.2s, color 0.2s; box-shadow: -3px 0 12px rgba(0,0,0,0.5);
@@ -1752,7 +1764,7 @@
 
 </div>
 
-<div style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+<div style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:clamp(4px,0.5vh,8px);max-height:95vh;justify-content:center;">
 
 <div class="milestones-tab" id="milestones-tab">
   <div class="milestones-panel" id="milestones-panel">
@@ -2807,7 +2819,7 @@ const RARE_DROPS = [
   { id: 'easter_egg',   name: 'Easter Egg',            emoji: '🥚', wikiImage: 'Easter_egg'             },
   { id: 'pumpkin',      name: 'Pumpkin',               emoji: '🎃', wikiImage: 'Pumpkin'                },
   { id: 'disk',         name: 'Disk of Returning',     emoji: '💿', wikiImage: 'Disk_of_returning'      },
-  { id: 'half_jug',     name: 'Half jug of wine',      emoji: '🍷', wikiImage: 'Half_jug_of_wine'       },
+  { id: 'half_jug',     name: 'Half full wine jug',    emoji: '🍷', wikiImage: 'Half_full_wine_jug'     },
   { id: 'cracker',      name: 'Christmas Cracker',     emoji: '🎁', wikiImage: 'Christmas_cracker'      },
   { id: 'garlic',       name: 'Garlic',                emoji: '🧄', wikiImage: 'Garlic'                 },
 ];
