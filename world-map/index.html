@@ -156,6 +156,8 @@
     cursor: pointer;
     transition: transform 0.15s ease;
     z-index: 10;
+    will-change: transform;
+    backface-visibility: hidden;
   }
 
   .pin:hover {
@@ -581,8 +583,8 @@ function buildPins() {
 
     const el = document.createElement('div');
     el.className = 'pin';
-    el.style.left = (pin.x * imgW) + 'px';
-    el.style.top  = (pin.y * imgH) + 'px';
+    el.style.left = Math.round(pin.x * imgW) + 'px';
+    el.style.top  = Math.round(pin.y * imgH) + 'px';
     el.style.setProperty('--pin-glow', col);
 
     el.innerHTML = `
