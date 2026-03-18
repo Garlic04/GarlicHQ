@@ -22,7 +22,7 @@
     background-color: var(--bg);
     background-image: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,168,75,0.06) 0%, transparent 60%);
     min-height: 100vh;
-    font-family: 'IM Fell English', Georgia, serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--parchment);
   }
   nav {
@@ -56,7 +56,7 @@
     padding: 0.5rem 0.25rem;
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
     cursor: pointer; color: var(--parchment);
-    font-family: 'IM Fell English', serif; font-size: 0.72rem;
+    font-family: 'Cinzel', serif; font-size: 0.68rem;
     transition: border-color 0.15s, background 0.15s, color 0.15s;
     opacity: 0.75;
   }
@@ -66,10 +66,12 @@
     color: var(--gold-glow); opacity: 1;
     box-shadow: 0 0 12px rgba(200,168,75,0.2);
   }
+
   :root {
     --sprite1: url('data:image/png;base64,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');
     --sprite2: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABLCAYAAACSoX4TAAAD5klEQVR4nO3aMU8bSQDF8bcOV/ARUEQVRUpHiSKZMkl7DbYUn5TOFHeFG3ur5GS6PRoXpiAdShaJ0KS9uxKkiBIpRaRT0hjER6DI5eYKPHOzs7vGJibsRf+fZAl2Z20kP72ZWVaanbnGNfNivBcqrDbjePP24YJ0819sUYDM4/qKHtdX/DGoqGiGsTZUkqQf3/096/VTf86fv99xvzx68kWS/EBJkv44OrE/3sTfgK80bWNlQiVJ36i55IcM/x/TBMtIlw311z8/uIPjxnLn5yh69OSLayopHy7aqvomBctIMoPBQIPBoHCAd27eC+pI44BZ3efv1X3+PhyDiir6coykTJg6nY4kaWt1UZLUPb6QHXN+fu7GJUky6X1nZX56+lSS9OzZfubEOHAEq8LCxso1lB+cUHgujmPFcSzNeXrc3W1mfh9PjewKK8wPlgkDZYMzDotjm6vMDOEyZa84jnV3edkN3N1tFq27CFdF2a1eLlSWN71J+m8avEqrta40PTAqn7LM4f5O7uBacyMT5LvLyzobjfR6b0/S5TTITrH6FsIDRVNf2FBhg12DC1W90XYHoygqfO/Xe3s63N/RWnNDkvzmYp1VUTUFbVUkbKmwxcq0WutSfrrKhWp7M1YUTc5IvdHW4f6OvJYjVBWWaayitorjWEmSuHBtrS6qe3zhwlXUMKenn8o+LxOqozcvMyftLtCXJImMMe4aSTqUtNbcmDTN4pZldoVLS0uFg7zdnrrHF9paXXTTY9heE0Ll2IDUG+3MVChJZ6OR+9kPVRRFV7YaqqMmKep0OhNvK0zj9PRTLlRpeiBN0So/v0g07PfcAv1sNMqEyhr2e1/1N+LbyTTWpHDZZgpvkrZa61O1lC+cArc3L9tw2O/pVZrqVZrmQiVJv/z620yfg9vjt4kpWy+Nm6cwVGVK2soM+z2tPLjnDti1Vrg7zFxUELKjNy/tLpH5sYL8xoqSJMlMaX4ThbccrhGqQmGorGG/p/A+l11nbW/GbpcobpJWUngfKxrf1MwFxy7arTQ9yI2xzaYrQnXy4aMkZZorZKe9onWWva7eaLNDrKiipxsiXQbMBcUP0P3a51x7eWMjzfAF24CFay5jjHuFVh7ccw3HLrG6cnfePZEk+2+ZjPu1zxqfy4y9CTZ09UY7FzT/bjyqZdpA5J4gla79eLIJbxv4U5sVtphvrbnhQjXs9+y0SX1VyG09814aLt/Jh49urWXH23GE6vti3j5cmNfToqWPzBS8Jo3Hd4IvEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQYf8CLGPNf3WPRFcAAAAASUVORK5CYII=');
   }
+  /* Gold glow on all skill icons */
   .skill-sprite {
     display: inline-block;
     width: 25px;
@@ -77,6 +79,7 @@
     background-size: 150px 75px;
     image-rendering: pixelated;
     vertical-align: middle;
+    filter: drop-shadow(0 0 3px rgba(200,168,75,0.8)) drop-shadow(0 0 6px rgba(200,168,75,0.4));
   }
   .skill-icon-prayer { background-image: var(--sprite1); background-position: -100px -0px; }
   .skill-icon-magic { background-image: var(--sprite1); background-position: -125px -0px; }
@@ -100,12 +103,13 @@
   .card-title {
     font-family: 'Cinzel', serif; font-size: 0.75rem;
     letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--gold-dim); margin-bottom: 1rem;
+    color: var(--gold); margin-bottom: 1rem;
+    text-shadow: 0 0 12px rgba(200,168,75,0.4);
   }
   .mode-toggle { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; }
   .mode-label {
     font-family: 'Cinzel', serif; font-size: 0.72rem;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dim);
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold);
   }
   .toggle-btns { display: flex; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
   .toggle-btns button, .bar-btn {
@@ -124,7 +128,7 @@
   .input-group input, .input-group .xp-display {
     width: 100%; padding: 0.5rem 0.75rem;
     background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 5px;
-    color: var(--parchment); font-family: 'IM Fell English', serif; font-size: 0.95rem;
+    color: var(--parchment); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 0.95rem;
     outline: none; transition: border-color 0.15s;
   }
   .input-group input:focus { border-color: var(--gold); }
@@ -146,6 +150,18 @@
   .dim { opacity: 0.35; }
   .warn { color: #c0392b; }
   .table-hint { font-size: 0.75rem; color: var(--gold-dim); font-style: italic; margin-top: 0.75rem; opacity: 0.6; }
+  .xp-table-btn {
+    padding: 5px 14px; background: transparent; border: 1px solid var(--border);
+    border-radius: 5px; color: var(--parchment); font-size: 0.68rem; cursor: pointer;
+    font-family: 'Cinzel', serif; letter-spacing: 0.05em; opacity: 0.75;
+    transition: color 0.2s, border-color 0.2s, opacity 0.2s;
+  }
+  .xp-table-btn:hover, .xp-table-btn.active {
+    color: var(--gold-glow); border-color: var(--gold); opacity: 1;
+  }
+  .xp-table-btn .btn-icon {
+    filter: drop-shadow(0 0 3px rgba(200,168,75,0.8)) drop-shadow(0 0 6px rgba(200,168,75,0.4));
+  }
   #calc-panel.hidden { display: none; }
   .prompt { text-align: center; padding: 3rem 1rem; color: var(--gold-dim); font-style: italic; opacity: 0.5; font-size: 1.05rem; }
   .lookup-bar {
@@ -156,7 +172,7 @@
   }
   .lookup-bar input {
     flex: 1; background: transparent; border: none; outline: none;
-    color: var(--parchment); font-family: 'IM Fell English', serif;
+    color: var(--parchment); font-family: 'Segoe UI', system-ui, sans-serif;
     font-size: 0.95rem;
   }
   .lookup-bar input::placeholder { color: var(--gold-dim); opacity: 0.6; }
@@ -191,6 +207,9 @@
   </div>
   <div class="lookup-status" id="lookup-status"></div>
   <div class="skill-grid" id="skill-grid"></div>
+  <div style="text-align:right;margin-bottom:0.5rem;">
+    <button id="toggle-xp-table" class="xp-table-btn" onclick="toggleXpTable()"><span class="btn-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAA4UlEQVR4nO2WQQ7CIBBFP8bEWDiXGz2NF1L3bkzUhedCWOKiSRM6UzKhBRb278p0+mDmFwBWtZDRXajF2pARparAt+MB0+1hv06W/QKd5BFKkkpWbJ2XrZqDviGuGC01AISQnvUUFH3F8sEzZJ1vA5aKgKWlWhwsNtdMkd8JQGSuD6iRDguAkz3moI8FoElwSSgL/mtz5cHDHX3uiQnuBtMW2kA46DmqZAHwBHSkecciq6forWbmyjsWi4EriN1AUpe+m+4mP2auiZi+RM8qDpa9ZVrnhzbSXpY2VgX/rIr0A0wjRUtUVXRgAAAAAElFTkSuQmCC" width="16" height="16" style="image-rendering:pixelated;vertical-align:middle;margin-right:5px;"></span>XP Table</button>
+  </div>
   <div class="prompt" id="skill-prompt">Select a skill above to begin</div>
 
   <div id="calc-panel" class="hidden">
@@ -258,6 +277,32 @@
         </table>
       </div>
       <p class="table-hint">Click a method to highlight it. Actions needed calculated from current → target.</p>
+    </div>
+  </div>
+</div>
+
+<!-- XP Table Panel -->
+<div id="xp-table-panel" style="display:none;max-width:900px;margin:1.5rem auto;padding:0 1rem;">
+  <div class="card">
+    <div class="card-title">Experience Table</div>
+    <p style="font-size:0.82rem;color:var(--text-dim);margin:0 0 1rem;">Total XP required to reach each level from level 1. Reaching level 99 requires 13,034,431 XP.</p>
+    <div style="overflow-x:auto;">
+      <table id="xp-table-inner" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--gold-dim);">
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">Level</th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">Total XP</th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">XP Diff</th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">% to 99</th>
+            <th style="padding:0;width:1px;background:var(--gold-dim);opacity:0.4;"></th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">Level</th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">Total XP</th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">XP Diff</th>
+            <th style="padding:6px 10px;text-align:right;color:var(--gold);font-weight:600;">% to 99</th>
+          </tr>
+        </thead>
+        <tbody id="xp-table-body"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -806,6 +851,59 @@ let currentSmithingBar = 'smelting';
 let currentSkill = null;
 let inputMode = 'level';
 
+let xpTableOpen = false;
+
+function toggleXpTable() {
+  xpTableOpen = !xpTableOpen;
+  const panel = document.getElementById('xp-table-panel');
+  const btn   = document.getElementById('toggle-xp-table');
+  panel.style.display = xpTableOpen ? 'block' : 'none';
+  if (btn) btn.classList.toggle('active', xpTableOpen);
+  if (xpTableOpen) buildXpTable();
+}
+
+function buildXpTable() {
+  const tbody = document.getElementById('xp-table-body');
+  if (!tbody || tbody.dataset.built) return;
+  tbody.dataset.built = '1';
+
+  const XP99 = XP_TABLE[98]; // 13,034,431
+  const fmt  = n => n.toLocaleString();
+
+  // Split into two halves: 1-50 left, 51-99 right
+  const rows = [];
+  for (let i = 0; i < 50; i++) {
+    const lvlL  = i + 1;
+    const xpL   = XP_TABLE[i];
+    const diffL = i === 0 ? '—' : fmt(XP_TABLE[i] - XP_TABLE[i - 1]);
+    const pctL  = ((xpL / XP99) * 100).toFixed(2);
+
+    const lvlR  = i + 51;
+    const xpR   = XP_TABLE[i + 50] ?? null;
+    const diffR = xpR !== null ? fmt(XP_TABLE[i + 50] - XP_TABLE[i + 49]) : '';
+    const pctR  = xpR !== null ? ((xpR / XP99) * 100).toFixed(2) : '';
+
+    rows.push({ lvlL, xpL: fmt(xpL), diffL, pctL, lvlR, xpR: xpR !== null ? fmt(xpR) : '', diffR, pctR });
+  }
+
+  tbody.innerHTML = rows.map((r, i) => {
+    const bg = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
+    const highlightL = r.lvlL === 99 ? 'color:var(--gold);font-weight:600;' : '';
+    const highlightR = r.lvlR === 99 ? 'color:var(--gold);font-weight:600;' : '';
+    return `<tr style="background:${bg};">
+      <td style="padding:4px 10px;text-align:right;${highlightL}">${r.lvlL}</td>
+      <td style="padding:4px 10px;text-align:right;${highlightL}font-family:'Share Tech Mono',monospace;">${r.xpL}</td>
+      <td style="padding:4px 10px;text-align:right;color:var(--text-dim);">${r.diffL}</td>
+      <td style="padding:4px 10px;text-align:right;color:var(--text-dim);">${r.pctL}%</td>
+      <td style="padding:0;width:1px;background:var(--gold-dim);opacity:0.4;"></td>
+      <td style="padding:4px 10px;text-align:right;${highlightR}">${r.lvlR}</td>
+      <td style="padding:4px 10px;text-align:right;${highlightR}font-family:'Share Tech Mono',monospace;">${r.xpR}</td>
+      <td style="padding:4px 10px;text-align:right;color:var(--text-dim);">${r.diffR}</td>
+      <td style="padding:4px 10px;text-align:right;color:var(--text-dim);">${r.pctR ? r.pctR + '%' : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
 function setInputMode(mode) {
   inputMode = mode;
   const isXP = mode === 'xp';
@@ -813,10 +911,11 @@ function setInputMode(mode) {
   document.getElementById('toggle-xp').className    = isXP ? 'active-toggle' : '';
   document.getElementById('input-current-level').style.display = isXP ? 'none' : '';
   document.getElementById('input-current-xp').style.display   = isXP ? '' : 'none';
-  document.getElementById('input-target-level').style.display = isXP ? 'none' : '';
-  document.getElementById('input-target-xp').style.display    = isXP ? '' : 'none';
+  // Target is always a level input
+  document.getElementById('input-target-level').style.display = '';
+  document.getElementById('input-target-xp').style.display    = 'none';
   document.getElementById('label-current').textContent = isXP ? 'Current XP' : 'Current Level';
-  document.getElementById('label-target').textContent  = isXP ? 'Target XP'  : 'Target Level';
+  document.getElementById('label-target').textContent  = 'Target Level';
   if (typeof autofillCurrentSkill === 'function') autofillCurrentSkill();
   recalc();
 }
@@ -828,7 +927,7 @@ function getCurrentXP() {
 }
 
 function getTargetXP() {
-  if (inputMode === 'xp') return parseInt(document.getElementById('input-target-xp').value) || 0;
+  // Target is always entered as a level regardless of input mode
   const lvl = Math.min(99, Math.max(1, parseInt(document.getElementById('input-target-level').value) || 99));
   return XP_TABLE[lvl - 1] || 0;
 }
