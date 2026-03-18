@@ -490,28 +490,22 @@ async function init() {
 
 async function loadFromData(data) {
   // Try high-res external image first, fall back to base64 in JSON
-  const externalAvailable = await new Promise(res => {
-    const test = new Image();
-    test.onload  = () => res(true);
-    test.onerror = () => res(false);
-    test.src = 'worldmap.png?' + Date.now();
-  });
+  const imgSrc = (typeof data.mapData === 'string') ? data.mapData : null;
 
-  if (externalAvailable) {
-    await new Promise((res, rej) => {
-      mapImg.onload = res;
-      mapImg.onerror = () => rej(new Error('worldmap.png failed to load.'));
-      mapImg.src = 'worldmap.png';
-    });
-  } else {
-    const imgSrc = (typeof data.mapData === 'string') ? data.mapData : null;
-    if (!imgSrc) throw new Error('No map image found. Add worldmap.png or ensure the JSON contains image data.');
-    await new Promise((res, rej) => {
-      mapImg.onload = res;
-      mapImg.onerror = () => rej(new Error('Embedded map image failed to load.'));
-      mapImg.src = imgSrc;
-    });
-  }
+  await new Promise((res, rej) => {
+    mapImg.onload = res;
+    mapImg.onerror = () => {
+      // External image not found — fall back to JSON embedded image
+      if (imgSrc) {
+        mapImg.onload = res;
+        mapImg.onerror = () => rej(new Error('Embedded map image failed to load.'));
+        mapImg.src = imgSrc;
+      } else {
+        rej(new Error('No map image found. Add worldmap.png or ensure the JSON contains image data.'));
+      }
+    };
+    mapImg.src = 'worldmap.png';
+  });
 
   imgW = mapImg.naturalWidth;
   imgH = mapImg.naturalHeight;
