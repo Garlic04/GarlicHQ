@@ -1542,8 +1542,8 @@
 
   <!-- Streaming (hidden from casual users) -->
   <div style="margin-top:24px;border-top:1px solid rgba(201,162,39,0.08);padding-top:8px;">
-    <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'" style="font-size:0.65rem;color:rgba(201,162,39,0.2);letter-spacing:0.1em;cursor:pointer;user-select:none;text-align:right;">⚙ streaming</div>
-    <div style="display:none;margin-top:8px;">
+    <div onclick="toggleStreamingPanel()" style="font-size:0.65rem;color:rgba(201,162,39,0.2);letter-spacing:0.1em;cursor:pointer;user-select:none;text-align:right;">⚙ streaming</div>
+    <div id="streaming-panel" style="display:none;margin-top:8px;">
       <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Stream key — paste this into your OBS overlay URL</div>
       <div style="display:flex;gap:6px;align-items:center;">
         <input id="stream-key-input" type="text" placeholder="No key set" readonly
@@ -2227,6 +2227,11 @@ let mode = 'mix';
 const WORKER_URL = 'https://lostcity-hiscores.nehughes97.workers.dev';
 
 // ─── Stream key ───────────────────────────────────────────────────────────────
+function toggleStreamingPanel() {
+  const panel = document.getElementById('streaming-panel');
+  if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
 function loadStreamKey() {
   const key = localStorage.getItem('garlichq_stream_key');
   const input = document.getElementById('stream-key-input');
@@ -3317,6 +3322,7 @@ function selectPickerTask(task) {
   renderPickerBtn();
   renderShop();
   pushToOverlay(task);
+}
 
 function cancelTaskPicker() {
   pickerActive = false;
@@ -4142,6 +4148,7 @@ function generateTask(isReroll = false) {
   switchTab('tasks');
   renderTask(task);
   pushToOverlay(task);
+}
 
 function skillLabel(skill) {
   const map = {
@@ -4270,6 +4277,7 @@ function completeTask() {
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
   pushToOverlay(null);
+}
 
 function extractKillCount(task) {
   if (task.type !== 'combat' && !task.chain) return 0;
