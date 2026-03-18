@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>World Map – GarlicHQ</title>
+<link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -603,9 +604,11 @@ function buildPins() {
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
 function showTooltip(e, pin, col) {
+  const DISPLAY_NAMES = { character: 'NPCs', faction: 'Quest' };
   document.getElementById('tt-name').textContent = pin.name;
   const typeEl = document.getElementById('tt-type');
-  typeEl.textContent = pin.type ?? '';
+  const typeLabel = DISPLAY_NAMES[pin.type] ?? (pin.type ? pin.type.charAt(0).toUpperCase() + pin.type.slice(1) : '');
+  typeEl.textContent = typeLabel;
   typeEl.style.color = col;
   const desc = pin.desc || pin.details || '';
   const descEl = document.getElementById('tt-desc');
