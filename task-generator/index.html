@@ -894,8 +894,8 @@
   .player-title {
     text-align: center;
     font-family: 'Cinzel', serif;
-    font-size: 0.78rem;
-    letter-spacing: 0.15em;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
     color: var(--gold-dim);
     margin-bottom: 0.5rem;
     min-height: 1.2em;
@@ -907,6 +907,36 @@
   .player-title.rank-4 { color: #4b8ec8; }
   .player-title.rank-5 { color: #c84b4b; }
   .player-title.rank-6 { color: #c84bc8; }
+  .player-title.boss-glow.rank-1 { animation: bossGlow1 2s ease-in-out infinite; }
+  .player-title.boss-glow.rank-2 { animation: bossGlow2 2s ease-in-out infinite; }
+  .player-title.boss-glow.rank-3 { animation: bossGlow3 2s ease-in-out infinite; }
+  .player-title.boss-glow.rank-4 { animation: bossGlow4 2s ease-in-out infinite; }
+  .player-title.boss-glow.rank-5 { animation: bossGlow5 2s ease-in-out infinite; }
+  .player-title.boss-glow.rank-6 { animation: bossGlow6 2s ease-in-out infinite; }
+  @keyframes bossGlow1 {
+    0%,100% { text-shadow: 0 0 4px #a0a0a0, 0 0 12px rgba(160,160,160,0.9), 0 0 28px rgba(160,160,160,0.6), 0 0 50px rgba(160,160,160,0.3); }
+    50%      { text-shadow: 0 0 8px #fff,    0 0 20px rgba(160,160,160,1),   0 0 45px rgba(160,160,160,0.8), 0 0 80px rgba(160,160,160,0.5); }
+  }
+  @keyframes bossGlow2 {
+    0%,100% { text-shadow: 0 0 4px #f0cc6e, 0 0 12px rgba(200,168,75,0.9), 0 0 28px rgba(200,168,75,0.6), 0 0 50px rgba(200,168,75,0.3); }
+    50%      { text-shadow: 0 0 8px #fff8c0, 0 0 20px rgba(200,168,75,1),   0 0 45px rgba(200,168,75,0.8), 0 0 80px rgba(200,168,75,0.5); }
+  }
+  @keyframes bossGlow3 {
+    0%,100% { text-shadow: 0 0 4px #4bc8a0, 0 0 12px rgba(75,200,160,0.9), 0 0 28px rgba(75,200,160,0.6), 0 0 50px rgba(75,200,160,0.3); }
+    50%      { text-shadow: 0 0 8px #afffea, 0 0 20px rgba(75,200,160,1),   0 0 45px rgba(75,200,160,0.8), 0 0 80px rgba(75,200,160,0.5); }
+  }
+  @keyframes bossGlow4 {
+    0%,100% { text-shadow: 0 0 4px #4b8ec8, 0 0 12px rgba(75,142,200,0.9), 0 0 28px rgba(75,142,200,0.6), 0 0 50px rgba(75,142,200,0.3); }
+    50%      { text-shadow: 0 0 8px #b0d8ff, 0 0 20px rgba(75,142,200,1),   0 0 45px rgba(75,142,200,0.8), 0 0 80px rgba(75,142,200,0.5); }
+  }
+  @keyframes bossGlow5 {
+    0%,100% { text-shadow: 0 0 4px #c84b4b, 0 0 12px rgba(200,75,75,0.9), 0 0 28px rgba(200,75,75,0.6), 0 0 50px rgba(200,75,75,0.3); }
+    50%      { text-shadow: 0 0 8px #ffb0b0, 0 0 20px rgba(200,75,75,1),   0 0 45px rgba(200,75,75,0.8), 0 0 80px rgba(200,75,75,0.5); }
+  }
+  @keyframes bossGlow6 {
+    0%,100% { text-shadow: 0 0 4px #c84bc8, 0 0 12px rgba(200,75,200,0.9), 0 0 28px rgba(200,75,200,0.6), 0 0 50px rgba(200,75,200,0.3); }
+    50%      { text-shadow: 0 0 8px #ffb0ff, 0 0 20px rgba(200,75,200,1),   0 0 45px rgba(200,75,200,0.8), 0 0 80px rgba(200,75,200,0.5); }
+  }
 
   .milestones-tab {
     display: flex;
@@ -1592,6 +1622,10 @@
       <div class="tracker-value points-value" id="tracker-points">0</div>
       <div id="bonus-badge" class="bonus-badge" style="display:none">Next: BONUS</div>
     </div>
+    <div class="tracker-stat" id="boss-kills-stat" style="display:none;">
+      <div class="tracker-label">Boss Tasks</div>
+      <div class="tracker-value" id="tracker-boss-kills" style="color:#c84b4b;">0</div>
+    </div>
   </div>
 
   <div id="reset-confirm" class="reset-confirm" style="display:none;">
@@ -2240,8 +2274,8 @@ const MILESTONES = [
   { id: 'tasks350',  label: '350 tasks', rankLabel: 'Hero',       rankColor: '#c84b4b', check: () => (tracker.highWater||tracker.total) >= 350, reward: 'Task Contracts unlocked!' },
   { id: 'tasks750',  label: '750 tasks', rankLabel: 'Legend',     rankColor: '#c84bc8', check: () => (tracker.highWater||tracker.total) >= 750, reward: 'Prestige unlocked!' },
   // Boss milestones
-  { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Proven in battle' },
-  { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Boss Hunter' },
+  { id: 'boss1',     label: 'Complete a boss task',   check: () => tracker.bossKills >= 1,  reward: 'Boss task tracker unlocked!' },
+  { id: 'boss10',    label: 'Complete 10 boss tasks', check: () => tracker.bossKills >= 10, reward: 'Title glow unlocked!' },
 ];
 
 let milestonesUnlocked = new Set();
@@ -2261,7 +2295,8 @@ function renderTitle() {
   const p = tracker.prestige || 0;
   const prestigeSuffix = p > 0 ? ` <span style="color:#d07ad0;font-size:0.85em;">${prestigeLabel(p)}</span>` : '';
   el.innerHTML = t.label + prestigeSuffix;
-  el.className = 'player-title ' + t.cls;
+  const hasBossGlow = (tracker.bossKills || 0) >= 10;
+  el.className = 'player-title ' + t.cls + (hasBossGlow ? ' boss-glow' : '');
 }
 
 function renderMilestones() {
@@ -3547,6 +3582,13 @@ function safeRerollTask() {
 
 function renderTracker() {
   document.getElementById('tracker-total').textContent  = tracker.total;
+
+  // Boss kills counter — only show after first boss kill
+  const bossKills = tracker.bossKills || 0;
+  const bossStatEl = document.getElementById('boss-kills-stat');
+  const bossValEl  = document.getElementById('tracker-boss-kills');
+  if (bossStatEl) bossStatEl.style.display = bossKills >= 1 ? '' : 'none';
+  if (bossValEl)  bossValEl.textContent = bossKills;
   renderTitle();
   renderMilestones();
   renderShop();
