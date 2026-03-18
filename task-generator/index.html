@@ -1633,7 +1633,23 @@
     <button class="reset-yes" onclick="confirmReset()">Yes, reset</button>
     <button class="reset-no" onclick="cancelReset()">Cancel</button>
   </div>
+
+  <!-- Save / Load panel -->
+  <div id="save-load-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+    <div style="font-size:13px;color:var(--text-bright);font-weight:600;margin-bottom:10px;">💾 Save / Load Progress</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button onclick="exportSave()" style="width:100%;padding:8px;background:rgba(201,162,39,0.1);border:1px solid var(--gold-dim);border-radius:6px;color:var(--gold);font-size:13px;cursor:pointer;font-family:inherit;text-align:left;">⬇ Export save file</button>
+      <label style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:13px;cursor:pointer;font-family:inherit;display:block;box-sizing:border-box;">
+        ⬆ Import save file
+        <input type="file" accept=".json" onchange="importSave(event)" style="display:none;">
+      </label>
+      <div id="save-load-msg" style="font-size:12px;color:var(--text-dim);display:none;"></div>
+    </div>
+    <button onclick="closeSaveLoad()" style="margin-top:10px;width:100%;padding:6px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:12px;cursor:pointer;font-family:inherit;">Close</button>
+  </div>
+
   <div style="text-align:right; margin-bottom: 16px;">
+    <button class="reset-btn" onclick="toggleSaveLoad()" style="color:var(--text-dim);display:block;margin-left:auto;margin-bottom:4px;">💾 Save / Load</button>
     <button class="reset-btn" onclick="promptReset()">↺ Reset progress</button>
   </div>
 
@@ -2210,6 +2226,108 @@ const STREAK_BONUS_AT  = 10;  // milestone interval
 let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0, prestige: 0, highWater: 0 };
 let currentTask = null;  // track whether a task is pending completion
 let completedQuests = new Set(); // set of quest names the player has finished
+
+// ─── Save / Load ──────────────────────────────────────────────────────────────
+
+function toggleSaveLoad() {
+  const panel = document.getElementById('save-load-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('save-load-msg').style.display = 'none';
+}
+
+function closeSaveLoad() {
+  document.getElementById('save-load-panel').style.display = 'none';
+}
+
+async function exportSave() {
+  try {
+    const keys = ['tracker','completedQuests','enabledSkills','challengeEnabled','challengeFreq',
+                   'currentTask','dailyTask','dailyDateKey','dailyDone',
+                   'activeContract','contractOptions','collectionLog',
+                   'milestonesUnlocked'];
+    const save = { version: 1, exported: new Date().toISOString() };
+    for (const key of keys) {
+      try { save[key] = await dbGet('settings', key); } catch(e) {}
+    }
+    // Also save tracker object directly
+    save.trackerObj = tracker;
+    save.collectionLogArr = [...collectionLog];
+    save.completedQuestsArr = [...completedQuests];
+    save.enabledSkillsArr = [...enabledSkills];
+
+    const blob = new Blob([JSON.stringify(save, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `garlichq-save-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showSaveMsg('✓ Save file downloaded!', '#4aaa4a');
+  } catch(e) {
+    showSaveMsg('✗ Export failed — ' + e.message, '#c84b4b');
+  }
+}
+
+async function importSave(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const save = JSON.parse(text);
+    if (!save.version) throw new Error('Invalid save file');
+
+    // Restore tracker
+    if (save.trackerObj) {
+      Object.assign(tracker, save.trackerObj);
+      await dbPut('settings', 'tracker', tracker);
+    }
+    // Restore collections
+    if (Array.isArray(save.collectionLogArr)) {
+      collectionLog = new Set(save.collectionLogArr);
+      await dbPut('settings', 'collectionLog', save.collectionLogArr);
+    }
+    if (Array.isArray(save.completedQuestsArr)) {
+      completedQuests = new Set(save.completedQuestsArr);
+      await dbPut('settings', 'completedQuests', save.completedQuestsArr);
+    }
+    if (Array.isArray(save.enabledSkillsArr)) {
+      enabledSkills = new Set(save.enabledSkillsArr);
+      await dbPut('settings', 'enabledSkills', save.enabledSkillsArr);
+    }
+    // Restore challenge settings
+    if (save.challengeEnabled !== undefined) { challengeEnabled = save.challengeEnabled; await dbPut('settings', 'challengeEnabled', challengeEnabled); }
+    if (save.challengeFreq)    { challengeFreq = save.challengeFreq;       await dbPut('settings', 'challengeFreq', challengeFreq); }
+    // Restore contracts
+    if (save.activeContract !== undefined)  { activeContract  = save.activeContract;  await dbPut('settings', 'activeContract', activeContract); }
+    if (Array.isArray(save.contractOptions)) { contractOptions = save.contractOptions; await dbPut('settings', 'contractOptions', contractOptions); }
+    // Restore daily
+    if (save.dailyTask !== undefined)    { dailyTask    = save.dailyTask;    await dbPut('settings', 'dailyTask', dailyTask); }
+    if (save.dailyDateKey !== undefined) { dailyDateKey = save.dailyDateKey; await dbPut('settings', 'dailyDateKey', dailyDateKey); }
+    if (save.dailyDone !== undefined)    { dailyDone    = save.dailyDone;    await dbPut('settings', 'dailyDone', dailyDone); }
+
+    // Re-render everything
+    renderTracker();
+    renderChallengeMode();
+    renderDailyTask();
+    renderContracts();
+    renderPrestige();
+    renderCollectionLog();
+    updateQuestChecklist();
+    buildSkillFilterGrid();
+    showSaveMsg('✓ Save loaded successfully!', '#4aaa4a');
+    event.target.value = ''; // reset file input
+  } catch(e) {
+    showSaveMsg('✗ Import failed — ' + e.message, '#c84b4b');
+  }
+}
+
+function showSaveMsg(msg, color) {
+  const el = document.getElementById('save-load-msg');
+  if (!el) return;
+  el.textContent  = msg;
+  el.style.color  = color;
+  el.style.display = 'block';
+}
 
 function promptReset() {
   document.getElementById('reset-confirm').style.display = 'flex';
