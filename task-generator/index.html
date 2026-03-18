@@ -1517,7 +1517,7 @@
   <div class="panel">
     <div class="panel-title">⚙ Task Type</div>
     <div class="toggle-group">
-      <button class="toggle-btn active-combat" id="btn-combat" onclick="setMode('combat')">
+      <button class="toggle-btn" id="btn-combat" onclick="setMode('combat')">
         <span class="toggle-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAABb0lEQVR4nO1VMW7CMBR9oF7lOyMDKyfIHA9ZewxEp3IAVpCYUeSsRRWqEGJnYAQfoKp6h/wOyKkJNjGQDpXypEiR4/9e3v/PCdCixR+h41okQWzu9VE79/jwSC1IEK83W15vtmwTNVnXrSObzuYIESdBPJ3NQ9/xOlGWZUEObKdZlt3UpbvFGxetipvLJn5ENCh1JIhlItHr9QAAo5cRgNP8v78+sd/voXJ1U4qfQjbpo+6oXJ25Gb+O8bF6B4CbRYFAxwamlTKR5do9okCgYxuult+D2nNs4JqzTCRkIoPOeZAwCWJz+URt2OLVWh+8rT4sCAAQpbgQNTNVuTp7pnLFv3W6zrQbJIiLXczFLmZzln0fkOFwyNX9dfxX01js4pIgSrU3vSSodAoA3f6yNuXecJEgttt1WJAzRFXRKNVBYfOGazI4iXb7y07IvKJUl04ngzDxC9G3Z1zMyZdU17qPo1a4iT9MUzwtWvwf/AA0hQ5xITn0NwAAAABJRU5ErkJggg==" width="24" height="24" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"></span>
         Combat
       </button>
@@ -1525,7 +1525,7 @@
         <span class="toggle-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAA4UlEQVR4nO2WQQ7CIBBFP8bEWDiXGz2NF1L3bkzUhedCWOKiSRM6UzKhBRb278p0+mDmFwBWtZDRXajF2pARparAt+MB0+1hv06W/QKd5BFKkkpWbJ2XrZqDviGuGC01AISQnvUUFH3F8sEzZJ1vA5aKgKWlWhwsNtdMkd8JQGSuD6iRDguAkz3moI8FoElwSSgL/mtz5cHDHX3uiQnuBtMW2kA46DmqZAHwBHSkecciq6forWbmyjsWi4EriN1AUpe+m+4mP2auiZi+RM8qDpa9ZVrnhzbSXpY2VgX/rIr0A0wjRUtUVXRgAAAAAElFTkSuQmCC" width="24" height="24" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"></span>
         Skilling
       </button>
-      <button class="toggle-btn" id="btn-mix" onclick="setMode('mix')">
+      <button class="toggle-btn active-mix" id="btn-mix" onclick="setMode('mix')">
         <span class="toggle-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAABb0lEQVR4nO1VMW7CMBR9oF7lOyMDKyfIHA9ZewxEp3IAVpCYUeSsRRWqEGJnYAQfoKp6h/wOyKkJNjGQDpXypEiR4/9e3v/PCdCixR+h41okQWzu9VE79/jwSC1IEK83W15vtmwTNVnXrSObzuYIESdBPJ3NQ9/xOlGWZUEObKdZlt3UpbvFGxetipvLJn5ENCh1JIhlItHr9QAAo5cRgNP8v78+sd/voXJ1U4qfQjbpo+6oXJ25Gb+O8bF6B4CbRYFAxwamlTKR5do9okCgYxuult+D2nNs4JqzTCRkIoPOeZAwCWJz+URt2OLVWh+8rT4sCAAQpbgQNTNVuTp7pnLFv3W6zrQbJIiLXczFLmZzln0fkOFwyNX9dfxX01js4pIgSrU3vSSodAoA3f6yNuXecJEgttt1WJAzRFXRKNVBYfOGazI4iXb7y07IvKJUl04ngzDxC9G3Z1zMyZdU17qPo1a4iT9MUzwtWvwf/AA0hQ5xITn0NwAAAABJRU5ErkJggg==" width="14" height="14" style="image-rendering:pixelated;vertical-align:middle;margin-right:1px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAA4UlEQVR4nO2WQQ7CIBBFP8bEWDiXGz2NF1L3bkzUhedCWOKiSRM6UzKhBRb278p0+mDmFwBWtZDRXajF2pARparAt+MB0+1hv06W/QKd5BFKkkpWbJ2XrZqDviGuGC01AISQnvUUFH3F8sEzZJ1vA5aKgKWlWhwsNtdMkd8JQGSuD6iRDguAkz3moI8FoElwSSgL/mtz5cHDHX3uiQnuBtMW2kA46DmqZAHwBHSkecciq6forWbmyjsWi4EriN1AUpe+m+4mP2auiZi+RM8qDpa9ZVrnhzbSXpY2VgX/rIr0A0wjRUtUVXRgAAAAAElFTkSuQmCC" width="14" height="14" style="image-rendering:pixelated;vertical-align:middle;margin-right:1px;"></span>
         Random
       </button>
@@ -2000,6 +2000,7 @@ const COMBAT_TASKS = [
   { name: 'Barbarians',        icon: '🪓', min: 1,  max: 40,  loc: 'Barbarian Village',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Barbarian_(Fafner)' },
   { name: 'Al-Kharid Warriors',icon: '⚔️', min: 1,  max: 45,  loc: 'Al-Kharid palace',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Al_Kharid_warrior' },
   { name: 'Bears',             icon: '🐻', min: 1,  max: 45,  loc: 'East of Ardougne',                  countMin: 20, countMax: 60,  prayer: false, npcImage: 'Grizzly_bear_(historical)' },
+  { name: 'Unicorns',          icon: '🦄', min: 1,  max: 50,  loc: 'White Wolf Mountain, north of Ardougne, or Wilderness (black unicorns)', countMin: 20, countMax: 60, prayer: false, npcImage: 'Unicorn_(historical_v1)', note: 'Unicorn horns are used in Herblore (anti-poison potions). Worth picking up! Black unicorns can also be found in the Wilderness.' },
   { name: 'Guards',            icon: '💂', min: 15, max: 55,  loc: 'Varrock or Falador',               countMin: 20, countMax: 60, prayer: false , npcImage: 'Guard' },
   { name: 'Skeletons',         icon: '💀', min: 15, max: 55,  loc: 'Edgeville Dungeon or Karamja Volcano', countMin: 20, countMax: 60, prayer: false , npcImage: 'Skeleton' },
   { name: 'Black Knights',     icon: '🗡️', min: 25, max: 65,  loc: 'Ice Mountain dungeon',             countMin: 20, countMax: 60, prayer: false , npcImage: 'Black_Knight_(historical)' },
@@ -2137,11 +2138,25 @@ const SKILL_TASKS = [
   { skill: 'gathering', name: 'Jangerberries',  icon: '🫐', req: 1,  unitMin: 30,  unitMax: 100, unit: 'jangerberries',  loc: 'Small island west of Yanille',                      itemImage: 'Jangerberries',    note: 'Cross the stepping stones west of Yanille to reach the island. Bring antipoison — the area has Ogres.' },
   { skill: 'gathering', name: 'White berries',  icon: '⚪', req: 1,  unitMin: 20,  unitMax: 60,  unit: 'white berries',  loc: 'Wilderness, level 4-5 (south of Black Knights\' Fortress)', itemImage: 'White_berries', note: '⚠️ Located in the Wilderness — bring only what you can afford to lose.' },
   { skill: 'gathering', name: 'Mort myre fungi',icon: '🍄', req: 1,  unitMin: 50,  unitMax: 150, unit: 'mort myre fungi', loc: 'Mort Myre Swamp',                                   itemImage: 'Mort_myre_fungus', questReq: 'Nature Spirit', note: 'Requires completion of <strong>Nature Spirit</strong>. Use a Silver sickle (b) on logs, roots or branches.' },
+  { skill: 'gathering', name: 'Red spiders\' eggs', icon: '🕷️', req: 1, unitMin: 30, unitMax: 100, unit: 'red spiders\' eggs', loc: 'Edgeville Dungeon (level 4 Wilderness area) or Karamja Volcano', itemImage: 'Red_spiders\'_eggs', note: 'Found on the ground in spider-infested areas. Edgeville Dungeon access requires going through a low-level Wilderness area.' },
+  { skill: 'gathering', name: 'Wool',           icon: '🐑', req: 1,  unitMin: 30,  unitMax: 100, unit: 'wool',           loc: 'Lumbridge sheep field or Crafting Guild', itemImage: 'Wool', note: 'Shear sheep with shears (found in Lumbridge or buy from a general store). Spin the wool at a spinning wheel for Crafting XP.' },
+
+  // Open-ended tasks (bank supplies / level-based)
+  { skill: 'thieving',  name: 'Gain Thieving levels', icon: '🎯', req: 1,  unitMin: 1, unitMax: 1, unit: 'level', loc: 'Any thieving location', itemImage: 'Thieving_icon_(detail)', note: 'Pickpocket Men (req 1) in Lumbridge or Varrock, or steal from market stalls in Ardougne. Mark complete when you reach the target level!' },
+  { skill: 'herblore',  name: 'Use up herb supplies',  icon: '🌿', req: 1,  unitMin: 1, unitMax: 1, unit: 'batch of potions', loc: 'Anywhere', itemImage: 'Herblore_icon_(detail)', note: 'Use all your current grimy herbs and secondaries to brew potions. Mark complete when your supplies are exhausted!' },
+  { skill: 'crafting',  name: 'Cut all gems in bank',  icon: '💎', req: 20, unitMin: 1, unitMax: 1, unit: 'gem cutting session', loc: 'Anywhere with a chisel', itemImage: 'Uncut_diamond', note: 'Cut every uncut gem you have in your bank. Sapphire req 20, Emerald req 27, Ruby req 34, Diamond req 43 Crafting.' },
+  { skill: 'crafting',  name: 'Craft jewellery',       icon: '💍', req: 6,  unitMin: 1, unitMax: 1, unit: 'jewellery crafting session', loc: 'Any furnace (Edgeville or Al-Kharid)', itemImage: 'Gold_ring', note: 'Craft all the gems and gold bars you have into jewellery. Gold ring req 5, Sapphire ring req 20, Emerald ring req 27, Ruby ring req 34, Diamond ring req 43 Crafting.' },
+
+  // New gathering tasks
+  { skill: 'gathering', name: 'Chocolate',          icon: '🍫', req: 1, unitMin: 20, unitMax: 60,  unit: 'chocolate bars or dust', loc: 'Bought from Culinaromancer\'s Chest or general stores', itemImage: 'Chocolate_bar', note: 'Buy chocolate bars and optionally grind them into dust with a knife. Used in Herblore to make energy potions.' },
+  { skill: 'gathering', name: 'Eye of newt',        icon: '👁️', req: 1, unitMin: 30, unitMax: 100, unit: 'eyes of newt',   loc: 'Bought from Betty\'s Magic Emporium in Port Sarim', itemImage: 'Eye_of_newt', note: 'Used in Herblore to make attack potions. Can be bought in bulk from Betty\'s.' },
+  { skill: 'gathering', name: 'Blue dragon scales', icon: '🐉', req: 1, unitMin: 20, unitMax: 60,  unit: 'blue dragon scales', loc: 'Taverley Dungeon (on the ground near baby blue dragons)', itemImage: 'Blue_dragon_scale', note: 'Found on the ground in the baby blue dragon area of Taverley Dungeon. Used in Herblore to make antifire potions.' },
+  { skill: 'gathering', name: 'Wine of Zamorak',    icon: '🍷', req: 1,  magicReq: 33, unitMin: 20, unitMax: 60, unit: 'wines of Zamorak', loc: 'Chaos Temple (level 38 Wilderness) or Zamorak\'s shrine west of Edgeville', itemImage: 'Wine_of_zamorak', note: 'Use Telekinetic Grab (req 33 Magic) to take the wine without getting attacked by monks. ⚠️ Wilderness location — bring only what you can afford to lose.' },
 ];
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
-let mode = 'combat';
+let mode = 'mix';
 const SAVE_KEY      = 'taskmaster_stats_v1';
 const TRACKER_KEY   = 'taskmaster_tracker_v1';
 
@@ -2366,6 +2381,9 @@ function generateDailyTask() {
     rc: getStat('stat-rc'), agility, smithing: getStat('stat-smithing'),
     crafting: getStat('stat-crafting'), thieving: getStat('stat-thieving'), herblore: getStat('stat-herblore'),
     gathering: 1,
+    thieving: getStat('stat-thieving') || 1,
+    herblore: getStat('stat-herblore') || 1,
+    crafting: getStat('stat-crafting') || 1,
   };
 
   const types = ['combat','combat','combat','skill','skill','skill','clue','quest'];
@@ -2391,8 +2409,16 @@ function generateDailyTask() {
       });
       if (!allEl.length) continue;
       const t = allEl[randInt(0, allEl.length - 1)];
-      const count = randInt(t.unitMin, t.unitMax);
-      task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title:`${skillLabel(t.skill)} ${count} ${t.unit}`, desc:`Location: ${t.loc}.`, note:t.note||null };
+      let count = randInt(t.unitMin, t.unitMax);
+      let title = `${skillLabel(t.skill)} ${count} ${t.unit}`;
+      if (t.name === 'Gain Thieving levels') {
+        const cur = stats['thieving'] || 1;
+        const lvls = cur >= 60 ? 1 : cur >= 40 ? 2 : cur >= 20 ? 3 : cur >= 10 ? 4 : 5;
+        const target = Math.min(99, cur + lvls);
+        count = lvls;
+        title = lvls === 1 ? `Gain a Thieving level (reach level ${target})` : `Gain ${lvls} Thieving levels (reach level ${target})`;
+      }
+      task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title, desc:`Location: ${t.loc}.`, note:t.note||null };
     } else if (pickType === 'clue') {
       const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
       if (!eligibleClues.length) continue;
@@ -3081,6 +3107,9 @@ function buildOneTask() {
     rc: getStat('stat-rc'), agility, smithing: getStat('stat-smithing'),
     crafting: getStat('stat-crafting'), thieving: getStat('stat-thieving'), herblore: getStat('stat-herblore'),
     gathering: 1,
+    thieving: getStat('stat-thieving') || 1,
+    herblore: getStat('stat-herblore') || 1,
+    crafting: getStat('stat-crafting') || 1,
   };
   const types = mode === 'combat' ? ['combat','combat','combat','combat'] :
                 mode === 'skill'  ? ['skill','skill','skill','skill'] :
@@ -3099,12 +3128,21 @@ function buildOneTask() {
       if (!enabledSkills.has(t.skill)) return false;
       if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq||99)) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
+      if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
       return true;
     });
     if (!allEl.length) return null;
     const t = allEl[randInt(0, allEl.length - 1)];
-    const count = randInt(t.unitMin, t.unitMax);
-    task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title:`${skillLabel(t.skill)} ${count} ${t.unit}`, desc:`Location: ${t.loc}.`, note:t.note||null };
+    let count = randInt(t.unitMin, t.unitMax);
+    let skillTitle = `${skillLabel(t.skill)} ${count} ${t.unit}`;
+    if (t.name === 'Gain Thieving levels') {
+      const cur = stats['thieving'] || 1;
+      const lvls = cur >= 60 ? 1 : cur >= 40 ? 2 : cur >= 20 ? 3 : cur >= 10 ? 4 : 5;
+      const target = Math.min(99, cur + lvls);
+      count = lvls;
+      skillTitle = lvls === 1 ? `Gain a Thieving level (reach level ${target})` : `Gain ${lvls} Thieving levels (reach level ${target})`;
+    }
+    task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title:skillTitle, desc:`Location: ${t.loc}.`, note:t.note||null };
   } else if (pickType === 'clue') {
     const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
     if (!eligibleClues.length) return null;
@@ -3369,6 +3407,42 @@ function buildChainTask(primaryTask, stats) {
     }
   }
 
+  // Gathering → Crafting: Wool → Spun wool
+  if (primaryTask.skill === 'gathering' && primaryTask.name === 'Wool') {
+    const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+    return {
+      step1: { title: `Shear ${count} sheep`, loc: primaryTask.loc, itemImage: 'Wool', skill: 'gathering', note: 'Bring shears — buy from any general store' },
+      step2: { title: `Spin the wool into balls of wool`, loc: 'Spinning wheel in Lumbridge Castle (2nd floor) or Seers\' bank', itemImage: 'Ball_of_wool', skill: 'crafting', note: 'Each wool spun gives 2.5 Crafting XP' },
+      count,
+    };
+  }
+
+  // Combat → Crafting: Cows → Tan cowhides → Craft leather
+  if (primaryTask.skill === 'combat' && primaryTask.name === 'Cows') {
+    const craftingLevel = stats['crafting'] || 1;
+    const leatherOptions = [
+      { item: 'leather gloves',     req: 1,  itemImage: 'Leather_gloves'     },
+      { item: 'leather boots',      req: 7,  itemImage: 'Leather_boots'       },
+      { item: 'leather cowl',       req: 9,  itemImage: 'Leather_cowl'        },
+      { item: 'leather vambraces',  req: 11, itemImage: 'Leather_vambraces'   },
+      { item: 'leather body',       req: 14, itemImage: 'Leather_body'        },
+      { item: 'leather chaps',      req: 14, itemImage: 'Leather_chaps'       },
+      { item: 'hardleather body',   req: 28, itemImage: 'Hardleather_body'    },
+    ].filter(o => craftingLevel >= o.req);
+    if (leatherOptions.length > 0) {
+      const picked = leatherOptions[randInt(0, leatherOptions.length - 1)];
+      const count  = randInt(primaryTask.countMin, primaryTask.countMax);
+      return {
+        step1: { title: `Kill ${count} Cows & collect their hides`, loc: primaryTask.loc, itemImage: 'Cowhide', skill: 'combat', note: 'Pick up all cowhides — they sell well and are used in the next step' },
+        step2: { title: `Tan the hides, then craft ${picked.item}`, loc: 'Al-Kharid tannery, then anywhere', itemImage: picked.itemImage, skill: 'crafting', note: `Requires ${picked.req} Crafting. Soft leather tanning costs 1 coin per hide at Al-Kharid tannery` },
+        count,
+        threeStep: false,
+        combatChain: true,
+        colour: 'Cow',
+      };
+    }
+  }
+
   return null; // no valid chain found
 }
 
@@ -3551,6 +3625,9 @@ const SKILL_DEFS = [
   { key: 'fletching', label: 'Fletching',   icon: 'stat-fletching' },
   { key: 'rc',        label: 'Runecrafting',icon: 'stat-rc' },
   { key: 'agility',   label: 'Agility',     icon: 'stat-agility' },
+  { key: 'thieving',  label: 'Thieving',    icon: 'stat-thieving' },
+  { key: 'herblore',  label: 'Herblore',    icon: 'stat-herblore' },
+  { key: 'crafting',  label: 'Crafting',    icon: 'stat-crafting' },
   { key: 'gathering', label: 'Gathering',   icon: null },
 ];
 
@@ -3683,7 +3760,10 @@ function generateTask(isReroll = false) {
     const count = randInt(t.countMin, t.countMax);
 
     const combatStats = { crafting: getStat('stat-crafting') };
-    const combatChain = (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons')) ? buildChainTask({ ...t, skill: 'combat' }, combatStats) : null;
+    const combatChain = (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons'))
+      ? buildChainTask({ ...t, skill: 'combat' }, combatStats)
+      : (t.name === 'Cows' && Math.random() < 0.5) ? buildChainTask({ ...t, skill: 'combat' }, combatStats)
+      : null;
     const chainColour = combatChain?.colour || '';
 
     task = {
@@ -3691,8 +3771,8 @@ function generateTask(isReroll = false) {
       name: t.name,
       icon: t.icon,
       npcImage: combatChain ? null : t.npcImage,
-      itemImage: combatChain ? (chainColour === 'Blue' ? 'Blue_dragonhide' : 'Green_dragonhide') : null,
-      title: combatChain ? `Kill & Craft ${chainColour} Dragons` : `Kill ${count} ${t.name}`,
+      itemImage: combatChain ? (chainColour === 'Blue' ? 'Blue_dragonhide' : chainColour === 'Green' ? 'Green_dragonhide' : 'Cowhide') : null,
+      title: combatChain ? (chainColour === 'Cow' ? `Kill & Craft Cows` : `Kill & Craft ${chainColour} Dragons`) : `Kill ${count} ${t.name}`,
       desc: `Head to ${t.loc} and begin your hunt.`,
       note: combatChain ? null : (t.prayer ? (t.note || '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended for this task.') : (t.note || null)),
       chain: combatChain || null,
@@ -3717,6 +3797,7 @@ function generateTask(isReroll = false) {
       if (!enabledSkills.has(t.skill)) return false;
       if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq || 99)) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
+      if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
       return true;
     });
     if (allEligible.length === 0) { showError(); return; }
@@ -3728,9 +3809,26 @@ function generateTask(isReroll = false) {
     const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligible;
 
     const t = eligible[randInt(0, eligible.length - 1)];
-    const count = randInt(t.unitMin, t.unitMax);
+    let count = randInt(t.unitMin, t.unitMax);
 
-    const chain = (wantChain && (chainableSkills.has(t.skill) || t.name === 'Rune essence' || (t.skill === 'gathering' && t.name === 'Flax'))) ? buildChainTask(t, stats) : null;
+    // Thieving level task: scale levels required by current level
+    let thiefLevelTarget = null;
+    if (t.name === 'Gain Thieving levels') {
+      const currentThiev = stats['thieving'] || 1;
+      // Levels to gain: 5 at 1-9, 4 at 10-19, 3 at 20-39, 2 at 40-59, 1 at 60+
+      const levelsToGain = currentThiev >= 60 ? 1
+        : currentThiev >= 40 ? 2
+        : currentThiev >= 20 ? 3
+        : currentThiev >= 10 ? 4
+        : 5;
+      thiefLevelTarget = Math.min(99, currentThiev + levelsToGain);
+      count = levelsToGain;
+    }
+
+    const chain = (wantChain && (chainableSkills.has(t.skill) || t.name === 'Rune essence' || (t.skill === 'gathering' && t.name === 'Flax')))
+      ? buildChainTask(t, stats)
+      : (t.skill === 'gathering' && t.name === 'Wool') ? buildChainTask(t, stats) // always chain wool
+      : null;
 
     // Build combined title
     const chainVerb2Map = { fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', smithing: 'Smelt', crafting: 'Spin' };
@@ -3746,9 +3844,17 @@ function generateTask(isReroll = false) {
     } else if (chain && t.name === 'Flax') {
       chainedTitle = `Pick & Spin ${chain.count} flax into bow strings`;
       chainedDesc = `Location: ${t.loc}.`;
+    } else if (chain && t.name === 'Wool') {
+      chainedTitle = `Shear & Spin ${chain.count} wool into balls of wool`;
+      chainedDesc = `Location: ${t.loc}.`;
     } else if (chain) {
       chainedTitle = `${skillLabel(t.skill)} & ${chainVerb2Map[chain.step2.skill] || 'Use'} ${chain.count} ${t.unit}`;
       chainedDesc = `Location: ${t.loc}.`;
+    } else if (thiefLevelTarget !== null) {
+      chainedTitle = count === 1
+        ? `Gain a Thieving level (reach level ${thiefLevelTarget})`
+        : `Gain ${count} Thieving levels (reach level ${thiefLevelTarget})`;
+      chainedDesc = `Current level: ${stats['thieving'] || 1}. Train at any thieving location.`;
     } else {
       chainedTitle = `${skillLabel(t.skill)} ${count} ${t.unit}`;
       chainedDesc = `Location: ${t.loc}.`;
@@ -3808,7 +3914,8 @@ function skillLabel(skill) {
   const map = {
     wc: 'Chop', mining: 'Mine', fishing: 'Catch',
     fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', rc: 'Craft',
-    agility: 'Collect', gathering: 'Gather'
+    agility: 'Collect', gathering: 'Gather',
+    thieving: 'Train', herblore: 'Train', crafting: 'Train',
   };
   return map[skill] || 'Gather';
 }
@@ -4353,5 +4460,7 @@ function switchTab(tab) {
   dbPut('settings', 'activeTab', tab);
 }
 </script>
+  <!-- Ko-fi support button -->
+  <a href="https://ko-fi.com/garlic04" target="_blank" rel="noopener" style="position:fixed;bottom:16px;left:16px;z-index:9000;display:flex;align-items:center;gap:7px;background:rgba(20,17,9,0.92);border:1px solid rgba(200,168,75,0.35);border-radius:20px;padding:7px 13px;text-decoration:none;color:#c9a227;font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;backdrop-filter:blur(4px);transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(200,168,75,0.8)';this.style.color='#f5d76e'" onmouseout="this.style.borderColor='rgba(200,168,75,0.35)';this.style.color='#c9a227'"><img src="https://storage.ko-fi.com/cdn/cup-border.png" width="18" height="18" alt="" style="opacity:0.85;">Support</a>
 </body>
 </html>
