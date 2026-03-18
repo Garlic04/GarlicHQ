@@ -1099,6 +1099,220 @@
   }
   .shop-buy-btn:hover { background: rgba(200,168,75,0.3); }
   .shop-buy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── Collection Tab ─────────────────────────────── */
+  .collection-tab { display: flex; align-items: stretch; }
+  .collection-tab:hover, .collection-tab.open { z-index: 2; position: relative; }
+  .collection-trigger {
+    writing-mode: vertical-rl; text-orientation: mixed;
+    background: #2a2210; border: 1px solid var(--gold-dim); border-right: none;
+    border-radius: 6px 0 0 6px; padding: 1rem 0.6rem; cursor: pointer;
+    font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.15em;
+    color: var(--gold); user-select: none;
+    transition: background 0.2s, color 0.2s; box-shadow: -3px 0 12px rgba(0,0,0,0.5);
+  }
+  .collection-tab:hover .collection-trigger, .collection-tab.open .collection-trigger {
+    background: #3a3015; color: #f0d060;
+  }
+  .collection-panel {
+    width: 0; overflow: hidden; background: #1e1a10;
+    border: 0px solid var(--gold-dim); border-right: none;
+    border-radius: 6px 0 0 6px; transition: width 0.3s ease;
+    display: flex; flex-direction: column;
+  }
+  .collection-tab:hover .collection-panel, .collection-tab.open .collection-panel {
+    width: 280px; border-width: 1px; box-shadow: -4px 0 20px rgba(0,0,0,0.6);
+  }
+  .collection-inner { width: 280px; padding: 1rem 1.2rem; flex-shrink: 0; }
+  .collection-title {
+    font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.15em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 4px; white-space: nowrap;
+  }
+  .collection-subtitle {
+    font-size: 11px; color: var(--text-dim); margin-bottom: 14px;
+  }
+  .collection-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  }
+  .collection-slot {
+    aspect-ratio: 1; border-radius: 6px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: default; position: relative;
+    transition: border-color 0.2s;
+  }
+  .collection-slot.obtained {
+    border-color: var(--gold-dim);
+    background: rgba(201,162,39,0.08);
+    filter: drop-shadow(0 0 4px rgba(201,162,39,0.6));
+  }
+  .collection-slot.cracker-owned {
+    border-color: #ff6677;
+    background: rgba(255,100,120,0.1);
+    cursor: pointer;
+    filter: drop-shadow(0 0 5px rgba(255,100,120,0.7));
+    animation: crackerPulse 2s ease-in-out infinite;
+  }
+  .collection-slot.cracker-owned:hover { border-color: #ff8899; }
+  @keyframes crackerPulse {
+    0%,100% { filter: drop-shadow(0 0 4px rgba(255,100,120,0.6)); }
+    50%      { filter: drop-shadow(0 0 10px rgba(255,100,120,1)) drop-shadow(0 0 20px rgba(255,100,120,0.4)); }
+  }
+
+  /* Cracker confirm modal */
+  #cracker-confirm {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.75);
+  }
+  #cracker-confirm.show { display: flex; }
+  .cracker-confirm-box {
+    background: #1e1a10; border: 1px solid #ff6677;
+    border-radius: 12px; padding: 24px 28px;
+    text-align: center; max-width: 300px;
+    animation: rdoPop 0.3s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  .cracker-confirm-box .cracker-icon { font-size: 40px; margin-bottom: 12px; }
+  .cracker-confirm-box h3 {
+    font-family: 'Cinzel', serif; font-size: 15px; color: #ff8899;
+    margin-bottom: 8px;
+  }
+  .cracker-confirm-box p { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
+  .cracker-confirm-btns { display: flex; gap: 10px; justify-content: center; }
+  .cracker-pull-btn {
+    padding: 8px 20px; background: rgba(255,100,120,0.15);
+    border: 1px solid #ff6677; border-radius: 6px;
+    color: #ff8899; font-family: 'Cinzel', serif; font-size: 12px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .cracker-pull-btn:hover { background: rgba(255,100,120,0.3); }
+  .cracker-cancel-btn {
+    padding: 8px 20px; background: transparent;
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text-dim); font-family: 'Cinzel', serif; font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* Cracker pop animation overlay */
+  #cracker-pop {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  #cracker-pop.show { display: flex; }
+  .cracker-pop-pieces {
+    position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  }
+  .cracker-piece {
+    position: absolute; width: 8px; height: 8px; border-radius: 2px;
+    animation: pieceFly 0.8s ease-out forwards;
+  }
+  @keyframes pieceFly {
+    from { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    to   { transform: translate(var(--tx), var(--ty)) rotate(var(--tr)); opacity: 0; }
+  }
+  .cracker-bang {
+    position: relative; z-index: 2;
+    font-family: 'Cinzel', serif; font-size: clamp(2rem,6vw,3.5rem); font-weight: 700;
+    color: #ff8899;
+    text-shadow: 0 0 30px rgba(255,100,120,0.9), 0 0 60px rgba(255,100,120,0.5);
+    animation: bangPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  @keyframes bangPop {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+  .collection-slot.locked {
+    filter: grayscale(1) brightness(0.25);
+  }
+  .collection-slot .slot-tooltip {
+    display: none; position: absolute; bottom: calc(100% + 6px); left: 50%;
+    transform: translateX(-50%); white-space: nowrap;
+    background: #1a1500; border: 1px solid var(--gold-dim);
+    border-radius: 5px; padding: 3px 8px;
+    font-size: 11px; color: var(--text-bright); z-index: 10;
+    pointer-events: none;
+  }
+  .collection-slot:hover .slot-tooltip { display: block; }
+  .collection-progress {
+    margin-top: 12px; font-size: 11px; color: var(--text-dim); text-align: center;
+  }
+  .collection-progress span { color: var(--gold); }
+
+  /* ── Rare Drop Flash Overlay ────────────────────── */
+  #rare-drop-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.88);
+    cursor: pointer;
+  }
+  #rare-drop-overlay.show { display: flex; }
+  .rdo-rays {
+    position: absolute; inset: 0; pointer-events: none;
+    background: conic-gradient(from 0deg at 50% 50%,
+      transparent 0deg, rgba(201,162,39,0.14) 6deg, transparent 12deg,
+      transparent 30deg, rgba(201,162,39,0.14) 36deg, transparent 42deg,
+      transparent 60deg, rgba(201,162,39,0.14) 66deg, transparent 72deg,
+      transparent 90deg, rgba(201,162,39,0.14) 96deg, transparent 102deg,
+      transparent 120deg, rgba(201,162,39,0.14) 126deg, transparent 132deg,
+      transparent 150deg, rgba(201,162,39,0.14) 156deg, transparent 162deg,
+      transparent 180deg, rgba(201,162,39,0.14) 186deg, transparent 192deg,
+      transparent 210deg, rgba(201,162,39,0.14) 216deg, transparent 222deg,
+      transparent 240deg, rgba(201,162,39,0.14) 246deg, transparent 252deg,
+      transparent 270deg, rgba(201,162,39,0.14) 276deg, transparent 282deg,
+      transparent 300deg, rgba(201,162,39,0.14) 306deg, transparent 312deg,
+      transparent 330deg, rgba(201,162,39,0.14) 336deg, transparent 342deg);
+    animation: rdoSpin 10s linear infinite;
+  }
+  @keyframes rdoSpin { to { transform: rotate(360deg); } }
+  .rdo-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 55% 45% at 50% 55%, rgba(201,162,39,0.3) 0%, transparent 70%);
+  }
+  .rdo-content {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    text-align: center; padding: 2rem;
+    animation: rdoPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  @keyframes rdoPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .rdo-eyebrow {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: #c9a227; opacity: 0.9;
+  }
+  .rdo-item-wrap {
+    width: 110px; height: 110px;
+    background: rgba(201,162,39,0.08); border: 1px solid rgba(201,162,39,0.4);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+    box-shadow: 0 0 40px rgba(201,162,39,0.45), inset 0 0 24px rgba(201,162,39,0.08);
+    animation: rdoFloat 2.5s ease-in-out infinite;
+  }
+  .rdo-item-img { max-width: 72px; max-height: 72px; image-rendering: pixelated;
+    filter: drop-shadow(0 0 8px rgba(201,162,39,0.9)) drop-shadow(0 0 20px rgba(201,162,39,0.5)); }
+  @keyframes rdoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .rdo-item-name {
+    font-family: 'Cinzel', serif; font-size: clamp(1.4rem,3vw,2rem); font-weight: 700;
+    color: #f5d76e;
+    text-shadow: 0 0 30px rgba(201,162,39,0.9), 0 0 60px rgba(201,162,39,0.5), 0 2px 0 rgba(0,0,0,0.8);
+    animation: rdoPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes rdoPulse {
+    0%,100% { text-shadow: 0 0 20px rgba(201,162,39,0.7),0 0 50px rgba(201,162,39,0.4); }
+    50% { text-shadow: 0 0 40px rgba(201,162,39,1),0 0 80px rgba(201,162,39,0.7),0 0 120px rgba(201,162,39,0.3); }
+  }
+  .rdo-sub { font-size: 13px; color: rgba(201,162,39,0.6); letter-spacing: 0.05em; }
+  .rdo-btn {
+    margin-top: 6px; padding: 10px 32px;
+    background: rgba(201,162,39,0.15); border: 1px solid rgba(201,162,39,0.5);
+    border-radius: 7px; color: #f5d76e;
+    font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.1em;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .rdo-btn:hover { background: rgba(201,162,39,0.28); }
+  .rdo-hint { font-size: 11px; color: rgba(201,162,39,0.3); }
   .safe-reroll-btn {
     display: none;
     background: rgba(75,200,100,0.15);
@@ -1594,7 +1808,54 @@
   <div class="shop-trigger" id="shop-trigger" onclick="toggleShop()">Shop</div>
 </div>
 
+<div class="collection-tab" id="collection-tab">
+  <div class="collection-panel" id="collection-panel">
+    <div class="collection-inner">
+      <div class="collection-title">⬡ Collection</div>
+      <div class="collection-subtitle" id="collection-subtitle">Complete tasks for a chance at rare drops</div>
+      <div class="collection-grid" id="collection-grid"></div>
+      <div class="collection-progress" id="collection-progress"></div>
+    </div>
+  </div>
+  <div class="collection-trigger" onclick="document.getElementById('collection-tab').classList.toggle('open')">Collection</div>
+</div>
+
 </div><!-- /side-tabs wrapper -->
+
+<!-- Cracker confirm modal -->
+<div id="cracker-confirm">
+  <div class="cracker-confirm-box">
+    <div class="cracker-icon">🎁</div>
+    <h3>Pull the Cracker?</h3>
+    <p>You'll receive a random partyhat — this uses up your cracker!</p>
+    <div class="cracker-confirm-btns">
+      <button class="cracker-pull-btn" onclick="confirmPullCracker()">Pull it!</button>
+      <button class="cracker-cancel-btn" onclick="closeCrackerConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cracker pop animation -->
+<div id="cracker-pop">
+  <div class="cracker-pop-pieces" id="cracker-pieces"></div>
+  <div class="cracker-bang">BANG!</div>
+</div>
+
+<!-- Rare Drop Flash Overlay -->
+<div id="rare-drop-overlay" onclick="closeRareDrop()">
+  <div class="rdo-rays"></div>
+  <div class="rdo-glow"></div>
+  <div class="rdo-content">
+    <div class="rdo-eyebrow">Rare Drop!</div>
+    <div class="rdo-item-wrap" id="rdo-item-wrap">
+      <img id="rdo-img" class="rdo-item-img" src="" alt="" style="display:none;">
+      <span id="rdo-emoji" style="font-size:64px;"></span>
+    </div>
+    <div class="rdo-item-name" id="rdo-item-name"></div>
+    <div class="rdo-sub">Added to your collection log</div>
+    <button class="rdo-btn" onclick="closeRareDrop();event.stopPropagation();">Collect</button>
+    <div class="rdo-hint">click anywhere to dismiss</div>
+</div><!-- /rare-drop-overlay -->
 
 <div class="toast" id="toast">Task complete! Well done, adventurer.</div>
 
@@ -2172,6 +2433,7 @@ function completeDailyTask() {
   // Contract progress — daily tasks count as their underlying type + also as 'daily'
   progressContract('daily', dailyTask.name, extractKillCount(dailyTask));
   progressContract(dailyTask.type, dailyTask.name, extractKillCount(dailyTask));
+  rollRareDrop();
 
   showToast(`☀ Daily complete! +${finalEarned} points (${DAILY_MULTIPLIER}× bonus)${isBonus ? ` + streak bonus!` : '!'}`);
   renderDailyTask();
@@ -2527,6 +2789,195 @@ function renderPrestige() {
 async function loadPrestige() {
   // prestige count is stored on tracker object — loaded via loadTracker
   // Nothing extra to load
+}
+
+// ─── Rare Drops & Collection Log ─────────────────────────────────────────────
+
+const RARE_DROPS = [
+  { id: 'blue_phat',    name: 'Blue Partyhat',        emoji: '🎩', wikiImage: 'Blue_partyhat'         },
+  { id: 'red_phat',     name: 'Red Partyhat',          emoji: '🎩', wikiImage: 'Red_partyhat'           },
+  { id: 'yellow_phat',  name: 'Yellow Partyhat',       emoji: '🎩', wikiImage: 'Yellow_partyhat'        },
+  { id: 'green_phat',   name: 'Green Partyhat',        emoji: '🎩', wikiImage: 'Green_partyhat'         },
+  { id: 'white_phat',   name: 'White Partyhat',        emoji: '🎩', wikiImage: 'White_partyhat'         },
+  { id: 'purple_phat',  name: 'Purple Partyhat',       emoji: '🎩', wikiImage: 'Purple_partyhat'        },
+  { id: 'hween_b',      name: 'Blue Halloween Mask',   emoji: '🎭', wikiImage: 'Blue_halloween_mask'    },
+  { id: 'hween_g',      name: 'Green Halloween Mask',  emoji: '🎭', wikiImage: 'Green_halloween_mask'   },
+  { id: 'hween_r',      name: 'Red Halloween Mask',    emoji: '🎭', wikiImage: 'Red_halloween_mask'     },
+  { id: 'santa',        name: 'Santa Hat',             emoji: '🎅', wikiImage: 'Santa_hat'              },
+  { id: 'easter_egg',   name: 'Easter Egg',            emoji: '🥚', wikiImage: 'Easter_egg'             },
+  { id: 'pumpkin',      name: 'Pumpkin',               emoji: '🎃', wikiImage: 'Pumpkin'                },
+  { id: 'disk',         name: 'Disk of Returning',     emoji: '💿', wikiImage: 'Disk_of_returning'      },
+  { id: 'half_jug',     name: 'Half jug of wine',      emoji: '🍷', wikiImage: 'Half_jug_of_wine'       },
+  { id: 'cracker',      name: 'Christmas Cracker',     emoji: '🎁', wikiImage: 'Christmas_cracker'      },
+  { id: 'garlic',       name: 'Garlic',                emoji: '🧄', wikiImage: 'Garlic'                 },
+];
+
+const RARE_DROP_CHANCE = 200;
+const PHAT_IDS = ['blue_phat','red_phat','yellow_phat','green_phat','white_phat','purple_phat'];
+let collectionLog = new Set();
+
+function allPhatsOwned() { return PHAT_IDS.every(id => collectionLog.has(id)); }
+function collectionFull() { return RARE_DROPS.every(d => collectionLog.has(d.id)); }
+
+function rollRareDrop() {
+  if (Math.floor(Math.random() * RARE_DROP_CHANCE) !== 0) return;
+  // Build pool: once collection is full allow all dupes, otherwise filter
+  let pool;
+  if (collectionFull()) {
+    pool = RARE_DROPS; // full dupes allowed
+  } else {
+    pool = RARE_DROPS.filter(d => {
+      if (collectionLog.has(d.id)) return false; // no dupes until full
+      // Cracker only drops until all phats + 1 cracker owned
+      if (d.id === 'cracker' && allPhatsOwned() && collectionLog.has('cracker')) return false;
+      return true;
+    });
+  }
+  if (!pool.length) return;
+  const drop = pool[Math.floor(Math.random() * pool.length)];
+  collectionLog.add(drop.id);
+  saveCollectionLog();
+  renderCollectionLog();
+  showRareDropFlash(drop);
+}
+
+function showRareDropFlash(drop) {
+  const overlay = document.getElementById('rare-drop-overlay');
+  const nameEl  = document.getElementById('rdo-item-name');
+  const imgEl   = document.getElementById('rdo-img');
+  const emojiEl = document.getElementById('rdo-emoji');
+  if (!overlay) return;
+  nameEl.textContent = drop.name;
+  imgEl.style.display   = 'none';
+  emojiEl.style.display = 'none';
+  const url = `https://oldschool.runescape.wiki/images/${drop.wikiImage}.png`;
+  const tmp = new Image();
+  tmp.onload  = () => { imgEl.src = url; imgEl.style.display = 'block'; };
+  tmp.onerror = () => { emojiEl.textContent = drop.emoji; emojiEl.style.display = 'block'; };
+  tmp.src = url;
+  overlay.classList.add('show');
+}
+
+function closeRareDrop() {
+  const overlay = document.getElementById('rare-drop-overlay');
+  if (overlay) overlay.classList.remove('show');
+}
+
+function renderCollectionLog() {
+  const grid     = document.getElementById('collection-grid');
+  const progress = document.getElementById('collection-progress');
+  const subtitle = document.getElementById('collection-subtitle');
+  if (!grid) return;
+  const obtained = collectionLog.size;
+  const total    = RARE_DROPS.length;
+  if (subtitle) subtitle.textContent = obtained === 0
+    ? 'Complete tasks for a chance at rare drops'
+    : `${obtained} / ${total} items found`;
+  grid.innerHTML = '';
+  RARE_DROPS.forEach(drop => {
+    const got  = collectionLog.has(drop.id);
+    const isCracker = drop.id === 'cracker';
+    const slot = document.createElement('div');
+    slot.className = 'collection-slot' + (got ? (isCracker ? ' cracker-owned' : ' obtained') : ' locked');
+    if (isCracker && got) {
+      slot.onclick = () => promptPullCracker();
+      slot.title   = '';
+    }
+    const tooltip = document.createElement('div');
+    tooltip.className   = 'slot-tooltip';
+    tooltip.textContent = got ? (isCracker ? drop.name + ' — click to pull!' : drop.name) : '???';
+    const img = document.createElement('img');
+    img.style.cssText = 'max-width:32px;max-height:32px;image-rendering:pixelated;';
+    if (!got) img.style.filter = 'brightness(0)';
+    img.src = `https://oldschool.runescape.wiki/images/${drop.wikiImage}.png`;
+    img.onerror = () => {
+      img.remove();
+      const em = document.createElement('span');
+      em.style.fontSize  = '22px';
+      em.textContent     = got ? drop.emoji : '?';
+      if (!got) em.style.filter = 'brightness(0)';
+      slot.insertBefore(em, tooltip);
+    };
+    slot.appendChild(img);
+    slot.appendChild(tooltip);
+    grid.appendChild(slot);
+  });
+  if (progress) {
+    const pct = Math.round((obtained / total) * 100);
+    progress.innerHTML = obtained === total
+      ? `<span>Collection complete! ✦</span>`
+      : `<span>${obtained}</span> / ${total} &nbsp;(${pct}%)`;
+  }
+}
+
+async function saveCollectionLog() {
+  await dbPut('settings', 'collectionLog', [...collectionLog]);
+}
+
+async function loadCollectionLog() {
+  try {
+    const saved = await dbGet('settings', 'collectionLog');
+    if (Array.isArray(saved)) collectionLog = new Set(saved);
+  } catch(e) {}
+}
+
+// ─── Christmas Cracker ────────────────────────────────────────────────────────
+
+function promptPullCracker() {
+  if (!collectionLog.has('cracker')) return;
+  document.getElementById('cracker-confirm').classList.add('show');
+}
+
+function closeCrackerConfirm() {
+  document.getElementById('cracker-confirm').classList.remove('show');
+}
+
+function confirmPullCracker() {
+  closeCrackerConfirm();
+  // Remove cracker from log (used up), unless full collection (then keep it)
+  if (!collectionFull()) collectionLog.delete('cracker');
+  // Pick a random phat not yet owned, or any phat if all owned
+  const unownedPhats = PHAT_IDS.filter(id => !collectionLog.has(id));
+  const pool = unownedPhats.length > 0 ? unownedPhats : PHAT_IDS;
+  const phatId = pool[Math.floor(Math.random() * pool.length)];
+  const phat   = RARE_DROPS.find(d => d.id === phatId);
+  collectionLog.add(phatId);
+  saveCollectionLog();
+  // Play crack animation then show the phat flash
+  playCrackerAnimation(() => {
+    renderCollectionLog();
+    showRareDropFlash(phat);
+  });
+}
+
+function playCrackerAnimation(onDone) {
+  const pop    = document.getElementById('cracker-pop');
+  const pieces = document.getElementById('cracker-pieces');
+  if (!pop || !pieces) { onDone(); return; }
+  pieces.innerHTML = '';
+  const colours = ['#ff6677','#ffdd44','#44cc88','#5599ff','#cc55ff','#ff9944','#ffffff'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'cracker-piece';
+    const angle = (Math.random() * 360) * (Math.PI / 180);
+    const dist  = 80 + Math.random() * 180;
+    const tx    = Math.cos(angle) * dist;
+    const ty    = Math.sin(angle) * dist - 60;
+    const tr    = (Math.random() - 0.5) * 720;
+    p.style.cssText = `
+      left:calc(50% - 4px); top:calc(50% - 4px);
+      background:${colours[Math.floor(Math.random() * colours.length)]};
+      --tx:${tx}px; --ty:${ty}px; --tr:${tr}deg;
+      animation-delay:${Math.random() * 0.1}s;
+    `;
+    pieces.appendChild(p);
+  }
+  pop.classList.add('show');
+  setTimeout(() => {
+    pop.classList.remove('show');
+    pieces.innerHTML = '';
+    onDone();
+  }, 700);
 }
 
 // ─── Task Picker ──────────────────────────────────────────────────────────────
@@ -2921,7 +3372,8 @@ function renderShop() {
 
   // Trigger label
   const trigger = document.getElementById('shop-trigger');
-  if (trigger) trigger.textContent = unlocked ? 'Shop' : '🔒 Shop';
+  if (trigger) trigger.textContent = 'Shop';
+  if (trigger) trigger.style.opacity = unlocked ? '1' : '0.5';
 
   const lockedMsg = document.getElementById('shop-locked-msg');
   const shopConts = document.getElementById('shop-contents');
@@ -3437,6 +3889,7 @@ function completeTask() {
   const contractType = currentTask.chain ? 'chain' : currentTask.type;
   const killCount = extractKillCount(currentTask);
   progressContract(contractType, currentTask.name, killCount);
+  rollRareDrop();
 
   const msg = isBonus
     ? `🔥 ${tracker.streak}-task streak! BONUS: +${earned} points (${base} × ${BONUS_MULTIPLIER})!`
@@ -3737,6 +4190,9 @@ openDB().then(async () => {
 
   await loadContracts();
   renderContracts();
+
+  await loadCollectionLog();
+  renderCollectionLog();
 
   renderPrestige();
 
