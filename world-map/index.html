@@ -1,1 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Map – GarlicHQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold:        #c9a84c;
+    --gold-light:  #e8c96a;
+    --gold-dim:    #7a6030;
+    --bg:          #0e0d0b;
+    --bg-panel:    #1a1813;
+    --bg-card:     #201e18;
+    --border:      #3a3320;
+    --text:        #d4c89a;
+    --text-dim:    #8a7d5a;
 
+    /* Pin colours matching Verdant Atlas defaults */
+    --pin-location:  #4a9eff;
+    --pin-character: #4caf6e;
+    --pin-faction:   #9c6fff;
+    --pin-item:      #ff9c4a;
+    --pin-event:     #ff5a5a;
+    --pin-default:   #c9a84c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IM Fell English', serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .site-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .site-logo:hover { opacity: 1; }
+
+  .divider {
+    width: 1px;
+    height: 22px;
+    background: var(--border);
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 0.08em;
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+  }
+  .legend-item:hover { color: var(--text); }
+  .legend-item.inactive { opacity: 0.35; }
+
+  .legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .hint {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.03em;
+    font-style: italic;
+  }
+
+  /* ── Map viewport ── */
+  #viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+  }
+  #viewport.dragging { cursor: grabbing; }
+
+  #map-container {
+    position: absolute;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  #map-img {
+    display: block;
+    image-rendering: pixelated;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* ── Pins ── */
+  .pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    z-index: 10;
+  }
+
+  .pin-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    box-shadow: 0 0 6px rgba(0,0,0,0.6);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pin:hover .pin-dot {
+    transform: scale(1.7);
+    box-shadow: 0 0 12px rgba(0,0,0,0.8), 0 0 6px var(--pin-glow);
+  }
+
+  .pin-label {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 6px);
+    transform: translateX(-50%) scale(0.85);
+    transform-origin: top center;
+    white-space: nowrap;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: var(--gold-light);
+    text-shadow: 0 1px 3px #000, 0 0 8px #000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    letter-spacing: 0.04em;
+  }
+
+  .pin:hover .pin-label {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  /* ── Tooltip card ── */
+  #tooltip {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    max-width: 220px;
+  }
+  #tooltip.visible { opacity: 1; }
+
+  .tooltip-inner {
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    padding: 10px 13px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  }
+
+  .tooltip-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  .tooltip-type {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .tooltip-desc {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* ── Load overlay ── */
+  #load-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    transition: opacity 0.4s ease;
+  }
+  #load-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .load-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .load-bar-wrap {
+    width: 240px;
+    height: 3px;
+    background: var(--border);
+  }
+  .load-bar {
+    height: 100%;
+    background: var(--gold);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .load-hint {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Zoom controls ── */
+  .zoom-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 200;
+  }
+
+  .zoom-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    transition: background 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .zoom-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--gold-dim);
+  }
+
+  /* ── Upload prompt (shown if no JSON found) ── */
+  #upload-prompt {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    height: 100%;
+    text-align: center;
+    padding: 40px;
+  }
+  #upload-prompt.visible { display: flex; }
+
+  .upload-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.07em;
+  }
+  .upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    max-width: 360px;
+    line-height: 1.6;
+  }
+  .upload-btn {
+    padding: 9px 22px;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .upload-btn:hover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+  #file-input { display: none; }
+</style>
+</head>
+<body>
+
+<div id="load-overlay">
+  <div class="load-title">World Map</div>
+  <div class="load-bar-wrap"><div class="load-bar" id="load-bar"></div></div>
+  <div class="load-hint" id="load-hint">Loading map data…</div>
+</div>
+
+<header>
+  <div class="header-left">
+    <a class="site-logo" href="/">GarlicHQ</a>
+    <div class="divider"></div>
+    <h1>World Map</h1>
+  </div>
+  <div class="header-controls">
+    <div class="legend" id="legend"></div>
+    <div class="hint">Scroll to zoom · Drag to pan · Hover pins</div>
+  </div>
+</header>
+
+<div id="viewport">
+  <div id="map-container">
+    <img id="map-img" src="worldmap.png" alt="World Map" draggable="false">
+    <div id="pins-layer"></div>
+  </div>
+  <div id="upload-prompt">
+    <div class="upload-title">No Map Data Found</div>
+    <div class="upload-hint">Drop your Verdant Atlas JSON export here, or click to load it. The file stays local — nothing is uploaded.</div>
+    <button class="upload-btn" onclick="document.getElementById('file-input').click()">Load JSON Export</button>
+    <input type="file" id="file-input" accept=".json">
+  </div>
+</div>
+
+<div id="tooltip">
+  <div class="tooltip-inner">
+    <div class="tooltip-name" id="tt-name"></div>
+    <div class="tooltip-type" id="tt-type"></div>
+    <div class="tooltip-desc" id="tt-desc"></div>
+  </div>
+</div>
+
+<div class="zoom-controls">
+  <button class="zoom-btn" id="btn-zoom-in">+</button>
+  <button class="zoom-btn" id="btn-zoom-out">−</button>
+  <button class="zoom-btn" id="btn-zoom-reset" title="Reset view" style="font-size:0.7rem;">⌂</button>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+
+// Point this at your JSON file path on GarlicHQ.
+// If you want a file-picker fallback, leave as null and it will prompt.
+const JSON_URL = 'worldmap-data.json'; // change to your actual filename
+
+const PIN_COLORS = {
+  location:  '#4caf6e',
+  character: '#e8c96a',
+  faction:   '#4a9eff',
+  item:      '#ff5a5a',
+  lore:      '#9c6fff',
+};
+const DEFAULT_COLOR = '#c9a84c';
+
+function pinColor(type) {
+  return PIN_COLORS[type?.toLowerCase()] ?? DEFAULT_COLOR;
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+
+let scale = 1;
+let panX = 0, panY = 0;
+let imgW = 0, imgH = 0;
+let isDragging = false;
+let dragStartX, dragStartY, panStartX, panStartY;
+let allPins = [];
+let activeTypes = new Set();
+let pinEls = [];
+
+const viewport    = document.getElementById('viewport');
+const container   = document.getElementById('map-container');
+const mapImg      = document.getElementById('map-img');
+const pinsLayer   = document.getElementById('pins-layer');
+const tooltip     = document.getElementById('tooltip');
+const loadOverlay = document.getElementById('load-overlay');
+const loadBar     = document.getElementById('load-bar');
+const loadHint    = document.getElementById('load-hint');
+const legend      = document.getElementById('legend');
+const uploadPrompt= document.getElementById('upload-prompt');
+
+// ── Load data ────────────────────────────────────────────────────────────────
+
+async function init() {
+  setLoad(10, 'Loading map data…');
+
+  let data = null;
+  try {
+    const resp = await fetch(JSON_URL);
+    if (!resp.ok) throw new Error('not found');
+    data = await resp.json();
+  } catch(e) {
+    setLoad(100, '');
+    setTimeout(() => {
+      loadOverlay.classList.add('hidden');
+      uploadPrompt.classList.add('visible');
+    }, 300);
+    setupFileInput();
+    return;
+  }
+
+  setLoad(40, 'Loading map image…');
+  await loadFromData(data);
+}
+
+async function loadFromData(data) {
+  // Extract embedded base64 image from JSON
+  // mapData is the image string directly; pins are top-level
+  const imgSrc = (typeof data.mapData === 'string') ? data.mapData : null;
+
+  if (imgSrc) {
+    await new Promise((res, rej) => {
+      mapImg.onload = res;
+      mapImg.onerror = () => rej(new Error('Embedded map image failed to load.'));
+      mapImg.src = imgSrc;
+    });
+  } else {
+    await new Promise((res, rej) => {
+      if (mapImg.complete && mapImg.naturalWidth) { res(); return; }
+      mapImg.onload = res;
+      mapImg.onerror = () => rej(new Error('No map image found in JSON and worldmap.png is missing.'));
+    });
+  }
+
+  imgW = mapImg.naturalWidth;
+  imgH = mapImg.naturalHeight;
+  pinsLayer.style.width    = imgW + 'px';
+  pinsLayer.style.height   = imgH + 'px';
+  pinsLayer.style.position = 'absolute';
+  pinsLayer.style.top  = '0';
+  pinsLayer.style.left = '0';
+
+  setLoad(80, 'Placing pins…');
+  loadMapData(data);
+  setLoad(100, '');
+  setTimeout(() => loadOverlay.classList.add('hidden'), 350);
+}
+
+function loadMapData(data) {
+  // Verdant Atlas export: { pins: [...], maps: [...], ... }
+  // pins may be at top level or nested
+  // pins are top-level in the export
+  const pins = data.pins ?? data.markers ?? [];
+  allPins = pins.filter(p => !p.hidden);
+
+  // Collect unique types
+  const types = [...new Set(allPins.map(p => p.type).filter(Boolean))];
+  types.forEach(t => activeTypes.add(t));
+
+  buildLegend(types);
+  buildPins();
+  setupPanZoom();
+  resetView();
+}
+
+// ── Legend ───────────────────────────────────────────────────────────────────
+
+function buildLegend(types) {
+  legend.innerHTML = '';
+  types.forEach(type => {
+    const col = pinColor(type);
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.type = type;
+    item.innerHTML = `
+      <div class="legend-dot" style="background:${col}"></div>
+      ${type.charAt(0).toUpperCase() + type.slice(1)}
+    `;
+    item.addEventListener('click', () => toggleType(type, item));
+    legend.appendChild(item);
+  });
+}
+
+function toggleType(type, el) {
+  if (activeTypes.has(type)) {
+    activeTypes.delete(type);
+    el.classList.add('inactive');
+  } else {
+    activeTypes.add(type);
+    el.classList.remove('inactive');
+  }
+  updatePinVisibility();
+}
+
+function updatePinVisibility() {
+  pinEls.forEach(({ el, pin }) => {
+    el.style.display = activeTypes.has(pin.type) ? '' : 'none';
+  });
+}
+
+// ── Pins ─────────────────────────────────────────────────────────────────────
+
+function buildPins() {
+  pinsLayer.innerHTML = '';
+  pinEls = [];
+
+  allPins.forEach(pin => {
+    const col = pinColor(pin.type);
+
+    const el = document.createElement('div');
+    el.className = 'pin';
+    el.style.left = (pin.x * imgW) + 'px';
+    el.style.top  = (pin.y * imgH) + 'px';
+    el.style.setProperty('--pin-glow', col);
+
+    el.innerHTML = `
+      <div class="pin-dot" style="background:${col}"></div>
+      <div class="pin-label">${pin.name}</div>
+    `;
+
+    el.addEventListener('mouseenter', (e) => showTooltip(e, pin, col));
+    el.addEventListener('mousemove',  (e) => moveTooltip(e));
+    el.addEventListener('mouseleave', hideTooltip);
+
+    pinsLayer.appendChild(el);
+    pinEls.push({ el, pin });
+  });
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+
+function showTooltip(e, pin, col) {
+  document.getElementById('tt-name').textContent = pin.name;
+  const typeEl = document.getElementById('tt-type');
+  typeEl.textContent = pin.type ?? '';
+  typeEl.style.color = col;
+  const desc = pin.desc || pin.details || '';
+  const descEl = document.getElementById('tt-desc');
+  descEl.textContent = desc;
+  descEl.style.display = desc ? '' : 'none';
+  tooltip.classList.add('visible');
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  const pad = 14;
+  const tw = tooltip.offsetWidth || 220;
+  const th = tooltip.offsetHeight || 60;
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+  if (x + tw > window.innerWidth)  x = e.clientX - tw - pad;
+  if (y + th > window.innerHeight) y = e.clientY - th - pad;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('visible');
+}
+
+// ── Pan & Zoom ────────────────────────────────────────────────────────────────
+
+function applyTransform() {
+  container.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  container.style.transformOrigin = '0 0';
+}
+
+function resetView() {
+  const vw = viewport.clientWidth;
+  const vh = viewport.clientHeight;
+  // Fit the whole map in view with a bit of padding
+  const fitScale = Math.min(vw / imgW, vh / imgH) * 0.95;
+  scale = fitScale;
+  panX = (vw - imgW * scale) / 2;
+  panY = (vh - imgH * scale) / 2;
+  applyTransform();
+}
+
+function clampPan() {
+  // Soft clamp — allow map edges to reach viewport edges
+  const vw = viewport.clientWidth;
+  const vh = viewport.clientHeight;
+  const mapW = imgW * scale;
+  const mapH = imgH * scale;
+  const margin = 80;
+  panX = Math.min(margin, Math.max(vw - mapW - margin, panX));
+  panY = Math.min(margin, Math.max(vh - mapH - margin, panY));
+}
+
+function setupPanZoom() {
+  // Mouse drag
+  viewport.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    panStartX  = panX;
+    panStartY  = panY;
+    viewport.classList.add('dragging');
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    panX = panStartX + (e.clientX - dragStartX);
+    panY = panStartY + (e.clientY - dragStartY);
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+    viewport.classList.remove('dragging');
+  });
+
+  // Scroll to zoom
+  viewport.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = viewport.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    const delta = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+    const newScale = Math.max(0.15, Math.min(8, scale * delta));
+
+    // Zoom toward cursor
+    panX = mx - (mx - panX) * (newScale / scale);
+    panY = my - (my - panY) * (newScale / scale);
+    scale = newScale;
+    clampPan();
+    applyTransform();
+  }, { passive: false });
+
+  // Touch pinch-zoom
+  let lastTouchDist = null;
+  let lastTouchMidX = 0, lastTouchMidY = 0;
+
+  viewport.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      lastTouchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      lastTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      lastTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    } else if (e.touches.length === 1) {
+      isDragging = true;
+      dragStartX = e.touches[0].clientX;
+      dragStartY = e.touches[0].clientY;
+      panStartX  = panX;
+      panStartY  = panY;
+    }
+  }, { passive: true });
+
+  viewport.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (lastTouchDist) {
+        const delta = dist / lastTouchDist;
+        const rect = viewport.getBoundingClientRect();
+        const mx = lastTouchMidX - rect.left;
+        const my = lastTouchMidY - rect.top;
+        const newScale = Math.max(0.15, Math.min(8, scale * delta));
+        panX = mx - (mx - panX) * (newScale / scale);
+        panY = my - (my - panY) * (newScale / scale);
+        scale = newScale;
+        clampPan();
+        applyTransform();
+      }
+      lastTouchDist = dist;
+    } else if (e.touches.length === 1 && isDragging) {
+      panX = panStartX + (e.touches[0].clientX - dragStartX);
+      panY = panStartY + (e.touches[0].clientY - dragStartY);
+      applyTransform();
+    }
+  }, { passive: false });
+
+  viewport.addEventListener('touchend', () => {
+    isDragging = false;
+    lastTouchDist = null;
+  });
+
+  // Zoom buttons
+  document.getElementById('btn-zoom-in').addEventListener('click',  () => zoomBy(1.25));
+  document.getElementById('btn-zoom-out').addEventListener('click', () => zoomBy(1/1.25));
+  document.getElementById('btn-zoom-reset').addEventListener('click', resetView);
+}
+
+function zoomBy(delta) {
+  const vw = viewport.clientWidth;
+  const vh = viewport.clientHeight;
+  const cx = vw / 2, cy = vh / 2;
+  const newScale = Math.max(0.15, Math.min(8, scale * delta));
+  panX = cx - (cx - panX) * (newScale / scale);
+  panY = cy - (cy - panY) * (newScale / scale);
+  scale = newScale;
+  clampPan();
+  applyTransform();
+}
+
+// ── File input fallback ───────────────────────────────────────────────────────
+
+function setupFileInput() {
+  const handleFile = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        uploadPrompt.classList.remove('visible');
+        loadOverlay.classList.remove('hidden');
+        setLoad(20, 'Loading map image...');
+        await loadFromData(data);
+      } catch(e) {
+        alert('Could not load file: ' + (e.message ?? e));
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
+
+  document.body.addEventListener('dragover', e => e.preventDefault());
+  document.body.addEventListener('drop', e => {
+    e.preventDefault();
+    handleFile(e.dataTransfer.files[0]);
+  });
+}
+
+// ── Loader helper ─────────────────────────────────────────────────────────────
+
+function setLoad(pct, msg) {
+  loadBar.style.width = pct + '%';
+  if (msg) loadHint.textContent = msg;
+}
+
+// ── Go ────────────────────────────────────────────────────────────────────────
+
+init().catch(err => {
+  console.error(err);
+  loadHint.textContent = err.message ?? 'Something went wrong loading the map.';
+});
+</script>
+</body>
+</html>
