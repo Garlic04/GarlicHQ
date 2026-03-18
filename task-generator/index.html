@@ -882,13 +882,13 @@
   .player-title.rank-6 { color: #c84bc8; }
 
   .milestones-tab {
-    position: fixed;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    z-index: 100;
     display: flex;
     align-items: stretch;
+  }
+  .milestones-tab:hover,
+  .milestones-tab.open {
+    z-index: 2;
+    position: relative;
   }
   .milestones-trigger {
     writing-mode: vertical-rl;
@@ -973,13 +973,13 @@
   .milestone-reward { font-size: 0.72rem; color: var(--gold); }
 
   .shop-tab {
-    position: fixed;
-    top: calc(50% + 120px);
-    right: 0;
-    transform: translateY(-50%);
-    z-index: 100;
     display: flex;
     align-items: stretch;
+  }
+  .shop-tab:hover,
+  .shop-tab.open {
+    z-index: 2;
+    position: relative;
   }
   .shop-trigger {
     writing-mode: vertical-rl;
@@ -1333,7 +1333,9 @@
   </div>
 
   <!-- Tracker -->
-  <div style="text-align:center;margin-bottom:0.5rem;"><span class="player-title" id="player-title">— Wanderer —</span></div>
+  <div style="text-align:center;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <span class="player-title" id="player-title">— Wanderer —</span>
+  </div>
   <div class="tracker-panel">
     <div class="tracker-stat">
       <div class="tracker-label">Tasks Done</div>
@@ -1362,7 +1364,17 @@
 
   <div class="error-msg" id="error-msg">Unable to generate a task. Check your stats and try again.</div>
 
-  <button class="generate-btn" onclick="generateTask()">⚔ Generate Task</button>
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <button class="generate-btn" onclick="generateTask()" style="flex:1;">⚔ Generate Task</button>
+    <button id="picker-charge-btn" onclick="activateTaskPicker()" title="Use a Task Picker charge" style="display:none;padding:0 14px;background:rgba(74,122,204,0.15);border:1px solid #4a7acc;border-radius:8px;color:#7aaaee;font-size:18px;cursor:pointer;transition:background 0.2s;flex-shrink:0;" onmouseover="this.style.background='rgba(74,122,204,0.3)'" onmouseout="this.style.background='rgba(74,122,204,0.15)'">🎯<span id="picker-charge-count" style="font-size:11px;vertical-align:super;margin-left:2px;"></span></button>
+  </div>
+
+  <!-- Task Picker Modal -->
+  <div id="task-picker-modal" style="display:none;margin-top:12px;">
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">🎯 Choose your task:</div>
+    <div id="task-picker-options" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <button onclick="cancelTaskPicker()" style="margin-top:10px;width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:13px;cursor:pointer;font-family:inherit;">Cancel (keep charge)</button>
+  </div>
 
   <!-- Task Display -->
   <div id="task-display">
@@ -1453,6 +1465,17 @@
             <div id="contract-progress-text" style="font-size:12px;color:var(--gold);font-family:'Share Tech Mono',monospace;white-space:nowrap;"></div>
           </div>
         </div>
+        <!-- Cancel contract -->
+        <div id="contract-cancel-confirm" style="display:none;background:rgba(196,75,75,0.08);border:1px solid #6b2020;border-radius:8px;padding:10px 12px;margin-top:8px;">
+          <div style="font-size:13px;color:var(--text-bright);margin-bottom:8px;">⚠ Cancel this contract? All progress will be lost.</div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="confirmCancelContract()" style="flex:1;padding:7px;background:rgba(196,75,75,0.2);border:1px solid #c84b4b;border-radius:6px;color:#e07070;font-size:13px;cursor:pointer;font-family:inherit;">Yes, cancel</button>
+            <button onclick="hideCancelContract()" style="flex:1;padding:7px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:13px;cursor:pointer;font-family:inherit;">Keep going</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button id="contract-reroll-use-btn" onclick="useContractReroll()" style="display:none;flex:1;padding:7px;background:rgba(201,162,39,0.1);border:1px solid var(--gold-dim);border-radius:6px;color:var(--gold);font-size:13px;cursor:pointer;font-family:inherit;">📜 Use Reroll (<span id="contract-reroll-held">0</span>)</button>
+        </div>
       </div>
 
     </div>
@@ -1500,6 +1523,8 @@
 
 </div>
 
+<div style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+
 <div class="milestones-tab" id="milestones-tab">
   <div class="milestones-panel" id="milestones-panel">
     <div class="milestones-inner">
@@ -1529,11 +1554,32 @@
           <button class="shop-buy-btn" id="shop-buy-btn" onclick="buyReroll()">Buy</button>
         </div>
       </div>
+      <div class="shop-item" id="shop-picker-item">
+        <div class="shop-item-name">🎯 Task Picker</div>
+        <div class="shop-item-desc">Choose your next task from 3 options.</div>
+        <div class="shop-item-footer">
+          <span class="shop-cost">50 pts</span>
+          <span class="shop-stock">Held: <span id="shop-picker-count">0</span></span>
+          <button class="shop-buy-btn" id="shop-picker-buy-btn" onclick="buyTaskPicker()">Buy</button>
+        </div>
+      </div>
+      <div class="shop-item" id="shop-contract-reroll-item">
+        <div class="shop-item-name">📜 Contract Reroll</div>
+        <div class="shop-item-desc">Cancel your active contract and choose a new one.</div>
+        <div id="shop-contract-locked-note" style="font-size:11px;color:#c84b4b;margin-top:3px;display:none;">Unlock contracts first (350 tasks)</div>
+        <div class="shop-item-footer">
+          <span class="shop-cost">80 pts</span>
+          <span class="shop-stock">Held: <span id="shop-contract-reroll-count">0</span> / 3</span>
+          <button class="shop-buy-btn" id="shop-contract-reroll-buy-btn" onclick="buyContractReroll()">Buy</button>
+        </div>
+      </div>
       </div><!-- /shop-contents -->
     </div>
   </div>
   <div class="shop-trigger" id="shop-trigger" onclick="toggleShop()">Shop</div>
 </div>
+
+</div><!-- /side-tabs wrapper -->
 
 <div class="toast" id="toast">Task complete! Well done, adventurer.</div>
 
@@ -1665,10 +1711,16 @@ const COMBAT_TASKS = [
   { name: 'Men & Women',       icon: '🧑', min: 1,  max: 35,  loc: 'Lumbridge or Varrock',              countMin: 20, countMax: 60, prayer: false , npcImage: 'Man' },
   { name: 'Barbarians',        icon: '🪓', min: 1,  max: 40,  loc: 'Barbarian Village',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Barbarian_(Fafner)' },
   { name: 'Al-Kharid Warriors',icon: '⚔️', min: 1,  max: 45,  loc: 'Al-Kharid palace',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Al_Kharid_warrior' },
+  { name: 'Bears',             icon: '🐻', min: 1,  max: 45,  loc: 'East of Ardougne',                  countMin: 20, countMax: 60,  prayer: false, npcImage: 'Grizzly_bear_(historical)' },
   { name: 'Guards',            icon: '💂', min: 15, max: 55,  loc: 'Varrock or Falador',               countMin: 20, countMax: 60, prayer: false , npcImage: 'Guard' },
   { name: 'Skeletons',         icon: '💀', min: 15, max: 55,  loc: 'Edgeville Dungeon or Karamja Volcano', countMin: 20, countMax: 60, prayer: false , npcImage: 'Skeleton' },
   { name: 'Black Knights',     icon: '🗡️', min: 25, max: 65,  loc: 'Ice Mountain dungeon',             countMin: 20, countMax: 60, prayer: false , npcImage: 'Black_Knight_(historical)' },
   { name: 'Dark Wizards',      icon: '🧙', min: 1,  max: 40,  loc: 'South of Varrock',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Dark_wizard' },
+  { name: 'Zombies',            icon: '🧟', min: 1,  max: 40,  loc: 'Edgeville Dungeon',                 countMin: 20, countMax: 60,  prayer: false, npcImage: 'Zombie_(Level_13)_(historical)' },
+  { name: 'Ghosts',             icon: '👻', min: 1,  max: 40,  loc: 'Edgeville Dungeon or Melzar\'s Maze', countMin: 20, countMax: 60,  prayer: false, npcImage: 'Ghost_(historical)' },
+  { name: 'Scorpions',          icon: '🦂', min: 1,  max: 40,  loc: 'Al-Kharid or Dwarven Mine',          countMin: 20, countMax: 60,  prayer: false, npcImage: 'Scorpion_(historical)' },
+  { name: 'Wolves',             icon: '🐺', min: 20, max: 65,  loc: 'White Wolf Mountain',                countMin: 20, countMax: 60,  prayer: false, npcImage: 'Wolf_(historical)' },
+  { name: 'Chaos Druids',       icon: '🌿', min: 1,  max: 126, loc: 'Edgeville Dungeon or Taverley Dungeon', countMin: 20, countMax: 80, prayer: false, note: 'Great for herb drops. Beware of PKers in Edgeville Dungeon', npcImage: 'Chaos_druid' },
 
   // Mid tier
   { name: 'Hobgoblins',        icon: '👾', min: 30, max: 126,  loc: 'Edgeville Dungeon or Port Sarim Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Hobgoblin' },
@@ -1679,6 +1731,9 @@ const COMBAT_TASKS = [
   { name: 'Earth Warriors',    icon: '🪨', min: 40, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false, note: '⚠️ Located in the Wilderness (level 5). Accessible via the monkey bars shortcut in Edgeville Dungeon (requires 15 Agility), or the long route through the dungeon', agility: 15 , npcImage: 'Earth_warrior' },
   { name: 'Jogres',            icon: '🦍', min: 45, max: 126,  loc: 'Karamja',                          countMin: 50, countMax: 120, prayer: false , npcImage: 'Jogre_(historical)' },
   { name: 'Ogres',             icon: '👹', min: 40, max: 126,  loc: "Gu'Tanoth",                        countMin: 50, countMax: 120, prayer: false , npcImage: 'Ogre' },
+  { name: 'Chaos Dwarves',     icon: '⛏', min: 35, max: 90,  loc: 'Taverley Dungeon',                   countMin: 30, countMax: 80,  prayer: false, npcImage: 'Chaos_dwarf' },
+  { name: 'Trolls',            icon: '🗿', min: 55, max: 100, loc: 'Death Plateau or Trollheim',          countMin: 30, countMax: 80,  prayer: false, note: 'Death Plateau quest recommended for easier access', npcImage: 'Mountain_troll' },
+  { name: 'Tribesmen',         icon: '🏹', min: 30, max: 126,  loc: 'Karamja jungle',                   countMin: 50, countMax: 120, prayer: false, note: 'Found in the Karamja jungle south of the volcano. Poisonous — bring antipoison', npcImage: 'Tribesman_(historical)' },
 
   // High tier
   { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon (level 5-12 Wilderness) — no quest required, but bring PK awareness' , npcImage: 'Fire_giant_(historical)' },
@@ -1686,6 +1741,7 @@ const COMBAT_TASKS = [
   { name: 'Greater Demons',    icon: '👿', min: 75, max: 126,  loc: 'Brimhaven Dungeon',                countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Greater_demon_(historical)' },
   { name: 'Blue Dragons',      icon: '🐉', min: 85, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: 'Anti-dragon shield required; prayer recommended' , npcImage: 'Blue_dragon_(historical)' },
   { name: 'Baby Blue Dragons', icon: '🐉', min: 40, max: 100,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, npcImage: 'Baby_blue_dragon_(historical_v1)' },
+  { name: 'Black Dragons',     icon: '🐲', min: 90, max: 126,  loc: 'Taverley Dungeon',                 countMin: 30, countMax: 100, prayer: true,  note: 'Anti-dragon shield required; prayer recommended', npcImage: 'Black_dragon_(historical)' },
   { name: 'Hellhounds',        icon: '🐕', min: 90, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Hellhound_(historical)' },
   { name: 'Black Demons',      icon: '🖤', min: 99, max: 126,  loc: 'Taverley Dungeon or Edgeville Dungeon', countMin: 50, countMax: 150, prayer: true, note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Black_demon_(historical)' },
   { name: 'Green Dragons',     icon: '🐲', min: 60, max: 126,  loc: 'Wilderness',                       countMin: 50, countMax: 150, prayer: false, note: '⚠️ Wilderness — bring only what you can afford to lose' , npcImage: 'Green_dragon_(historical)' },
@@ -1785,6 +1841,14 @@ const SKILL_TASKS = [
   { skill: 'agility', name: 'Brimhaven tickets (high)', icon: '🎟️', req: 80, unitMin: 150, unitMax: 350, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket' },
   { skill: 'agility', name: 'Barbarian Outpost laps',   icon: '🏃', req: 35, unitMin: 20,  unitMax: 60,  unit: 'laps', loc: 'Barbarian Outpost Agility Course, north of Baxtorian Falls', itemImage: 'Agility_icon_(detail)', maxReq: 51 },
   { skill: 'agility', name: 'Wilderness laps',          icon: '🏃', req: 52, unitMin: 15,  unitMax: 45,  unit: 'laps', loc: 'Wilderness Agility Course, level 50-56 Wilderness', note: '⚠️ Located deep in the Wilderness. Bring nothing you are not willing to lose.', itemImage: 'Agility_icon_(detail)' },
+
+  // Gathering
+  { skill: 'gathering', name: 'Snape grass',    icon: '🌿', req: 1,  unitMin: 50,  unitMax: 150, unit: 'snape grass',    loc: 'Hobgoblin Peninsula (south-west of Crafting Guild)', itemImage: 'Snape_grass',      note: 'Noted snape grass is a popular money-making method.' },
+  { skill: 'gathering', name: 'Flax',           icon: '🌾', req: 1,  unitMin: 100, unitMax: 300, unit: 'flax',           loc: 'South of Seers\' Village',                          itemImage: 'Flax',             note: 'Can be spun into bow strings at the spinning wheel upstairs in Seers\' bank.' },
+  { skill: 'gathering', name: 'Potato cactus',  icon: '🌵', req: 1,  unitMin: 30,  unitMax: 100, unit: 'potato cacti',   loc: 'Kalphite Lair',                                     itemImage: 'Potato_cactus',    note: 'Found growing in the Kalphite Lair. Watch out for Kalphites.' },
+  { skill: 'gathering', name: 'Jangerberries',  icon: '🫐', req: 1,  unitMin: 30,  unitMax: 100, unit: 'jangerberries',  loc: 'Small island west of Yanille',                      itemImage: 'Jangerberries',    note: 'Cross the stepping stones west of Yanille to reach the island. Bring antipoison — the area has Ogres.' },
+  { skill: 'gathering', name: 'White berries',  icon: '⚪', req: 1,  unitMin: 20,  unitMax: 60,  unit: 'white berries',  loc: 'Wilderness, level 4-5 (south of Black Knights\' Fortress)', itemImage: 'White_berries', note: '⚠️ Located in the Wilderness — bring only what you can afford to lose.' },
+  { skill: 'gathering', name: 'Mort myre fungi',icon: '🍄', req: 1,  unitMin: 50,  unitMax: 150, unit: 'mort myre fungi', loc: 'Mort Myre Swamp',                                   itemImage: 'Mort_myre_fungus', questReq: 'Nature Spirit', note: 'Requires completion of <strong>Nature Spirit</strong>. Use a Silver sickle (b) on logs, roots or branches.' },
 ];
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -1846,12 +1910,13 @@ function taskPointValue(task) {
   // Boss tier
   if (['King Black Dragon','Kalphite Queen'].includes(name)) return BASE_POINTS.combat_boss;
   // High tier
-  const high = ['Fire Giants','Lesser Demons','Greater Demons','Blue Dragons','Hellhounds','Black Demons','Green Dragons','Kalphite Guardians'];
+  const high = ['Fire Giants','Lesser Demons','Greater Demons','Blue Dragons','Black Dragons','Hellhounds','Black Demons','Green Dragons','Kalphite Guardians'];
   if (high.includes(name)) return BASE_POINTS.combat_high;
   // Mid tier
-  const mid = ['Hobgoblins','Giants','Moss Giants','Ice Giants','Ice Warriors','Earth Warriors','Jogres','Ogres','Kalphite Soldiers'];
+  const mid = ['Hobgoblins','Giants','Moss Giants','Ice Giants','Ice Warriors','Earth Warriors','Jogres','Ogres','Kalphite Soldiers','Tribesmen','Wolves','Chaos Dwarves','Trolls'];
   if (mid.includes(name)) return BASE_POINTS.combat_mid;
   return BASE_POINTS.combat_low;
+  // (combat_low covers: Chickens, Cows, Goblins, Men & Women, Barbarians, Al-Kharid Warriors, Bears, Guards, Skeletons, Black Knights, Dark Wizards, Zombies, Ghosts, Scorpions, Chaos Druids)
 }
 
 
@@ -2012,6 +2077,7 @@ function generateDailyTask() {
     fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'),
     rc: getStat('stat-rc'), agility, smithing: getStat('stat-smithing'),
     crafting: getStat('stat-crafting'), thieving: getStat('stat-thieving'), herblore: getStat('stat-herblore'),
+    gathering: 1,
   };
 
   const types = ['combat','combat','combat','skill','skill','skill','clue','quest'];
@@ -2448,6 +2514,173 @@ async function loadPrestige() {
   // Nothing extra to load
 }
 
+// ─── Task Picker ──────────────────────────────────────────────────────────────
+
+const TASK_PICKER_COST = 50;
+let pickerActive = false;
+
+function buyTaskPicker() {
+  if (tracker.points < TASK_PICKER_COST) return;
+  tracker.points -= TASK_PICKER_COST;
+  tracker.pickerCharges = (tracker.pickerCharges || 0) + 1;
+  saveTracker();
+  renderTracker();
+  renderPickerBtn();
+  showToast('🎯 Task Picker charge added!');
+}
+
+function renderPickerBtn() {
+  const btn      = document.getElementById('picker-charge-btn');
+  const countEl  = document.getElementById('picker-charge-count');
+  const charges  = tracker.pickerCharges || 0;
+  if (!btn) return;
+  btn.style.display = (isShopUnlocked() && charges > 0) ? 'flex' : 'none';
+  if (countEl) countEl.textContent = charges > 1 ? charges : '';
+}
+
+function activateTaskPicker() {
+  const charges = tracker.pickerCharges || 0;
+  if (charges <= 0) return;
+  pickerActive = true;
+
+  // Generate 3 distinct task options
+  const options = [];
+  const maxTries = 30;
+  let tries = 0;
+  while (options.length < 3 && tries < maxTries) {
+    tries++;
+    const task = buildOneTask();
+    if (!task) continue;
+    // Avoid duplicates by name
+    if (options.some(o => o.title === task.title)) continue;
+    options.push(task);
+  }
+  if (!options.length) { showToast('Could not generate options — check your stats!'); pickerActive = false; return; }
+
+  const modal   = document.getElementById('task-picker-modal');
+  const listEl  = document.getElementById('task-picker-options');
+  listEl.innerHTML = '';
+  options.forEach(task => {
+    const div = document.createElement('div');
+    div.className = 'contract-option';
+    const icon = task.npcImage || task.itemImage ? '' : (task.icon || '⚔️');
+    div.innerHTML = `
+      <div class="contract-option-left">
+        <div class="contract-option-name">${icon ? icon + ' ' : ''}${task.title}</div>
+        <div class="contract-option-desc">${task.desc}</div>
+      </div>`;
+    div.onclick = () => selectPickerTask(task);
+    listEl.appendChild(div);
+  });
+  modal.style.display = 'block';
+  document.getElementById('task-display').style.display = 'none';
+}
+
+function selectPickerTask(task) {
+  tracker.pickerCharges = Math.max(0, (tracker.pickerCharges || 0) - 1);
+  saveTracker();
+  pickerActive = false;
+  document.getElementById('task-picker-modal').style.display = 'none';
+  currentTask = task;
+  dbPut('settings', 'currentTask', task);
+  renderTask(task);
+  renderPickerBtn();
+  renderShop();
+}
+
+function cancelTaskPicker() {
+  pickerActive = false;
+  document.getElementById('task-picker-modal').style.display = 'none';
+}
+
+// Builds a single task object using current mode/stats — shared between generateTask and picker
+function buildOneTask() {
+  const cb      = calcCombatLevel();
+  const agility = getStat('stat-agility');
+  const stats   = {
+    wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'),
+    fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'),
+    rc: getStat('stat-rc'), agility, smithing: getStat('stat-smithing'),
+    crafting: getStat('stat-crafting'), thieving: getStat('stat-thieving'), herblore: getStat('stat-herblore'),
+    gathering: 1,
+  };
+  const types = mode === 'combat' ? ['combat','combat','combat','combat'] :
+                mode === 'skill'  ? ['skill','skill','skill','skill'] :
+                ['combat','combat','combat','skill','skill','skill','clue','quest'];
+  const pickType = types[randInt(0, types.length - 1)];
+  let task = null;
+
+  if (pickType === 'combat') {
+    const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    if (!eligible.length) return null;
+    const t = eligible[randInt(0, eligible.length - 1)];
+    const count = randInt(t.countMin, t.countMax);
+    task = { type:'combat', name:t.name, icon:t.icon, npcImage:t.npcImage, title:`Kill ${count} ${t.name}`, desc:`Head to ${t.loc} and begin your hunt.`, note:t.note||null };
+  } else if (pickType === 'skill') {
+    const allEl = SKILL_TASKS.filter(t => {
+      if (!enabledSkills.has(t.skill)) return false;
+      if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq||99)) return false;
+      if (t.questReq && !completedQuests.has(t.questReq)) return false;
+      return true;
+    });
+    if (!allEl.length) return null;
+    const t = allEl[randInt(0, allEl.length - 1)];
+    const count = randInt(t.unitMin, t.unitMax);
+    task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title:`${skillLabel(t.skill)} ${count} ${t.unit}`, desc:`Location: ${t.loc}.`, note:t.note||null };
+  } else if (pickType === 'clue') {
+    const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
+    if (!eligibleClues.length) return null;
+    const t = eligibleClues[randInt(0, eligibleClues.length - 1)];
+    task = { type:'clue', name:t.name, icon:t.icon, itemImage:t.itemImage||null, title:t.title, desc:t.desc, note:t.note||null };
+  } else if (pickType === 'quest') {
+    const eligible = QUEST_TASKS.filter(isQuestEligible);
+    if (!eligible.length) return null;
+    const t = eligible[randInt(0, eligible.length - 1)];
+    task = { type:'quest', name:t.name, icon:'📜', itemImage:'Quest_point_icon', title:`Complete: ${t.name}`, desc:`Start this quest in-game!`, note:null, questName:t.name };
+  }
+  return task;
+}
+
+// ─── Contract Reroll ──────────────────────────────────────────────────────────
+
+const CONTRACT_REROLL_COST = 80;
+const CONTRACT_REROLL_MAX  = 3;
+
+function buyContractReroll() {
+  if (!isContractsUnlocked()) return;
+  if (tracker.points < CONTRACT_REROLL_COST) return;
+  if ((tracker.contractRerolls || 0) >= CONTRACT_REROLL_MAX) return;
+  tracker.points -= CONTRACT_REROLL_COST;
+  tracker.contractRerolls = (tracker.contractRerolls || 0) + 1;
+  saveTracker();
+  renderTracker();
+  showToast('📜 Contract Reroll purchased!');
+}
+
+function useContractReroll() {
+  if ((tracker.contractRerolls || 0) <= 0) return;
+  document.getElementById('contract-cancel-confirm').style.display = 'block';
+  document.getElementById('contract-reroll-use-btn').style.display = 'none';
+}
+
+function hideCancelContract() {
+  document.getElementById('contract-cancel-confirm').style.display = 'none';
+  const held = tracker.contractRerolls || 0;
+  if (held > 0) document.getElementById('contract-reroll-use-btn').style.display = 'flex';
+}
+
+function confirmCancelContract() {
+  tracker.contractRerolls = Math.max(0, (tracker.contractRerolls || 0) - 1);
+  activeContract  = null;
+  contractOptions = [];
+  saveTracker();
+  saveContracts();
+  document.getElementById('contract-cancel-confirm').style.display = 'none';
+  showToast('Contract cancelled. Choose a new one!');
+  pickContractOptions();
+  renderTracker();
+}
+
 function toggleChallengeMode() {
   if (!isChallengeUnlocked()) return;
   challengeEnabled = !challengeEnabled;
@@ -2646,6 +2879,18 @@ function buildChainTask(primaryTask, stats) {
     }
   }
 
+  // Gathering → Crafting: Flax → Bow strings
+  if (primaryTask.skill === 'gathering' && primaryTask.name === 'Flax') {
+    if (enabledSkills.has('gathering')) {
+      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      return {
+        step1: { title: `Pick ${count} flax`, loc: primaryTask.loc, itemImage: 'Flax', skill: 'gathering', note: primaryTask.note },
+        step2: { title: `Spin them into bow strings`, loc: 'Spinning wheel, upstairs in Seers\' bank', itemImage: 'Bow_string', skill: 'crafting', note: 'No Crafting level required to spin flax' },
+        count,
+      };
+    }
+  }
+
   return null; // no valid chain found
 }
 
@@ -2656,21 +2901,20 @@ function toggleShop() {
 }
 
 function renderShop() {
-  const count    = tracker.safeRerolls || 0;
   const pts      = tracker.points || 0;
   const unlocked = isShopUnlocked();
 
-  // Trigger label — show lock icon when locked
+  // Trigger label
   const trigger = document.getElementById('shop-trigger');
   if (trigger) trigger.textContent = unlocked ? 'Shop' : '🔒 Shop';
 
-  // Show locked msg or contents
-  const lockedMsg  = document.getElementById('shop-locked-msg');
-  const shopConts  = document.getElementById('shop-contents');
-  if (lockedMsg) lockedMsg.style.display  = unlocked ? 'none' : 'block';
-  if (shopConts) shopConts.style.display  = unlocked ? 'block' : 'none';
+  const lockedMsg = document.getElementById('shop-locked-msg');
+  const shopConts = document.getElementById('shop-contents');
+  if (lockedMsg) lockedMsg.style.display = unlocked ? 'none' : 'block';
+  if (shopConts) shopConts.style.display = unlocked ? 'block' : 'none';
 
-  // Shop panel counts
+  // Safe Reroll
+  const count   = tracker.safeRerolls || 0;
   const stockEl = document.getElementById('shop-safe-reroll-count');
   if (stockEl) stockEl.textContent = count;
   const buyBtn = document.getElementById('shop-buy-btn');
@@ -2681,11 +2925,34 @@ function renderShop() {
   if (srBtn) {
     const countEl = document.getElementById('safe-reroll-count');
     if (countEl) countEl.textContent = count;
-    if (count > 0 && currentTask && unlocked) {
-      srBtn.classList.add('visible');
-    } else {
-      srBtn.classList.remove('visible');
-    }
+    if (count > 0 && currentTask && unlocked) srBtn.classList.add('visible');
+    else srBtn.classList.remove('visible');
+  }
+
+  // Task Picker
+  const pickerCharges = tracker.pickerCharges || 0;
+  const pickerCount   = document.getElementById('shop-picker-count');
+  if (pickerCount) pickerCount.textContent = pickerCharges;
+  const pickerBuy = document.getElementById('shop-picker-buy-btn');
+  if (pickerBuy) pickerBuy.disabled = pts < TASK_PICKER_COST;
+  renderPickerBtn();
+
+  // Contract Reroll
+  const cRerolls    = tracker.contractRerolls || 0;
+  const cRCount     = document.getElementById('shop-contract-reroll-count');
+  if (cRCount) cRCount.textContent = cRerolls;
+  const cRBuy       = document.getElementById('shop-contract-reroll-buy-btn');
+  const cRNote      = document.getElementById('shop-contract-locked-note');
+  const contractsOn = isContractsUnlocked();
+  if (cRNote) cRNote.style.display = contractsOn ? 'none' : 'block';
+  if (cRBuy)  cRBuy.disabled = pts < CONTRACT_REROLL_COST || cRerolls >= CONTRACT_REROLL_MAX || !contractsOn;
+
+  // Contract reroll use btn
+  const useBtn  = document.getElementById('contract-reroll-use-btn');
+  const heldEl  = document.getElementById('contract-reroll-held');
+  if (useBtn) {
+    useBtn.style.display = (cRerolls > 0 && activeContract) ? 'flex' : 'none';
+    if (heldEl) heldEl.textContent = cRerolls;
   }
 }
 
@@ -2779,14 +3046,15 @@ function updateCombatDisplay() {
 }
 
 const SKILL_DEFS = [
-  { key: 'wc',       label: 'Woodcutting', icon: 'stat-wc' },
-  { key: 'mining',   label: 'Mining',      icon: 'stat-mining' },
-  { key: 'fishing',  label: 'Fishing',     icon: 'stat-fishing' },
-  { key: 'fm',       label: 'Firemaking',  icon: 'stat-fm' },
-  { key: 'cooking',  label: 'Cooking',     icon: 'stat-cooking' },
-  { key: 'fletching',label: 'Fletching',   icon: 'stat-fletching' },
-  { key: 'rc',       label: 'Runecrafting',icon: 'stat-rc' },
-  { key: 'agility',  label: 'Agility',     icon: 'stat-agility' },
+  { key: 'wc',        label: 'Woodcutting', icon: 'stat-wc' },
+  { key: 'mining',    label: 'Mining',      icon: 'stat-mining' },
+  { key: 'fishing',   label: 'Fishing',     icon: 'stat-fishing' },
+  { key: 'fm',        label: 'Firemaking',  icon: 'stat-fm' },
+  { key: 'cooking',   label: 'Cooking',     icon: 'stat-cooking' },
+  { key: 'fletching', label: 'Fletching',   icon: 'stat-fletching' },
+  { key: 'rc',        label: 'Runecrafting',icon: 'stat-rc' },
+  { key: 'agility',   label: 'Agility',     icon: 'stat-agility' },
+  { key: 'gathering', label: 'Gathering',   icon: null },
 ];
 
 // All skills enabled by default
@@ -2902,7 +3170,7 @@ function generateTask(isReroll = false) {
   const agility = getStat('stat-agility');
 
   if (doMix) {
-    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility') };
+    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility'), gathering: 1 };
     const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
     const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && skillStats[t.skill] <= (t.maxReq || 99)).length > 0;
     const hasQuest  = QUEST_TASKS.filter(isQuestEligible).length > 0;
@@ -2958,17 +3226,17 @@ function generateTask(isReroll = false) {
 
     // Challenge Mode: if shouldChain, try to pick only from chainable skills first
     const wantChain = shouldChain();
-    const chainableSkills = new Set(['wc','fishing','mining','essence']);
+    const chainableSkills = new Set(['wc','fishing','mining','essence','gathering']);
     const chainableEligible = wantChain ? allEligible.filter(t => chainableSkills.has(t.skill)) : [];
     const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligible;
 
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.unitMin, t.unitMax);
 
-    const chain = (wantChain && (chainableSkills.has(t.skill) || t.name === 'Rune essence')) ? buildChainTask(t, stats) : null;
+    const chain = (wantChain && (chainableSkills.has(t.skill) || t.name === 'Rune essence' || (t.skill === 'gathering' && t.name === 'Flax'))) ? buildChainTask(t, stats) : null;
 
     // Build combined title
-    const chainVerb2Map = { fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', smithing: 'Smelt' };
+    const chainVerb2Map = { fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', smithing: 'Smelt', crafting: 'Spin' };
     let chainedTitle, chainedDesc;
     if (chain && chain.barName) {
       chainedTitle = chain.threeStep
@@ -2977,6 +3245,9 @@ function generateTask(isReroll = false) {
       chainedDesc = `Location: ${t.loc}.`;
     } else if (chain && chain.runeName) {
       chainedTitle = `Mine ${chain.count} essence & Craft into ${chain.runeName}`;
+      chainedDesc = `Location: ${t.loc}.`;
+    } else if (chain && t.name === 'Flax') {
+      chainedTitle = `Pick & Spin ${chain.count} flax into bow strings`;
       chainedDesc = `Location: ${t.loc}.`;
     } else if (chain) {
       chainedTitle = `${skillLabel(t.skill)} & ${chainVerb2Map[chain.step2.skill] || 'Use'} ${chain.count} ${t.unit}`;
@@ -3040,7 +3311,7 @@ function skillLabel(skill) {
   const map = {
     wc: 'Chop', mining: 'Mine', fishing: 'Catch',
     fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', rc: 'Craft',
-    agility: 'Collect'
+    agility: 'Collect', gathering: 'Gather'
   };
   return map[skill] || 'Gather';
 }
