@@ -548,10 +548,7 @@ function buildLegend(types) {
     item.dataset.type = type;
     const DISPLAY_NAMES = { character: 'NPCs', faction: 'Quest' };
     const label = DISPLAY_NAMES[type] ?? (type.charAt(0).toUpperCase() + type.slice(1));
-    item.innerHTML = `
-      <div class="legend-dot" style="background:\${col}"></div>
-      \${label}
-    `;
+    item.innerHTML = '<div class="legend-dot" style="background:' + col + '"></div>' + label;
     item.addEventListener('click', () => toggleType(type, item));
     legend.appendChild(item);
   });
