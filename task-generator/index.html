@@ -1552,6 +1552,7 @@
         <button onclick="copyStreamKey()" style="padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:12px;cursor:pointer;font-family:inherit;">Copy</button>
       </div>
       <div style="font-size:11px;color:rgba(201,162,39,0.35);margin-top:6px;">OBS overlay URL: <span id="stream-overlay-url" style="font-family:monospace;">https://garlichq.com/overlay.html?key=...</span></div>
+      <button onclick="pushToOverlay(currentTask)" style="margin-top:6px;width:100%;padding:5px;background:rgba(201,162,39,0.08);border:1px solid rgba(201,162,39,0.2);border-radius:4px;color:rgba(201,162,39,0.5);font-size:11px;cursor:pointer;font-family:inherit;">Test sync</button>
       <div id="stream-key-msg" style="font-size:11px;color:#4aaa4a;margin-top:4px;display:none;"></div>
     </div>
   </div>
@@ -2267,7 +2268,7 @@ async function pushToOverlay(task) {
   const key = localStorage.getItem('garlichq_stream_key');
   if (!key) return; // only push if a stream key has been set
   try {
-    await fetch(`${WORKER_URL}/task`, {
+    const res = await fetch(`${WORKER_URL}/task`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -2283,7 +2284,22 @@ async function pushToOverlay(task) {
         }
       })
     });
-  } catch(e) { /* silently fail — overlay sync is non-critical */ }
+    const data = await res.json();
+    console.log('[Overlay sync]', res.status, data);
+    // Update status indicator in streaming panel
+    const msg = document.getElementById('stream-key-msg');
+    if (msg) {
+      msg.textContent = res.ok ? '✓ Overlay synced' : '✗ Sync failed: ' + res.status;
+      msg.style.color  = res.ok ? '#4aaa4a' : '#c84b4b';
+      msg.style.display = 'block';
+      clearTimeout(msg._t);
+      msg._t = setTimeout(() => msg.style.display = 'none', 3000);
+    }
+  } catch(e) {
+    console.error('[Overlay sync error]', e);
+    const msg = document.getElementById('stream-key-msg');
+    if (msg) { msg.textContent = '✗ Network error'; msg.style.color = '#c84b4b'; msg.style.display = 'block'; }
+  }
 }
 const SAVE_KEY      = 'taskmaster_stats_v1';
 const TRACKER_KEY   = 'taskmaster_tracker_v1';
@@ -4154,7 +4170,7 @@ function skillLabel(skill) {
   const map = {
     wc: 'Chop', mining: 'Mine', fishing: 'Catch',
     fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', rc: 'Craft',
-    agility: 'Collect', gathering: 'Gather',
+    agility: 'Complete', gathering: 'Gather',
     thieving: 'Train', herblore: 'Train', crafting: 'Train',
   };
   return map[skill] || 'Gather';
