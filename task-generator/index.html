@@ -1540,6 +1540,22 @@
     </div>
   </div>
 
+  <!-- Streaming (hidden from casual users) -->
+  <div style="margin-top:24px;border-top:1px solid rgba(201,162,39,0.08);padding-top:8px;">
+    <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'" style="font-size:0.65rem;color:rgba(201,162,39,0.2);letter-spacing:0.1em;cursor:pointer;user-select:none;text-align:right;">⚙ streaming</div>
+    <div style="display:none;margin-top:8px;">
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Stream key — paste this into your OBS overlay URL</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input id="stream-key-input" type="text" placeholder="No key set" readonly
+          style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:12px;padding:5px 8px;font-family:monospace;">
+        <button onclick="generateStreamKey()" style="padding:5px 10px;background:rgba(201,162,39,0.1);border:1px solid var(--gold-dim);border-radius:4px;color:var(--gold);font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;">New key</button>
+        <button onclick="copyStreamKey()" style="padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:12px;cursor:pointer;font-family:inherit;">Copy</button>
+      </div>
+      <div style="font-size:11px;color:rgba(201,162,39,0.35);margin-top:6px;">OBS overlay URL: <span id="stream-overlay-url" style="font-family:monospace;">https://garlichq.com/overlay.html?key=...</span></div>
+      <div id="stream-key-msg" style="font-size:11px;color:#4aaa4a;margin-top:4px;display:none;"></div>
+    </div>
+  </div>
+
   </div>
 
   <div class="tab-content active" id="tab-tasks">
@@ -2207,6 +2223,63 @@ const SKILL_TASKS = [
 // ─── State ───────────────────────────────────────────────────────────────────
 
 let mode = 'mix';
+
+const WORKER_URL = 'https://lostcity-hiscores.nehughes97.workers.dev';
+
+// ─── Stream key ───────────────────────────────────────────────────────────────
+function loadStreamKey() {
+  const key = localStorage.getItem('garlichq_stream_key');
+  const input = document.getElementById('stream-key-input');
+  const urlEl = document.getElementById('stream-overlay-url');
+  if (input) input.value = key || '';
+  if (urlEl)  urlEl.textContent = key
+    ? `https://garlichq.com/overlay.html?key=${key}`
+    : 'https://garlichq.com/overlay.html?key=...';
+  return key;
+}
+
+function generateStreamKey() {
+  const key = 'garlic-' + Array.from(crypto.getRandomValues(new Uint8Array(6)))
+    .map(b => b.toString(16).padStart(2,'0')).join('');
+  localStorage.setItem('garlichq_stream_key', key);
+  loadStreamKey();
+  const msg = document.getElementById('stream-key-msg');
+  if (msg) { msg.textContent = '✓ New key saved!'; msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 2500); }
+}
+
+function copyStreamKey() {
+  const key = localStorage.getItem('garlichq_stream_key');
+  if (!key) return;
+  const urlEl = document.getElementById('stream-overlay-url');
+  const toCopy = urlEl ? urlEl.textContent : key;
+  navigator.clipboard.writeText(toCopy);
+  const msg = document.getElementById('stream-key-msg');
+  if (msg) { msg.textContent = '✓ Copied!'; msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 2000); }
+}
+
+// Push current task + tracker state to worker so OBS overlay can read it
+async function pushToOverlay(task) {
+  const key = localStorage.getItem('garlichq_stream_key');
+  if (!key) return; // only push if a stream key has been set
+  try {
+    await fetch(`${WORKER_URL}/task`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key,
+        task: task || null,
+        tracker: {
+          total:     tracker.total,
+          streak:    tracker.streak,
+          points:    tracker.points,
+          bossKills: tracker.bossKills || 0,
+          prestige:  tracker.prestige  || 0,
+          highWater: tracker.highWater || 0,
+        }
+      })
+    });
+  } catch(e) { /* silently fail — overlay sync is non-critical */ }
+}
 const SAVE_KEY      = 'taskmaster_stats_v1';
 const TRACKER_KEY   = 'taskmaster_tracker_v1';
 
@@ -3243,7 +3316,7 @@ function selectPickerTask(task) {
   renderTask(task);
   renderPickerBtn();
   renderShop();
-}
+  pushToOverlay(task);
 
 function cancelTaskPicker() {
   pickerActive = false;
@@ -4068,7 +4141,7 @@ function generateTask(isReroll = false) {
   dbPut('settings', 'currentTask', task);
   switchTab('tasks');
   renderTask(task);
-}
+  pushToOverlay(task);
 
 function skillLabel(skill) {
   const map = {
@@ -4196,7 +4269,7 @@ function completeTask() {
   currentTask = null;
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
-}
+  pushToOverlay(null);
 
 function extractKillCount(task) {
   if (task.type !== 'combat' && !task.chain) return 0;
@@ -4501,6 +4574,7 @@ openDB().then(async () => {
   }
 
   scaleSideTabs();
+  loadStreamKey();
 });
 
 const HISCORE_MAP_TASK = {
