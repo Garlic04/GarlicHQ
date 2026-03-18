@@ -152,46 +152,65 @@
   /* ── Pins ── */
   .pin {
     position: absolute;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -100%);
     cursor: pointer;
     transition: transform 0.15s ease;
     z-index: 10;
   }
 
+  .pin:hover {
+    z-index: 100;
+  }
+
   .pin-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.35);
-    box-shadow: 0 0 6px rgba(0,0,0,0.6);
+    width: 24px;
+    height: 24px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid rgba(255,255,255,0.4);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+  }
+
+  .pin-dot::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
   }
 
   .pin:hover .pin-dot {
-    transform: scale(1.7);
-    box-shadow: 0 0 12px rgba(0,0,0,0.8), 0 0 6px var(--pin-glow);
+    transform: rotate(-45deg) scale(1.25);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8), 0 0 10px var(--pin-glow);
   }
 
   .pin-label {
     position: absolute;
     left: 50%;
-    top: calc(100% + 6px);
-    transform: translateX(-50%) scale(0.85);
+    top: calc(100% + 4px);
+    transform: translateX(-50%);
     transform-origin: top center;
     white-space: nowrap;
     font-family: 'Cinzel', serif;
-    font-size: 10px;
-    color: var(--gold-light);
-    text-shadow: 0 1px 3px #000, 0 0 8px #000;
+    font-size: 11px;
+    font-weight: 700;
+    font-variant: small-caps;
+    color: #ffffff;
+    text-shadow: 0 1px 2px #000, 0 0 6px #000, 1px 1px 0 #000, -1px -1px 0 #000;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    letter-spacing: 0.04em;
+    opacity: 1;
+    letter-spacing: 0.03em;
+    transition: font-size 0.15s ease, transform 0.15s ease;
   }
 
   .pin:hover .pin-label {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
+    font-size: 13px;
   }
 
   /* ── Tooltip card ── */
