@@ -351,6 +351,26 @@
     filter: drop-shadow(0 0 12px rgba(201,162,39,0.3));
   }
 
+  .task-multi-img {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    margin: 0 auto 12px;
+    flex-wrap: wrap;
+  }
+  .task-multi-img img {
+    height: 56px;
+    width: auto;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 5px rgba(201,162,39,0.8)) drop-shadow(0 0 12px rgba(201,162,39,0.4));
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .task-multi-img img:hover {
+    transform: translateY(-3px) scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(201,162,39,1)) drop-shadow(0 0 20px rgba(201,162,39,0.6));
+  }
+
   #task-npc-img {
     display: block;
     margin: 0 auto 12px;
@@ -1714,6 +1734,7 @@
     <div class="task-card" id="task-card">
       <div class="task-type-badge" id="task-badge">Combat</div>
       <img id="task-npc-img" src="" alt="" style="display:none;">
+      <div id="task-multi-img" class="task-multi-img" style="display:none;"></div>
       <span class="task-monster-icon" id="task-icon">⚔️</span>
       <div class="task-title" id="task-title">Kill 80 Cows</div>
       <div class="task-desc" id="task-desc">Head to Lumbridge and slay some cattle.</div>
@@ -2139,31 +2160,53 @@ const COMBAT_TASKS = [
 const CHOICE_TASKS = [
   // Combat — player picks which type
   { name: 'Any Dragon',   icon: '🐲', min: 40, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Baby_blue_dragon_(historical_v1)','Blue_dragon_(historical)','Green_dragon_(historical)','Black_dragon_(historical)'],
     title: 'Kill {count} dragons',
     desc: 'Your choice — any dragon will do. Baby blues, blues, greens, blacks… pick your poison.',
     note: 'Anti-dragon shield recommended for most dragons. Green dragons and KBD are in the Wilderness.' },
   { name: 'Any Giant',    icon: '🗿', min: 1, max: 999, countMin: 30, countMax: 100,
+    multiImages: ['Hill_Giant_(historical_v1)','Moss_giant_(historical)','Ice_giant_(historical_v1)','Fire_giant_(historical)'],
     title: 'Kill {count} giants',
     desc: 'Hill, moss, ice or fire — your call. Find them across Gielinor.',
     note: 'Hill Giants require a brass key for Edgeville Dungeon. Fire Giants require Waterfall Quest or Wilderness access.' },
   { name: 'Any Demon',    icon: '😈', min: 40, max: 999, countMin: 30, countMax: 100,
+    multiImages: ['Lesser_demon_(historical)','Greater_demon_(historical)','Black_demon_(historical)'],
     title: 'Kill {count} demons',
     desc: 'Lesser, greater or black — your choice of demon slaying.',
     note: 'Greater and Black Demons: Prayer recommended. Found in Taverley/Brimhaven dungeons.' },
   // Skilling — player picks which type
-  { name: 'Any Logs',     icon: '🪵', skill: 'woodcutting', req: 1, countMin: 100, countMax: 400,
+  { name: 'Cut Logs',     icon: '🪵', skill: 'woodcutting', req: 1, countMin: 100, countMax: 400,
+    multiImages: ['Logs','Oak_logs','Willow_logs','Yew_logs'],
+    title: 'Cut {count} logs',
+    desc: 'Chop any type of logs you like. Normal, oak, willow, maple or yew — your choice.',
+    note: 'Higher level trees give better Woodcutting XP.' },
+  { name: 'Burn Logs',    icon: '🔥', skill: 'woodcutting', req: 1, countMin: 100, countMax: 400,
+    multiImages: ['Logs','Oak_logs','Willow_logs','Yew_logs'],
     title: 'Burn {count} logs',
     desc: 'Cut and burn any type of logs. Normal, oak, willow or yew — your choice.',
     note: 'Higher level logs give better Firemaking XP. Pair with Woodcutting for efficiency.' },
-  { name: 'Any Fish',     icon: '🐟', skill: 'fishing',     req: 1, countMin: 50,  countMax: 200,
+  { name: 'Fish',         icon: '🐟', skill: 'fishing',     req: 1, countMin: 50,  countMax: 200,
+    multiImages: ['Raw_shrimps','Raw_trout','Raw_lobster','Raw_shark'],
+    title: 'Fish {count} fish',
+    desc: 'Catch any fish of your choosing. Shrimp, trout, lobster — whatever fits your level.',
+    note: 'Higher level fish give better Fishing XP.' },
+  { name: 'Cook Fish',    icon: '🍳', skill: 'cooking',     req: 1, countMin: 50,  countMax: 200,
+    multiImages: ['Shrimps','Trout','Lobster','Shark'],
     title: 'Cook {count} fish',
-    desc: 'Catch and cook any fish of your choosing. Shrimp, trout, lobster — whatever fits your level.',
+    desc: 'Cook any fish of your choosing. Whatever fits your level.',
     note: 'Cook near a range for lower burn rates. Higher level fish give better Cooking XP.' },
-  { name: 'Any Ore',      icon: '⛏️', skill: 'mining',      req: 1, countMin: 50,  countMax: 200,
+  { name: 'Mine Ores',    icon: '⛏️', skill: 'mining',      req: 1, countMin: 50,  countMax: 200,
+    multiImages: ['Iron_ore','Coal','Gold_ore','Adamantite_ore'],
+    title: 'Mine {count} ores',
+    desc: 'Mine any ore you like. Coal, iron, gold, adamant — whatever suits your level.',
+    note: 'Higher tier ores give better Mining XP.' },
+  { name: 'Smelt Bars',   icon: '🔨', skill: 'smithing',    req: 1, countMin: 50,  countMax: 200,
+    multiImages: ['Bronze_bar','Steel_bar','Adamantite_bar','Runite_bar'],
     title: 'Smelt {count} bars',
     desc: 'Mine and smelt any ore into bars. Bronze through rune — your call.',
-    note: 'Higher tier ores give better Smithing XP. Pair with Smithing to craft gear.' },
-  { name: 'Any Runes',    icon: '🔮', skill: 'rc',          req: 1, countMin: 100, countMax: 500,
+    note: 'Higher tier bars give better Smithing XP.' },
+  { name: 'Craft Runes',  icon: '🔮', skill: 'rc',          req: 1, countMin: 100, countMax: 500,
+    multiImages: ['Air_rune','Fire_rune','Nature_rune','Death_rune'],
     title: 'Craft {count} runes',
     desc: 'Visit any altar and craft runes of your choice.',
     note: 'Use the appropriate talisman or tiara for your chosen altar.' },
@@ -3472,7 +3515,7 @@ function buildOneTask() {
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
     const title = t.title.replace('{count}', count);
-    task = { type: t.skill ? 'skill' : 'combat', name: t.name, icon: t.icon, title, desc: t.desc, note: t.note || null, freeChoice: true };
+    task = { type: t.skill ? 'skill' : 'combat', name: t.name, icon: t.icon, npcImage: t.npcImage || null, itemImage: t.itemImage || null, multiImages: t.multiImages || null, title, desc: t.desc, note: t.note || null, freeChoice: true };
   }
   return task;
 }
@@ -4268,30 +4311,48 @@ function renderTask(task) {
     notesEl.style.display = 'none';
   }
 
-  // Image: NPC for combat, item for skilling
-  const iconEl = document.getElementById('task-icon');
-  const imgEl  = document.getElementById('task-npc-img');
-  const wikiKey = task.npcImage || task.itemImage;
-  if (wikiKey) {
-    imgEl.style.display = 'none';
-    imgEl.src = '';
-    imgEl.className = task.itemImage ? 'item-img' : '';
-    iconEl.style.display = 'none';
-    const localSrc = NPC_IMAGES[wikiKey];
-    if (localSrc) {
-      imgEl.src = localSrc;
-      imgEl.style.display = 'block';
-    } else {
-      const url = `https://oldschool.runescape.wiki/images/${wikiKey}.png`;
-      const tmp = new Image();
-      tmp.onload = () => { imgEl.src = url; imgEl.style.display = 'block'; };
-      tmp.onerror = () => { iconEl.textContent = task.icon; iconEl.style.display = 'block'; };
-      tmp.src = url;
-    }
+  // Image: multi-image row for choice tasks, single NPC/item image otherwise
+  const iconEl     = document.getElementById('task-icon');
+  const imgEl      = document.getElementById('task-npc-img');
+  const multiEl    = document.getElementById('task-multi-img');
+
+  // Reset all
+  imgEl.style.display   = 'none';
+  imgEl.src             = '';
+  multiEl.style.display = 'none';
+  multiEl.innerHTML     = '';
+  iconEl.style.display  = 'none';
+
+  if (task.multiImages && task.multiImages.length) {
+    multiEl.style.display = 'flex';
+    task.multiImages.forEach(key => {
+      const img = new Image();
+      img.style.display = 'none';
+      img.onload  = () => { img.style.display = 'block'; };
+      img.onerror = () => { img.remove(); };
+      img.src = `https://oldschool.runescape.wiki/images/${key}.png`;
+      multiEl.appendChild(img);
+    });
   } else {
-    imgEl.style.display = 'none';
-    iconEl.textContent = task.icon;
-    iconEl.style.display = 'block';
+    const wikiKey = task.npcImage || task.itemImage;
+    if (wikiKey) {
+      imgEl.className = task.itemImage ? 'item-img' : '';
+      iconEl.style.display = 'none';
+      const localSrc = NPC_IMAGES[wikiKey];
+      if (localSrc) {
+        imgEl.src = localSrc;
+        imgEl.style.display = 'block';
+      } else {
+        const url = `https://oldschool.runescape.wiki/images/${wikiKey}.png`;
+        const tmp = new Image();
+        tmp.onload  = () => { imgEl.src = url; imgEl.style.display = 'block'; };
+        tmp.onerror = () => { iconEl.textContent = task.icon; iconEl.style.display = 'block'; };
+        tmp.src = url;
+      }
+    } else {
+      iconEl.textContent = task.icon;
+      iconEl.style.display = 'block';
+    }
   }
 
   const chainEl = document.getElementById('task-chain-steps');
