@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page Not Found | GarlicHQ</title>
+<link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d0b08;
+    --bg2:       #141109;
+    --gold:      #c8a84b;
+    --gold-dim:  #8a6f2e;
+    --gold-glow: #f0cc6e;
+    --parchment: #e8d5a3;
+    --border:    rgba(200,168,75,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,168,75,0.06) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'IM Fell English', Georgia, serif;
+    color: var(--parchment);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  /* Subtle vignette */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    max-width: 560px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Garlic mascot */
+  .garlic-wrap {
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .garlic-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(200,168,75,0.4)) drop-shadow(0 0 40px rgba(200,168,75,0.15));
+    animation: float 4s ease-in-out infinite, wobble 0.6s ease 0.8s both;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  @keyframes wobble {
+    0%   { transform: rotate(0deg); }
+    20%  { transform: rotate(-8deg); }
+    40%  { transform: rotate(7deg); }
+    60%  { transform: rotate(-5deg); }
+    80%  { transform: rotate(3deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  /* 404 number */
+  .error-code {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(5rem, 18vw, 9rem);
+    line-height: 1;
+    color: var(--gold-glow);
+    text-shadow:
+      0 0 40px rgba(200,168,75,0.5),
+      0 0 80px rgba(200,168,75,0.2),
+      0 2px 4px rgba(0,0,0,0.9);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.3rem;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem auto 1.2rem;
+    max-width: 320px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+  }
+
+  .divider-rune {
+    font-size: 0.9rem;
+    color: var(--gold-dim);
+    opacity: 0.7;
+  }
+
+  /* Headline */
+  .headline {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.07em;
+    margin-bottom: 0.8rem;
+    animation: fadeUp 0.7s ease 0.25s both;
+  }
+
+  /* Flavour text */
+  .flavour {
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-size: 0.88rem;
+    color: rgba(232,213,163,0.55);
+    line-height: 1.8;
+    letter-spacing: 0.04em;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+
+  /* Buttons */
+  .actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.4s both;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+  }
+
+  .btn:hover { transform: translateY(-2px); }
+
+  .btn-primary {
+    background: rgba(200,168,75,0.12);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+  }
+
+  .btn-primary:hover {
+    background: rgba(200,168,75,0.22);
+    border-color: var(--gold);
+    color: var(--gold-glow);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: rgba(232,213,163,0.5);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold-dim);
+    color: var(--parchment);
+  }
+
+  /* Footer note */
+  .footer-note {
+    margin-top: 3rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    color: var(--gold-dim);
+    opacity: 0.5;
+    animation: fadeUp 0.7s ease 0.5s both;
+  }
+
+  /* Floating runes background decoration */
+  .runes {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .rune {
+    position: absolute;
+    font-family: 'Cinzel', serif;
+    color: rgba(200,168,75,0.04);
+    font-size: 4rem;
+    animation: drift linear infinite;
+    user-select: none;
+  }
+
+  @keyframes drift {
+    from { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    to   { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="runes" aria-hidden="true">
+  <div class="rune" style="left:8%;  animation-duration:18s; animation-delay:0s;   font-size:3rem;">✦</div>
+  <div class="rune" style="left:22%; animation-duration:24s; animation-delay:4s;   font-size:5rem;">⚔</div>
+  <div class="rune" style="left:40%; animation-duration:20s; animation-delay:8s;   font-size:2.5rem;">🗡</div>
+  <div class="rune" style="left:60%; animation-duration:22s; animation-delay:2s;   font-size:4rem;">✦</div>
+  <div class="rune" style="left:75%; animation-duration:19s; animation-delay:6s;   font-size:3.5rem;">⚔</div>
+  <div class="rune" style="left:88%; animation-duration:25s; animation-delay:10s;  font-size:2rem;">✦</div>
+</div>
+
+<div class="container">
+
+  <div class="garlic-wrap">
+    <img class="garlic-img"
+         src="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png"
+         alt="Garlic mascot"
+         onerror="this.src='https://oldschool.runescape.wiki/images/Garlic.png'">
+  </div>
+
+  <div class="error-code">404</div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-rune">✦</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="headline">Page Not Found</div>
+
+  <p class="flavour">
+    You've wandered into uncharted territory.<br>
+    Even the Wise Old Man doesn't know what's here.
+  </p>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="/">⚔ Back to GarlicHQ</a>
+  </div>
+
+  <div class="footer-note">Garlic &nbsp;·&nbsp; Lost City Fan Tools &nbsp;·&nbsp; Not affiliated with Jagex</div>
+
+</div>
+
+</body>
+</html>
