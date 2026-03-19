@@ -15,6 +15,17 @@
 <meta name="twitter:title"      content="Update Timeline — GarlicHQ">
 <meta name="twitter:description" content="Browse RS2 history as followed by Lost City — quests, skills, and content updates from 2004 to 2005.">
 <meta name="twitter:image"      content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="GarlicHQ">
+<meta property="og:title"       content="Update Timeline — GarlicHQ">
+<meta property="og:description" content="Browse RS2 history as followed by Lost City — quests, skills, and content updates from 2004 to 2005.">
+<meta property="og:image"       content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
+<meta property="og:url"         content="https://garlichq.com/update-timeline/">
+<meta name="description"        content="Browse RS2 history as followed by Lost City — quests, skills, and content updates from 2004 to 2005.">
+<meta name="twitter:card"       content="summary">
+<meta name="twitter:title"      content="Update Timeline — GarlicHQ">
+<meta name="twitter:description" content="Browse RS2 history as followed by Lost City — quests, skills, and content updates from 2004 to 2005.">
+<meta name="twitter:image"      content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
 <link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
 <style>
 :root {
@@ -452,7 +463,7 @@ function wikiImg(name) {
   return `https://oldschool.runescape.wiki/images/${encodeURIComponent(name)}`;
 }
 function wikiFile(file) {
-  return `https://oldschool.runescape.wiki/w/Special:FilePath/${file}`;
+  return `https://oldschool.runescape.wiki/w/Special:FilePath/${encodeURIComponent(file)}`;
 }
 
 // ─────────────────────────────────────────
@@ -486,7 +497,7 @@ const EVENTS = [
     date: '2004-06-01', title: 'New Game Update System', side: 'above', offset: 90,
     status: 'released', rev: 244,
     revColor: '#d4892a',
-    img: wikiFile('Player_moderator_crown.png'),
+    img: wikiFile('Moderator_crown.png'),
     tag: 'content', releaseNote: 'Rev 244', desc: 'Rev 244. New in-game update system introduced alongside Player Moderators.',
     newsUrl: 'https://secure.runescape.com/m=news/new-game-update-system',
   },
@@ -554,7 +565,7 @@ const EVENTS = [
     date: '2004-07-27', title: 'Agility, Potions & Parties!', side: 'below', offset: 128,
     status: 'released', rev: 254,
     revColor: '#d45a5a',
-    img: wikiFile('Ticket.png'),
+    img: wikiFile('Agility_arena_ticket.png'),
     tag: 'skill', releaseNote: 'Rev 254', desc: 'Rev 254. Brimhaven Agility Arena opens. New potions added. Birthday party event.',
     newsUrl: 'https://secure.runescape.com/m=news/agility-potions-and-parties',
   },
