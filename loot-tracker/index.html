@@ -86,7 +86,6 @@
     letter-spacing: 0.06em;
     cursor: pointer;
     transition: all 0.2s;
-    margin-left: auto;
   }
   .row-toggle:hover {
     border-color: var(--gold-dim);
@@ -99,13 +98,6 @@
   }
   .row-toggle img { image-rendering: pixelated; opacity: 0.7; transition: opacity 0.2s; }
   .row-toggle.active img { opacity: 1; }
-  .tabs-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 0;
-  }
-
   .boss-tabs {
     display: flex;
     gap: 0;
@@ -600,15 +592,9 @@
 </nav>
 
 <!-- BOSS TABS -->
-<div class="tabs-row">
-  <div class="boss-tabs">
-    <div class="boss-tab active" data-boss="kbd" onclick="switchBoss('kbd')"><img src="https://oldschool.runescape.wiki/images/King_Black_Dragon.png" alt="KBD" onerror="this.outerHTML='🐉'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> King Black Dragon</div>
-    <div class="boss-tab" data-boss="kq" onclick="switchBoss('kq')"><img src="https://oldschool.runescape.wiki/images/Kalphite_Queen.png" alt="KQ" onerror="this.outerHTML='🦂'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> Kalphite Queen</div>
-  </div>
-  <button class="row-toggle" id="row-toggle" onclick="toggleRoW()" title="Toggle Ring of Wealth rates">
-    <img src="https://oldschool.runescape.wiki/images/Ring_of_wealth_(5)_(v1)_detail.png" width="18" height="18" alt="RoW">
-    Ring of Wealth
-  </button>
+<div class="boss-tabs">
+  <div class="boss-tab active" data-boss="kbd" onclick="switchBoss('kbd')"><img src="https://oldschool.runescape.wiki/images/King_Black_Dragon.png" alt="KBD" onerror="this.outerHTML='🐉'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> King Black Dragon</div>
+  <div class="boss-tab" data-boss="kq" onclick="switchBoss('kq')"><img src="https://oldschool.runescape.wiki/images/Kalphite_Queen.png" alt="KQ" onerror="this.outerHTML='🦂'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> Kalphite Queen</div>
 </div>
 
 <!-- ══════════════════ KBD ══════════════════ -->
@@ -621,6 +607,10 @@
         <div class="kc-value" id="kbd-kc">0</div>
       </div>
       <button class="reset-btn" onclick="resetBoss('kbd')">Reset</button>
+      <button class="row-toggle row-toggle-btn" onclick="toggleRoW()" title="Toggle Ring of Wealth rates">
+        <img src="https://oldschool.runescape.wiki/images/Ring_of_wealth_(5)_(v1)_detail.png" width="16" height="16" alt="RoW">
+        Ring of Wealth
+      </button>
       <button class="end-trip-btn" onclick="endTrip('kbd')">End Trip</button>
     </div>
   </div>
@@ -667,6 +657,10 @@
         <div class="kc-value" id="kq-kc">0</div>
       </div>
       <button class="reset-btn" onclick="resetBoss('kq')">Reset</button>
+      <button class="row-toggle row-toggle-btn" onclick="toggleRoW()" title="Toggle Ring of Wealth rates">
+        <img src="https://oldschool.runescape.wiki/images/Ring_of_wealth_(5)_(v1)_detail.png" width="16" height="16" alt="RoW">
+        Ring of Wealth
+      </button>
       <button class="end-trip-btn" onclick="endTrip('kq')">End Trip</button>
     </div>
   </div>
@@ -952,8 +946,7 @@ let rowEnabled = false;
 
 function toggleRoW() {
   rowEnabled = !rowEnabled;
-  const btn = document.getElementById('row-toggle');
-  btn.classList.toggle('active', rowEnabled);
+  document.querySelectorAll('.row-toggle-btn').forEach(btn => btn.classList.toggle('active', rowEnabled));
   // Rebuild drop grids and loot tables for both bosses
   buildDropGrid('kbd');
   buildDropGrid('kq');
