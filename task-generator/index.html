@@ -901,41 +901,66 @@
     min-height: 1.2em;
     transition: color 0.3s;
   }
-  .player-title.rank-1 { color: #a0a0a0; }
-  .player-title.rank-2 { color: #c8a84b; }
-  .player-title.rank-3 { color: #4bc8a0; }
-  .player-title.rank-4 { color: #4b8ec8; }
-  .player-title.rank-5 { color: #c84b4b; }
-  .player-title.rank-6 { color: #c84bc8; }
-  .player-title.boss-glow.rank-1 { animation: bossGlow1 2s ease-in-out infinite; }
-  .player-title.boss-glow.rank-2 { animation: bossGlow2 2s ease-in-out infinite; }
-  .player-title.boss-glow.rank-3 { animation: bossGlow3 2s ease-in-out infinite; }
-  .player-title.boss-glow.rank-4 { animation: bossGlow4 2s ease-in-out infinite; }
-  .player-title.boss-glow.rank-5 { animation: bossGlow5 2s ease-in-out infinite; }
-  .player-title.boss-glow.rank-6 { animation: bossGlow6 2s ease-in-out infinite; }
+  .player-title.rank-1 { color: #c8c8c8; }
+  .player-title.rank-2 { color: #f0cc6e; }
+  .player-title.rank-3 { color: #5ee8b8; }
+  .player-title.rank-4 { color: #5aaff0; }
+  .player-title.rank-5 { color: #f06060; }
+  .player-title.rank-6 { color: #e060e0; }
+
+  /* Glowing gradient titles */
+  .player-title.boss-glow {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .player-title.boss-glow.rank-1 {
+    background-image: linear-gradient(135deg, #c0c0c0, #ffffff, #c0c0c0);
+    animation: bossGlow1 2s ease-in-out infinite;
+  }
+  .player-title.boss-glow.rank-2 {
+    background-image: linear-gradient(135deg, #c8941a, #ffe87a, #c8941a);
+    animation: bossGlow2 2s ease-in-out infinite;
+  }
+  .player-title.boss-glow.rank-3 {
+    background-image: linear-gradient(135deg, #1ab890, #80ffd8, #1ab890);
+    animation: bossGlow3 2s ease-in-out infinite;
+  }
+  .player-title.boss-glow.rank-4 {
+    background-image: linear-gradient(135deg, #1a70c8, #90d0ff, #1a70c8);
+    animation: bossGlow4 2s ease-in-out infinite;
+  }
+  .player-title.boss-glow.rank-5 {
+    background-image: linear-gradient(135deg, #c82020, #ff9090, #c82020);
+    animation: bossGlow5 2s ease-in-out infinite;
+  }
+  .player-title.boss-glow.rank-6 {
+    background-image: linear-gradient(135deg, #a020c8, #ff80ff, #a020c8);
+    animation: bossGlow6 2s ease-in-out infinite;
+  }
   @keyframes bossGlow1 {
-    0%,100% { text-shadow: 0 0 4px #a0a0a0, 0 0 12px rgba(160,160,160,0.9), 0 0 28px rgba(160,160,160,0.6), 0 0 50px rgba(160,160,160,0.3); }
-    50%      { text-shadow: 0 0 8px #fff,    0 0 20px rgba(160,160,160,1),   0 0 45px rgba(160,160,160,0.8), 0 0 80px rgba(160,160,160,0.5); }
+    0%,100% { filter: drop-shadow(0 0 4px rgba(220,220,220,0.8)) drop-shadow(0 0 12px rgba(255,255,255,0.5)); }
+    50%      { filter: drop-shadow(0 0 8px rgba(255,255,255,1))   drop-shadow(0 0 24px rgba(220,220,220,0.9)) drop-shadow(0 0 40px rgba(200,200,200,0.6)); }
   }
   @keyframes bossGlow2 {
-    0%,100% { text-shadow: 0 0 4px #f0cc6e, 0 0 12px rgba(200,168,75,0.9), 0 0 28px rgba(200,168,75,0.6), 0 0 50px rgba(200,168,75,0.3); }
-    50%      { text-shadow: 0 0 8px #fff8c0, 0 0 20px rgba(200,168,75,1),   0 0 45px rgba(200,168,75,0.8), 0 0 80px rgba(200,168,75,0.5); }
+    0%,100% { filter: drop-shadow(0 0 4px rgba(240,200,80,0.8))  drop-shadow(0 0 12px rgba(200,160,40,0.5)); }
+    50%      { filter: drop-shadow(0 0 8px rgba(255,240,120,1))   drop-shadow(0 0 24px rgba(220,180,60,0.9)) drop-shadow(0 0 40px rgba(200,160,40,0.6)); }
   }
   @keyframes bossGlow3 {
-    0%,100% { text-shadow: 0 0 4px #4bc8a0, 0 0 12px rgba(75,200,160,0.9), 0 0 28px rgba(75,200,160,0.6), 0 0 50px rgba(75,200,160,0.3); }
-    50%      { text-shadow: 0 0 8px #afffea, 0 0 20px rgba(75,200,160,1),   0 0 45px rgba(75,200,160,0.8), 0 0 80px rgba(75,200,160,0.5); }
+    0%,100% { filter: drop-shadow(0 0 4px rgba(60,220,160,0.8))  drop-shadow(0 0 12px rgba(40,180,130,0.5)); }
+    50%      { filter: drop-shadow(0 0 8px rgba(120,255,210,1))   drop-shadow(0 0 24px rgba(60,220,160,0.9)) drop-shadow(0 0 40px rgba(40,180,130,0.6)); }
   }
   @keyframes bossGlow4 {
-    0%,100% { text-shadow: 0 0 4px #4b8ec8, 0 0 12px rgba(75,142,200,0.9), 0 0 28px rgba(75,142,200,0.6), 0 0 50px rgba(75,142,200,0.3); }
-    50%      { text-shadow: 0 0 8px #b0d8ff, 0 0 20px rgba(75,142,200,1),   0 0 45px rgba(75,142,200,0.8), 0 0 80px rgba(75,142,200,0.5); }
+    0%,100% { filter: drop-shadow(0 0 4px rgba(60,160,240,0.8))  drop-shadow(0 0 12px rgba(40,120,200,0.5)); }
+    50%      { filter: drop-shadow(0 0 8px rgba(120,200,255,1))   drop-shadow(0 0 24px rgba(60,160,240,0.9)) drop-shadow(0 0 40px rgba(40,120,200,0.6)); }
   }
   @keyframes bossGlow5 {
-    0%,100% { text-shadow: 0 0 4px #c84b4b, 0 0 12px rgba(200,75,75,0.9), 0 0 28px rgba(200,75,75,0.6), 0 0 50px rgba(200,75,75,0.3); }
-    50%      { text-shadow: 0 0 8px #ffb0b0, 0 0 20px rgba(200,75,75,1),   0 0 45px rgba(200,75,75,0.8), 0 0 80px rgba(200,75,75,0.5); }
+    0%,100% { filter: drop-shadow(0 0 4px rgba(240,80,80,0.8))   drop-shadow(0 0 12px rgba(200,40,40,0.5)); }
+    50%      { filter: drop-shadow(0 0 8px rgba(255,140,140,1))   drop-shadow(0 0 24px rgba(240,80,80,0.9))  drop-shadow(0 0 40px rgba(200,40,40,0.6)); }
   }
   @keyframes bossGlow6 {
-    0%,100% { text-shadow: 0 0 4px #c84bc8, 0 0 12px rgba(200,75,200,0.9), 0 0 28px rgba(200,75,200,0.6), 0 0 50px rgba(200,75,200,0.3); }
-    50%      { text-shadow: 0 0 8px #ffb0ff, 0 0 20px rgba(200,75,200,1),   0 0 45px rgba(200,75,200,0.8), 0 0 80px rgba(200,75,200,0.5); }
+    0%,100% { filter: drop-shadow(0 0 4px rgba(220,60,220,0.8))  drop-shadow(0 0 12px rgba(160,20,200,0.5)); }
+    50%      { filter: drop-shadow(0 0 8px rgba(255,120,255,1))   drop-shadow(0 0 24px rgba(220,60,220,0.9)) drop-shadow(0 0 40px rgba(160,20,200,0.6)); }
   }
 
   .milestones-tab {
@@ -2092,7 +2117,7 @@ const COMBAT_TASKS = [
   { name: 'Tribesmen',         icon: '🏹', min: 30, max: 126,  loc: 'Karamja jungle',                   countMin: 50, countMax: 120, prayer: false, note: 'Found in the Karamja jungle south of the volcano. Poisonous — bring antipoison', npcImage: 'Tribesman' },
 
   // High tier
-  { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon (level 5-12 Wilderness) — no quest required, but bring PK awareness' , npcImage: 'Fire_giant_(historical)' },
+  { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon — no quest required, but bring PK awareness' , npcImage: 'Fire_giant_(historical)' },
   { name: 'Lesser Demons',     icon: '😈', min: 65, max: 126,  loc: 'Karamja Volcano or Taverley Dungeon', countMin: 50, countMax: 150, prayer: false , npcImage: 'Lesser_demon_(historical)' },
   { name: 'Greater Demons',    icon: '👿', min: 75, max: 126,  loc: 'Brimhaven Dungeon',                countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Greater_demon_(historical)' },
   { name: 'Blue Dragons',      icon: '🐉', min: 85, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: 'Anti-dragon shield required; prayer recommended' , npcImage: 'Blue_dragon_(historical)' },
@@ -2110,6 +2135,39 @@ const COMBAT_TASKS = [
   { name: 'King Black Dragon', icon: '👑', min: 99, max: 126,  loc: 'Wilderness',                       countMin: 3,  countMax: 15, prayer: true,  note: 'Anti-dragon shield required; prayer recommended; ⚠️ Wilderness' , npcImage: 'King_Black_Dragon_(historical)' },
 ];
 
+
+const CHOICE_TASKS = [
+  // Combat — player picks which type
+  { name: 'Any Dragon',   icon: '🐲', min: 40, max: 999, countMin: 20, countMax: 80,
+    title: 'Kill {count} dragons',
+    desc: 'Your choice — any dragon will do. Baby blues, blues, greens, blacks… pick your poison.',
+    note: 'Anti-dragon shield recommended for most dragons. Green dragons and KBD are in the Wilderness.' },
+  { name: 'Any Giant',    icon: '🗿', min: 1, max: 999, countMin: 30, countMax: 100,
+    title: 'Kill {count} giants',
+    desc: 'Hill, moss, ice or fire — your call. Find them across Gielinor.',
+    note: 'Hill Giants require a brass key for Edgeville Dungeon. Fire Giants require Waterfall Quest or Wilderness access.' },
+  { name: 'Any Demon',    icon: '😈', min: 40, max: 999, countMin: 30, countMax: 100,
+    title: 'Kill {count} demons',
+    desc: 'Lesser, greater or black — your choice of demon slaying.',
+    note: 'Greater and Black Demons: Prayer recommended. Found in Taverley/Brimhaven dungeons.' },
+  // Skilling — player picks which type
+  { name: 'Any Logs',     icon: '🪵', skill: 'woodcutting', req: 1, countMin: 100, countMax: 400,
+    title: 'Burn {count} logs',
+    desc: 'Cut and burn any type of logs. Normal, oak, willow or yew — your choice.',
+    note: 'Higher level logs give better Firemaking XP. Pair with Woodcutting for efficiency.' },
+  { name: 'Any Fish',     icon: '🐟', skill: 'fishing',     req: 1, countMin: 50,  countMax: 200,
+    title: 'Cook {count} fish',
+    desc: 'Catch and cook any fish of your choosing. Shrimp, trout, lobster — whatever fits your level.',
+    note: 'Cook near a range for lower burn rates. Higher level fish give better Cooking XP.' },
+  { name: 'Any Ore',      icon: '⛏️', skill: 'mining',      req: 1, countMin: 50,  countMax: 200,
+    title: 'Smelt {count} bars',
+    desc: 'Mine and smelt any ore into bars. Bronze through rune — your call.',
+    note: 'Higher tier ores give better Smithing XP. Pair with Smithing to craft gear.' },
+  { name: 'Any Runes',    icon: '🔮', skill: 'rc',          req: 1, countMin: 100, countMax: 500,
+    title: 'Craft {count} runes',
+    desc: 'Visit any altar and craft runes of your choice.',
+    note: 'Use the appropriate talisman or tiara for your chosen altar.' },
+];
 
 const SKILL_TASKS = [
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABJElEQVR4nN2VsQ3CQAxFfwLNIaZgBMpImYEShmACBmAChoCSGU6iZASmQKSCUDmYnO0zQTR8CRFyzn/nH6MD/kWFs679xscDaQEgrEs09SNdXea9Si9A1SHjkIEkgBBLhKg+0kKJVWsxATT1AyEqkZGU6KRtiQD+rXajRCdWm++AaqIZ41ts46wbjJ1Lawfw2ADkp0vU4jxJAIvzRN1MthMyPM5vb7/765ZEdLN7TRCZc/F7dN3dWybl9giTVtW0M+Kd0WZW1RT701X11d5JwT6dAY+GrmkDvedcnfTVCoaYje4AgG1sTC/vdCUGPYCpQSNMYgAzkUEQ6sIDGAy53Ecf1Xsh1smYOzVdEHGyAGBTBxfI1YkEoMgYSJX7jHfI+5/7jZ5cmV0xV2/8bgAAAABJRU5ErkJggg==" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Woodcutting — levelrequired from trees.dbrow
@@ -3361,9 +3419,9 @@ function buildOneTask() {
     herblore: getStat('stat-herblore') || 1,
     crafting: getStat('stat-crafting') || 1,
   };
-  const types = mode === 'combat' ? ['combat','combat','combat','combat'] :
-                mode === 'skill'  ? ['skill','skill','skill','skill'] :
-                ['combat','combat','combat','skill','skill','skill','clue','quest'];
+  const types = mode === 'combat' ? ['combat','combat','combat','choice'] :
+                mode === 'skill'  ? ['skill','skill','skill','choice'] :
+                ['combat','combat','combat','skill','skill','skill','clue','quest','choice'];
   const pickType = types[randInt(0, types.length - 1)];
   let task = null;
 
@@ -3405,6 +3463,16 @@ function buildOneTask() {
     if (!eligible.length) return null;
     const t = eligible[randInt(0, eligible.length - 1)];
     task = { type:'quest', name:t.name, icon:'📜', itemImage:'Quest_point_icon', title:`Complete: ${t.name}`, desc:`Start this quest in-game!`, note:null, questName:t.name };
+  } else if (pickType === 'choice') {
+    const eligible = CHOICE_TASKS.filter(t => {
+      if (t.skill) return enabledSkills.has(t.skill) && (stats[t.skill] || 1) >= t.req;
+      return cb >= t.min && cb <= t.max;
+    });
+    if (!eligible.length) return null;
+    const t = eligible[randInt(0, eligible.length - 1)];
+    const count = randInt(t.countMin, t.countMax);
+    const title = t.title.replace('{count}', count);
+    task = { type: t.skill ? 'skill' : 'combat', name: t.name, icon: t.icon, title, desc: t.desc, note: t.note || null, freeChoice: true };
   }
   return task;
 }
