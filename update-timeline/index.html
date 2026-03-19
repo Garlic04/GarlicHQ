@@ -325,9 +325,37 @@ header .subtitle {
 
   .page-title { font-size: 1.1rem; }
 }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,11,8,0.8);
+    backdrop-filter: blur(4px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-brand span { color: var(--gold-dim); font-weight: 400; }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<nav>
+  <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Update Timeline</a>
+</nav>
 
 <header>
   <div class="header-deco">
@@ -344,18 +372,7 @@ header .subtitle {
   </div>
 </header>
 
-<div style="padding: 8px 20px 0;">
-  <a href="../" style="
-    display: inline-flex; align-items: center; gap: 6px;
-    color: var(--text-dim); text-decoration: none;
-    font-size: 0.72rem; font-family: 'Courier New', monospace;
-    padding: 4px 10px; border: 1px solid var(--border);
-    border-radius: var(--radius); transition: all 0.15s;
-  " onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold-dim)'"
-     onmouseout="this.style.color='var(--text-dim)';this.style.borderColor='var(--border)'">
-    ← Back to Home
-  </a>
-</div>
+
 
 <div class="top-bar">
   <div class="legend">
