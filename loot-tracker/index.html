@@ -681,7 +681,7 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'cert_yew', img: 'Yew_logs',           name: 'Yew Logs',      icon: '🌲',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'amulet_strength', img: 'Amulet_of_strength',    name: 'Amulet of Strength',  icon: '📿',  qty: '1',       rate: '1/18.3',   rarity: 'uncommon' , alchGp: 1215 },
     { group: 'Main Table', id: 'shark', img: 'Shark',              name: 'Sharks',              icon: '🦈',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',   name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 1014 },
     // Ultra Rare table (8/128 chance to roll)
     { group: 'Ultra Rare', id: 'ur_nature_rune', img: 'Nature_rune',     name: 'Nature Runes',        icon: '🍃',  qty: '67',      rate: 'ultra: 1/42.7',  rarity: 'rare' },
@@ -725,7 +725,7 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'mithril_arrow', img: 'Mithril_arrow_detail',      name: 'Mithril Arrows',      icon: '🏹',  qty: '500',     rate: '1/12.8',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'iron_arrow', img: 'Iron_arrow_detail',         name: 'Iron Arrows',         icon: '🏹',  qty: '1–335',   rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'rune_arrow', img: 'Rune_arrow_detail',         name: 'Rune Arrows',         icon: '🏹',  qty: '100',     rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',   name: 'Big Oyster Pearls',   icon: '🦪',  qty: '40',      rate: '1/42.7',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '40',      rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'blood_rune', img: 'Blood_rune',         name: 'Blood Runes',         icon: '🩸',  qty: '19',      rate: '1/6.4',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'nature_rune', img: 'Nature_rune',        name: 'Nature Runes',        icon: '🍃',  qty: '75',      rate: '1/9.1',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'fire_rune', img: 'Fire_rune',          name: 'Fire Runes',          icon: '🔥',  qty: '600',     rate: '1/12.8',  rarity: 'uncommon' },
@@ -860,23 +860,17 @@ function renderKC(boss) {
 function removeDrop(boss, id) {
   if (state[boss].loot[id] > 0) {
     const drop = DROP_TABLES[boss].find(d => d.id === id);
-    // Alch coins: find smallest alch value to subtract, or just clear
     if (drop && drop.alchEntry) {
       state[boss].loot[id] = 0;
     } else {
       state[boss].loot[id]--;
-    }
-
-    // If removing a non-always/non-alch drop, also remove one set of always-drops
-    if (drop && drop.group !== 'Always' && !drop.alchEntry) {
-      const alwaysDrops = DROP_TABLES[boss].filter(d => d.group === 'Always');
-      for (const always of alwaysDrops) {
-        if (state[boss].loot[always.id] > 0) {
-          state[boss].loot[always.id]--;
+      if (drop && drop.group !== 'Always') {
+        const alwaysDrops = DROP_TABLES[boss].filter(d => d.group === 'Always');
+        for (const always of alwaysDrops) {
+          if (state[boss].loot[always.id] > 0) state[boss].loot[always.id]--;
         }
       }
     }
-
     renderLootTable(boss);
     saveState();
     showToast('Drop removed.');
@@ -896,17 +890,7 @@ function renderLootTable(boss) {
   const rows = drops.map(drop => {
     const count = state[boss].loot[drop.id];
     if (count === 0) return '';
-    // Alch coins entry stores raw GP total, display differently
-    if (drop.alchEntry) {
-      return `
-      <tr>
-        <td><div class="item-cell">${renderIcon(drop)} Alch Proceeds</div></td>
-        <td class="rate-cell">alched</td>
-        <td style="text-align:right;padding-right:0.5rem;"><span class="count-badge">—</span></td>
-        <td style="text-align:right;padding-right:0.5rem;color:var(--gold-dim);font-size:0.85rem;">${count.toLocaleString()} gp</td>
-        <td style="text-align:right;"><button class="remove-btn" onclick="removeDrop('${boss}', '${drop.id}')" title="Remove one">−</button></td>
-      </tr>`;
-    }
+    if (drop.alchEntry) return '';
     return `
       <tr>
         <td><div class="item-cell">${renderIcon(drop)} ${drop.name}${drop.qty ? `<span style="color:rgba(232,213,163,0.65);font-size:0.82em;margin-left:0.3em">×${drop.qty}</span>` : ""}</div></td>
@@ -917,7 +901,23 @@ function renderLootTable(boss) {
       </tr>`;
   }).filter(Boolean).join('');
 
-  tbody.innerHTML = rows || `<tr><td colspan="4" class="empty-state" style="color:var(--gold-dim);font-style:italic">No drops recorded yet — kills logged but nothing selected.</td></tr>`;
+  const alches = state[boss].alches || {};
+  const alchRows = drops
+    .filter(d => d.alchGp && (alches[d.id] || 0) > 0)
+    .map(d => {
+      const n = alches[d.id];
+      const totalGp = n * d.alchGp;
+      return `<tr>
+        <td><div class="item-cell">${renderIcon(d)} ${d.name} <span style="color:var(--gold-dim);font-size:0.8em;">(alched)</span></div></td>
+        <td class="rate-cell">alched</td>
+        <td style="text-align:right;padding-right:0.5rem;"><span class="count-badge">${n}</span></td>
+        <td style="text-align:right;padding-right:0.5rem;color:var(--gold-dim);font-size:0.85rem;">${totalGp.toLocaleString()} gp</td>
+        <td style="text-align:right;"></td>
+      </tr>`;
+    }).join('');
+
+  const combined = (rows || '') + alchRows;
+  tbody.innerHTML = combined || `<tr><td colspan="4" class="empty-state" style="color:var(--gold-dim);font-style:italic">No drops recorded yet — kills logged but nothing selected.</td></tr>`;
 }
 
 // ── ACTIONS ───────────────────────────────────────────────────────────────────
@@ -925,36 +925,18 @@ function renderLootTable(boss) {
 function confirmKill(boss) {
   state[boss].kc++;
 
-  // Auto-log always-drops
   const alwaysDrops = DROP_TABLES[boss].filter(d => d.group === 'Always');
   for (const drop of alwaysDrops) {
-    if (state[boss].loot[drop.id] !== undefined) {
-      state[boss].loot[drop.id]++;
-    }
+    if (state[boss].loot[drop.id] !== undefined) state[boss].loot[drop.id]++;
   }
-
-  // Check for alchable items in selection and prompt
-  const alchableSelected = [...selected[boss]].map(id => DROP_TABLES[boss].find(d => d.id === id)).filter(d => d && d.alchGp);
 
   for (const id of selected[boss]) {
-    if (state[boss].loot[id] !== undefined) {
-      state[boss].loot[id]++;
-    }
+    if (state[boss].loot[id] !== undefined) state[boss].loot[id]++;
   }
 
-  // For each alchable item, ask if they alched it and add gp instead
-  for (const drop of alchableSelected) {
-    const didAlch = confirm(`Did you high alch the ${drop.name}?\n\nYes = log ${drop.alchGp.toLocaleString()} gp instead\nNo = keep the item`);
-    if (didAlch) {
-      // Remove the item, track in per-item alches
-      state[boss].loot[drop.id]--;
-      state[boss].alches[drop.id] = (state[boss].alches[drop.id] || 0) + 1;
-      // Keep alch_coins in sync for backward compat
-      if (state[boss].loot['alch_coins'] !== undefined) {
-        state[boss].loot['alch_coins'] = (state[boss].loot['alch_coins'] || 0) + drop.alchGp;
-      }
-    }
-  }
+  const alchQueue = [...selected[boss]]
+    .map(id => DROP_TABLES[boss].find(d => d.id === id))
+    .filter(d => d && d.alchGp);
 
   const dropCount = selected[boss].size;
   selected[boss].clear();
@@ -966,14 +948,46 @@ function confirmKill(boss) {
 
   const msg = dropCount > 0
     ? `Kill logged! ${dropCount} drop${dropCount > 1 ? 's' : ''} recorded.`
-    : `Kill logged. No drops selected.`;
+    : 'Kill logged. No drops selected.';
   showToast(msg);
+
+  if (alchQueue.length > 0) showAlchModal(boss, alchQueue, 0);
+}
+
+function showAlchModal(boss, queue, index) {
+  if (index >= queue.length) return;
+  const drop = queue[index];
+  const modal = document.getElementById('alch-modal');
+  document.getElementById('alch-modal-name').textContent = drop.name;
+  document.getElementById('alch-modal-gp').textContent = drop.alchGp.toLocaleString() + ' gp from alch';
+  const icon = document.getElementById('alch-modal-icon');
+  icon.style.display = '';
+  icon.src = 'https://oldschool.runescape.wiki/images/' + drop.img + '.png';
+  icon.alt = drop.icon;
+  icon.onerror = function() { this.style.display = 'none'; };
+  modal.classList.add('active');
+
+  const noBtn  = document.getElementById('alch-modal-no');
+  const yesBtn = document.getElementById('alch-modal-yes');
+  noBtn.replaceWith(noBtn.cloneNode(true));
+  yesBtn.replaceWith(yesBtn.cloneNode(true));
+
+  const next = () => { modal.classList.remove('active'); showAlchModal(boss, queue, index + 1); };
+  document.getElementById('alch-modal-no').addEventListener('click', next);
+  document.getElementById('alch-modal-yes').addEventListener('click', () => {
+    state[boss].loot[drop.id]--;
+    state[boss].alches[drop.id] = (state[boss].alches[drop.id] || 0) + 1;
+    if (state[boss].loot['alch_coins'] !== undefined)
+      state[boss].loot['alch_coins'] = (state[boss].loot['alch_coins'] || 0) + drop.alchGp;
+    renderLootTable(boss);
+    saveState();
+    next();
+  });
 }
 
 function resetBoss(boss) {
   if (!confirm(`Reset all data for ${boss.toUpperCase()}? This cannot be undone.`)) return;
   state[boss].kc = 0;
-  state[boss].alches = {};
   for (const drop of DROP_TABLES[boss]) {
     state[boss].loot[drop.id] = 0;
   }
@@ -1030,33 +1044,11 @@ function renderSplit() {
   const boss = tripBoss;
   const drops = DROP_TABLES[boss];
   const n = tripParty;
-  const alches = state[boss].alches || {};
+  const received = drops.filter(d => state[boss].loot[d.id] > 0);
 
-  // Non-alch drops (excluding the old alch_coins entry)
-  const received = drops.filter(d => state[boss].loot[d.id] > 0 && !d.alchEntry);
-
-  // Per-item alch rows
-  const alchedItems = drops.filter(d => alches[d.id] > 0);
-  const totalAlchGp = alchedItems.reduce((sum, d) => sum + (alches[d.id] * d.alchGp), 0);
-
-  const hasContent = received.length > 0 || alchedItems.length > 0;
-  if (!hasContent) {
+  if (received.length === 0) {
     document.getElementById('split-content').innerHTML = '<p style="color:var(--gold-dim);font-style:italic;font-size:0.85rem;">No drops recorded this trip.</p>';
     return;
-  }
-
-  function makeIcon(img, icon) {
-    return img
-      ? '<img src="https://oldschool.runescape.wiki/images/' + img + '.png" alt="' + icon + '" onerror="this.outerHTML=this.alt" style="width:18px;height:18px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:5px;">'
-      : (icon + ' ');
-  }
-
-  function splitDisplay(total, perPlayer) {
-    const isWhole = perPlayer === Math.floor(perPlayer);
-    const remainder = total % n;
-    return isWhole
-      ? perPlayer.toLocaleString()
-      : '<span style="display:block;line-height:1.3">' + Math.floor(perPlayer).toLocaleString() + '</span><span style="display:block;color:var(--gold-dim);font-size:0.75em;line-height:1.3">(' + remainder + ' remaining)</span>';
   }
 
   const splitRows = received.map(drop => {
@@ -1064,49 +1056,26 @@ function renderSplit() {
     const qtyNum = drop.qty ? (parseInt(drop.qty.toString().replace(/[^0-9]/g,'')) || 1) : 1;
     const totalQty = count * qtyNum;
     const perPlayer = totalQty / n;
-    return '<tr><td>' + makeIcon(drop.img, drop.icon) + drop.name + (drop.qty ? ' ×' + drop.qty : '') + '</td>'
+    const isWholeNumber = perPlayer === Math.floor(perPlayer);
+    const remainder = totalQty % n;
+    const splitDisplay = isWholeNumber
+      ? perPlayer.toString()
+      : `<span style="display:block;line-height:1.3">${Math.floor(perPlayer)}</span><span style="display:block;color:var(--gold-dim);font-size:0.75em;line-height:1.3">(${remainder} remaining)</span>`;
+    const iconHtml = drop.img
+      ? '<img src="https://oldschool.runescape.wiki/images/' + drop.img + '.png" alt="' + drop.icon + '" onerror="this.outerHTML=this.alt" style="width:18px;height:18px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:5px;">'
+      : (drop.icon + ' ');
+    return '<tr><td>' + iconHtml + drop.name + (drop.qty ? ' ×' + drop.qty : '') + '</td>'
       + '<td style="text-align:center">' + count + '</td>'
       + '<td style="text-align:center">' + totalQty + '</td>'
-      + '<td style="text-align:right">' + splitDisplay(totalQty, perPlayer) + '</td></tr>';
+      + '<td style="text-align:right">' + splitDisplay + '</td></tr>';
   }).join('');
 
-  // Alch section
-  let alchSection = '';
-  if (alchedItems.length > 0) {
-    const alchRows = alchedItems.map(drop => {
-      const count = alches[drop.id];
-      const totalGp = count * drop.alchGp;
-      const perPlayer = totalGp / n;
-      return '<tr><td>' + makeIcon(drop.img, drop.icon) + drop.name + ' <span style="color:var(--gold-dim);font-size:0.8em;">(alched)</span></td>'
-        + '<td style="text-align:center">' + count + '</td>'
-        + '<td style="text-align:center">' + totalGp.toLocaleString() + ' gp</td>'
-        + '<td style="text-align:right">' + splitDisplay(totalGp, perPlayer) + ' gp</td></tr>';
-    }).join('');
-
-    const totalPerPlayer = totalAlchGp / n;
-    const totalIsWhole = totalPerPlayer === Math.floor(totalPerPlayer);
-    const totalRemainder = totalAlchGp % n;
-    const totalDisplay = totalIsWhole
-      ? totalPerPlayer.toLocaleString() + ' gp'
-      : Math.floor(totalPerPlayer).toLocaleString() + ' gp (' + totalRemainder + ' remaining)';
-
-    alchSection = '<h4 style="font-family:Cinzel,serif;font-size:0.72rem;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;margin:1.2rem 0 0.5rem;">Alch Proceeds</h4>'
-      + '<table class="split-table">'
-      + '<thead><tr><th>Item</th><th>Alched</th><th>Total GP</th><th style="text-align:right">Each</th></tr></thead>'
-      + '<tbody>' + alchRows + '</tbody>'
-      + '<tfoot><tr style="border-top:1px solid var(--gold-dim)">'
-      + '<td colspan="2" style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--gold);">Total</td>'
-      + '<td style="text-align:center;color:var(--gold);">' + totalAlchGp.toLocaleString() + ' gp</td>'
-      + '<td style="text-align:right;color:var(--gold);">' + totalDisplay + '</td>'
-      + '</tr></tfoot></table>';
-  }
-
-  document.getElementById('split-content').innerHTML =
-    (n > 1 ? '<p class="split-note">Items that cannot divide evenly are flagged — work those out between yourselves.</p>' : '')
-    + (received.length > 0
-      ? '<table class="split-table"><thead><tr><th>Item</th><th>Drops</th><th>Total Qty</th><th style="text-align:right">Each</th></tr></thead><tbody>' + splitRows + '</tbody></table>'
-      : '')
-    + alchSection;
+  document.getElementById('split-content').innerHTML = `
+    ${n > 1 ? `<p class="split-note">Items that cannot divide evenly are flagged — work those out between yourselves.</p>` : ''}
+    <table class="split-table">
+      <thead><tr><th>Item</th><th>Drops</th><th>Total Qty</th><th style="text-align:right">Each</th></tr></thead>
+      <tbody>${splitRows}</tbody>
+    </table>`;
 }
 
 function closeTrip() {
@@ -1156,5 +1125,22 @@ function confirmEndTrip() {
 </div>
   <!-- Ko-fi support button -->
   <a href="https://ko-fi.com/garlic04" target="_blank" rel="noopener" style="position:fixed;bottom:16px;left:16px;z-index:9000;display:flex;align-items:center;gap:7px;background:rgba(20,17,9,0.92);border:1px solid rgba(200,168,75,0.35);border-radius:20px;padding:7px 13px;text-decoration:none;color:#c9a227;font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;backdrop-filter:blur(4px);transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(200,168,75,0.8)';this.style.color='#f5d76e'" onmouseout="this.style.borderColor='rgba(200,168,75,0.35)';this.style.color='#c9a227'"><img src="https://storage.ko-fi.com/cdn/cup-border.png" width="18" height="18" alt="" style="opacity:0.85;">Support</a>
+<div class="modal-overlay" id="alch-modal">
+  <div class="modal">
+    <h2>High Alch?</h2>
+    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;">
+      <img id="alch-modal-icon" src="" alt="" style="width:36px;height:36px;object-fit:contain;image-rendering:pixelated;">
+      <div>
+        <div id="alch-modal-name" style="font-family:'Cinzel',serif;color:var(--gold-glow);font-size:1rem;margin-bottom:0.3rem;"></div>
+        <div id="alch-modal-gp" style="color:var(--parchment);font-size:0.88rem;"></div>
+      </div>
+    </div>
+    <div style="color:var(--parchment);font-size:0.85rem;margin-bottom:1.4rem;font-style:italic;opacity:0.75;">Did you high alch this item during the trip?</div>
+    <div class="modal-actions">
+      <button class="modal-close-btn" id="alch-modal-no">Keep Item</button>
+      <button class="modal-end-btn" id="alch-modal-yes" style="border-color:var(--gold-dim);background:rgba(200,168,75,0.12);color:var(--gold-glow);">Log Alch</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
