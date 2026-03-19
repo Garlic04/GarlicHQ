@@ -4485,6 +4485,7 @@ function completeTask() {
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
   pushToOverlay(null);
+  updateGenerateBtn();
 }
 
 function extractKillCount(task) {
