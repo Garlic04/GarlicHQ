@@ -384,6 +384,29 @@
     background: rgba(201,168,76,0.08);
   }
   #file-input { display: none; }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,11,8,0.8);
+    backdrop-filter: blur(4px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-brand span { color: var(--gold-dim); font-weight: 400; }
 </style>
 </head>
 <body>
@@ -394,10 +417,12 @@
   <div class="load-hint" id="load-hint">Loading map data…</div>
 </div>
 
+<nav>
+  <a class="nav-brand" href="/">← <span>GarlicHQ</span> / World Map</a>
+</nav>
+
 <header>
   <div class="header-left">
-    <a class="site-logo" href="/">GarlicHQ</a>
-    <div class="divider"></div>
     <h1>World Map</h1>
   </div>
   <div class="header-controls">
