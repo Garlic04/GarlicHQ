@@ -130,6 +130,24 @@
     color: var(--gold-glow);
   }
 
+  .yt-link.live {
+    background: rgba(255,68,68,0.12);
+    border-color: rgba(255,68,68,0.6);
+    color: #ff6666;
+    animation: livePulse 2s ease-in-out infinite;
+  }
+
+  .yt-link.live:hover {
+    background: rgba(255,68,68,0.22);
+    border-color: #ff4444;
+    color: #ff8888;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,68,68,0); }
+    50%       { box-shadow: 0 0 10px 2px rgba(255,68,68,0.25); }
+  }
+
   .yt-icon { width: 18px; height: 18px; fill: currentColor; }
 
   /* ── DIVIDER ── */
@@ -364,7 +382,7 @@
         <span class="live-dot"></span> Live Now
       </div>
       <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-        <a class="yt-link" href="https://youtube.com/@garlic04" target="_blank">
+        <a class="yt-link" id="yt-link" href="https://youtube.com/@garlic04" target="_blank">
           <svg class="yt-icon" viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
           youtube.com/@garlic04
         </a>
@@ -445,6 +463,8 @@
         const icon = document.getElementById('dividerIcon');
         icon.src = 'https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlic_live.png';
         icon.classList.add('live');
+        const ytLink = document.getElementById('yt-link');
+        if (ytLink) ytLink.classList.add('live');
       }
     } catch (e) {
       // silently fail if API unreachable
