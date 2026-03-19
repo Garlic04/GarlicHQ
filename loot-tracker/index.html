@@ -660,9 +660,9 @@
 const DROP_TABLES = {
   kbd: [
     { group: 'Always', id: 'dragon_bones', img: 'Dragon_bones',       name: 'Dragon Bones',        icon: '🦴',  qty: '1',   rate: 'always',  rarity: 'uncommon' },
-    { group: 'Always', id: 'black_dragonhide', img: 'Black_dragonhide',   name: 'Black Dragonhide',    icon: '🟫',  qty: '2',   rate: 'always',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'rune_longsword', img: 'Rune_longsword',     name: 'Rune Longsword',      icon: '⚔️',  qty: '1',       rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamant_platebody', img: 'Adamant_platebody',  name: 'Adamant Platebody',   icon: '🛡️',  qty: '1',       rate: '1/14.2',   rarity: 'uncommon' },
+    { group: 'Always', id: 'black_dragonhide', img: 'Black_dragonhide',   name: 'Black Dragonhide',    icon: '🟫',  qty: '1',   rate: 'always',  rarity: 'uncommon' },
+    { group: 'Main Table', id: 'rune_longsword', img: 'Rune_longsword',     name: 'Rune Longsword',      icon: '⚔️',  qty: '1',       rate: '1/12.8',  rarity: 'uncommon' , alchGp: 19200 },
+    { group: 'Main Table', id: 'adamant_platebody', img: 'Adamant_platebody',  name: 'Adamant Platebody',   icon: '🛡️',  qty: '1',       rate: '1/14.2',   rarity: 'uncommon' , alchGp: 9984 },
     { group: 'Main Table', id: 'dragon_med_helm', img: 'Dragon_med_helm',    name: 'Dragon Med Helm',     icon: '🪖',  qty: '1',       rate: '1/128',   rarity: 'rare' },
     { group: 'Main Table', id: 'bronze_arrow', img: 'Bronze_arrow_detail',       name: 'Bronze Arrows',       icon: '🏹',  qty: '310',     rate: '1/12.8',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'iron_arrow', img: 'Iron_arrow_detail',         name: 'Iron Arrows',         icon: '🏹',  qty: '690',     rate: '1/12.8',  rarity: 'uncommon' },
@@ -671,18 +671,18 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'blood_rune', img: 'Blood_rune',         name: 'Blood Runes',         icon: '🩸',  qty: '15',      rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'law_rune', img: 'Law_rune',           name: 'Law Runes',           icon: '📜',  qty: '15',      rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'death_rune', img: 'Death_rune',         name: 'Death Runes',         icon: '💀',  qty: '7',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamant_axe', img: 'Adamant_axe',        name: 'Adamant Axe',         icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'rune_axe', img: 'Rune_axe',           name: 'Rune Axe',            icon: '🪓',  qty: '1',       rate: '1/64',   rarity: 'rare' },
+    { group: 'Main Table', id: 'adamant_axe', img: 'Adamant_axe',        name: 'Adamant Axe',         icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 768 },
+    { group: 'Main Table', id: 'rune_axe', img: 'Rune_axe',           name: 'Rune Axe',            icon: '🪓',  qty: '1',       rate: '1/64',   rarity: 'rare' , alchGp: 7680 },
     { group: 'Main Table', id: 'adamantite_bar_1', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'adamantite_bar_2', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '2',       rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'runite_bar', img: 'Runite_bar',         name: 'Runite Bar',          icon: '🟦',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'cert_coal', img: 'Coal',          name: 'Coal',          icon: '⚫',  qty: '100',     rate: '1/64',   rarity: 'rare' },
     { group: 'Main Table', id: 'cert_iron', img: 'Iron_ore',          name: 'Iron Ore',      icon: '🟫',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'cert_yew', img: 'Yew_logs',           name: 'Yew Logs',      icon: '🌲',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'amulet_strength', img: 'Amulet_of_strength',    name: 'Amulet of Strength',  icon: '📿',  qty: '1',       rate: '1/18.3',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'amulet_strength', img: 'Amulet_of_strength',    name: 'Amulet of Strength',  icon: '📿',  qty: '1',       rate: '1/18.3',   rarity: 'uncommon' , alchGp: 1215 },
     { group: 'Main Table', id: 'shark', img: 'Shark',              name: 'Sharks',              icon: '🦈',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',   name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 1014 },
     // Ultra Rare table (8/128 chance to roll)
     { group: 'Ultra Rare', id: 'ur_nature_rune', img: 'Nature_rune',     name: 'Nature Runes',        icon: '🍃',  qty: '67',      rate: 'ultra: 1/42.7',  rarity: 'rare' },
     { group: 'Ultra Rare', id: 'ur_adamant_javelin', img: 'Adamant_javelin', name: 'Adamant Javelins',    icon: '🗡️',  qty: '20',      rate: 'ultra: 1/64',  rarity: 'rare' },
@@ -690,11 +690,12 @@ const DROP_TABLES = {
     { group: 'Ultra Rare', id: 'ur_law_rune', img: 'Law_rune',        name: 'Law Runes',           icon: '📜',  qty: '45',      rate: 'ultra: 1/64',  rarity: 'rare' },
     { group: 'Ultra Rare', id: 'ur_rune_arrow', img: 'Rune_arrow_detail',      name: 'Rune Arrows',         icon: '🏹',  qty: '42',      rate: 'ultra: 1/64',  rarity: 'rare' },
     { group: 'Ultra Rare', id: 'ur_steel_arrow', img: 'Steel_arrow_detail',     name: 'Steel Arrows',        icon: '🏹',  qty: '150',     rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_2h', img: 'Rune_2h_sword',         name: 'Rune 2H Sword',       icon: '⚔️',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_battleaxe', img: 'Rune_battleaxe',  name: 'Rune Battleaxe',      icon: '🪓',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_sq', img: 'Rune_sq_shield',         name: 'Rune Sq Shield',      icon: '🛡️',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_rune_2h', img: 'Rune_2h_sword',         name: 'Rune 2H Sword',       icon: '⚔️',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' , alchGp: 38400 },
+    { group: 'Ultra Rare', id: 'ur_rune_battleaxe', img: 'Rune_battleaxe',  name: 'Rune Battleaxe',      icon: '🪓',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' , alchGp: 24960 },
+    { group: 'Ultra Rare', id: 'ur_rune_sq', img: 'Rune_sq_shield',         name: 'Rune Sq Shield',      icon: '🛡️',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'rare' , alchGp: 23040 },
     { group: 'Ultra Rare', id: 'ur_dragon_med', img: 'Dragon_med_helm',      name: 'Dragon Med Helm',     icon: '🪖',  qty: '1',       rate: 'ultra: 1/128',  rarity: 'vrarare' },
-    { group: 'Ultra Rare', id: 'ur_rune_kite', img: 'Rune_kiteshield',       name: 'Rune Kiteshield',     icon: '🛡️',  qty: '1',       rate: 'ultra: 1/128',  rarity: 'vrarare' },
+    { group: 'Ultra Rare', id: 'ur_rune_kite', img: 'Rune_kiteshield',       name: 'Rune Kiteshield',     icon: '🛡️',  qty: '1',       rate: 'ultra: 1/128',  rarity: 'vrarare' , alchGp: 32640 },
+    { group: 'Alch Proceeds', id: 'alch_coins', img: 'Coins_10000', name: 'Alch Proceeds', icon: '🪙', qty: '1', rate: '', rarity: 'uncommon', alchEntry: true },
     { group: 'Ultra Rare', id: 'ur_coins', img: 'Coins_10000',           name: 'Coins',               icon: '🪙',  qty: '3,000',   rate: 'ultra: 1/6.1', rarity: 'rare' },
     { group: 'Ultra Rare', id: 'ur_keyhalf1', img: 'Loop_half_of_key',        name: 'Key Half (loop)',     icon: '🗝️',  qty: '1',       rate: 'ultra: 1/6.4', rarity: 'rare' },
     { group: 'Ultra Rare', id: 'ur_keyhalf2', img: 'Tooth_half_of_key',        name: 'Key Half (tooth)',    icon: '🗝️',  qty: '1',       rate: 'ultra: 1/6.4', rarity: 'rare' },
@@ -702,7 +703,7 @@ const DROP_TABLES = {
     { group: 'Ultra Rare', id: 'ur_dragonstone', img: 'Dragonstone',     name: 'Dragonstone',         icon: '💜',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'vrarare' },
     { group: 'Ultra Rare', id: 'ur_silver_ore', img: 'Silver_ore',      name: 'Silver Ore',    icon: '⚪',  qty: '100',     rate: 'ultra: 1/64',  rarity: 'rare' },
     // Mega Rare table (from ultra rare)
-    { group: 'Mega Rare', id: 'mr_rune_spear', img: 'Rune_spear',      name: 'Rune Spear',          icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
+    { group: 'Mega Rare', id: 'mr_rune_spear', img: 'Rune_spear',      name: 'Rune Spear',          icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' , alchGp: 12480 },
     { group: 'Mega Rare', id: 'mr_dragon_shield', img: 'Dragon_sq_shield',   name: 'Dragon Shield Half',  icon: '🛡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
     { group: 'Mega Rare', id: 'mr_dragon_spear', img: 'Dragon_spear',    name: 'Dragon Spear',        icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
     // Random Jewel table (2/128)
@@ -749,8 +750,8 @@ const DROP_TABLES = {
 // ── STATE ─────────────────────────────────────────────────────────────────────
 
 let state = {
-  kbd: { kc: 0, loot: {} },
-  kq:  { kc: 0, loot: {} }
+  kbd: { kc: 0, loot: {}, alches: {} },
+  kq:  { kc: 0, loot: {}, alches: {} }
 };
 
 let selected = { kbd: new Set(), kq: new Set() };
@@ -775,6 +776,7 @@ function loadState() {
       for (const boss of ['kbd', 'kq']) {
         if (saved[boss]) {
           state[boss].kc = saved[boss].kc || 0;
+          state[boss].alches = saved[boss].alches || {};
           for (const drop of DROP_TABLES[boss]) {
             state[boss].loot[drop.id] = saved[boss].loot?.[drop.id] || 0;
           }
@@ -857,7 +859,24 @@ function renderKC(boss) {
 
 function removeDrop(boss, id) {
   if (state[boss].loot[id] > 0) {
-    state[boss].loot[id]--;
+    const drop = DROP_TABLES[boss].find(d => d.id === id);
+    // Alch coins: find smallest alch value to subtract, or just clear
+    if (drop && drop.alchEntry) {
+      state[boss].loot[id] = 0;
+    } else {
+      state[boss].loot[id]--;
+    }
+
+    // If removing a non-always/non-alch drop, also remove one set of always-drops
+    if (drop && drop.group !== 'Always' && !drop.alchEntry) {
+      const alwaysDrops = DROP_TABLES[boss].filter(d => d.group === 'Always');
+      for (const always of alwaysDrops) {
+        if (state[boss].loot[always.id] > 0) {
+          state[boss].loot[always.id]--;
+        }
+      }
+    }
+
     renderLootTable(boss);
     saveState();
     showToast('Drop removed.');
@@ -877,6 +896,17 @@ function renderLootTable(boss) {
   const rows = drops.map(drop => {
     const count = state[boss].loot[drop.id];
     if (count === 0) return '';
+    // Alch coins entry stores raw GP total, display differently
+    if (drop.alchEntry) {
+      return `
+      <tr>
+        <td><div class="item-cell">${renderIcon(drop)} Alch Proceeds</div></td>
+        <td class="rate-cell">alched</td>
+        <td style="text-align:right;padding-right:0.5rem;"><span class="count-badge">—</span></td>
+        <td style="text-align:right;padding-right:0.5rem;color:var(--gold-dim);font-size:0.85rem;">${count.toLocaleString()} gp</td>
+        <td style="text-align:right;"><button class="remove-btn" onclick="removeDrop('${boss}', '${drop.id}')" title="Remove one">−</button></td>
+      </tr>`;
+    }
     return `
       <tr>
         <td><div class="item-cell">${renderIcon(drop)} ${drop.name}${drop.qty ? `<span style="color:rgba(232,213,163,0.65);font-size:0.82em;margin-left:0.3em">×${drop.qty}</span>` : ""}</div></td>
@@ -903,9 +933,26 @@ function confirmKill(boss) {
     }
   }
 
+  // Check for alchable items in selection and prompt
+  const alchableSelected = [...selected[boss]].map(id => DROP_TABLES[boss].find(d => d.id === id)).filter(d => d && d.alchGp);
+
   for (const id of selected[boss]) {
     if (state[boss].loot[id] !== undefined) {
       state[boss].loot[id]++;
+    }
+  }
+
+  // For each alchable item, ask if they alched it and add gp instead
+  for (const drop of alchableSelected) {
+    const didAlch = confirm(`Did you high alch the ${drop.name}?\n\nYes = log ${drop.alchGp.toLocaleString()} gp instead\nNo = keep the item`);
+    if (didAlch) {
+      // Remove the item, track in per-item alches
+      state[boss].loot[drop.id]--;
+      state[boss].alches[drop.id] = (state[boss].alches[drop.id] || 0) + 1;
+      // Keep alch_coins in sync for backward compat
+      if (state[boss].loot['alch_coins'] !== undefined) {
+        state[boss].loot['alch_coins'] = (state[boss].loot['alch_coins'] || 0) + drop.alchGp;
+      }
     }
   }
 
@@ -926,6 +973,7 @@ function confirmKill(boss) {
 function resetBoss(boss) {
   if (!confirm(`Reset all data for ${boss.toUpperCase()}? This cannot be undone.`)) return;
   state[boss].kc = 0;
+  state[boss].alches = {};
   for (const drop of DROP_TABLES[boss]) {
     state[boss].loot[drop.id] = 0;
   }
@@ -982,11 +1030,33 @@ function renderSplit() {
   const boss = tripBoss;
   const drops = DROP_TABLES[boss];
   const n = tripParty;
-  const received = drops.filter(d => state[boss].loot[d.id] > 0);
+  const alches = state[boss].alches || {};
 
-  if (received.length === 0) {
+  // Non-alch drops (excluding the old alch_coins entry)
+  const received = drops.filter(d => state[boss].loot[d.id] > 0 && !d.alchEntry);
+
+  // Per-item alch rows
+  const alchedItems = drops.filter(d => alches[d.id] > 0);
+  const totalAlchGp = alchedItems.reduce((sum, d) => sum + (alches[d.id] * d.alchGp), 0);
+
+  const hasContent = received.length > 0 || alchedItems.length > 0;
+  if (!hasContent) {
     document.getElementById('split-content').innerHTML = '<p style="color:var(--gold-dim);font-style:italic;font-size:0.85rem;">No drops recorded this trip.</p>';
     return;
+  }
+
+  function makeIcon(img, icon) {
+    return img
+      ? '<img src="https://oldschool.runescape.wiki/images/' + img + '.png" alt="' + icon + '" onerror="this.outerHTML=this.alt" style="width:18px;height:18px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:5px;">'
+      : (icon + ' ');
+  }
+
+  function splitDisplay(total, perPlayer) {
+    const isWhole = perPlayer === Math.floor(perPlayer);
+    const remainder = total % n;
+    return isWhole
+      ? perPlayer.toLocaleString()
+      : '<span style="display:block;line-height:1.3">' + Math.floor(perPlayer).toLocaleString() + '</span><span style="display:block;color:var(--gold-dim);font-size:0.75em;line-height:1.3">(' + remainder + ' remaining)</span>';
   }
 
   const splitRows = received.map(drop => {
@@ -994,28 +1064,49 @@ function renderSplit() {
     const qtyNum = drop.qty ? (parseInt(drop.qty.toString().replace(/[^0-9]/g,'')) || 1) : 1;
     const totalQty = count * qtyNum;
     const perPlayer = totalQty / n;
-    const isWholeNumber = perPlayer === Math.floor(perPlayer);
-    const remainder = totalQty % n;
-    const splitDisplay = isWholeNumber
-      ? perPlayer.toString()
-      : `<span style="display:block;line-height:1.3">${Math.floor(perPlayer)}</span><span style="display:block;color:var(--gold-dim);font-size:0.75em;line-height:1.3">(${remainder} remaining)</span>`;
-    const iconHtml = drop.img
-      ? '<img src="https://oldschool.runescape.wiki/images/' + drop.img + '.png" alt="' + drop.icon + '" onerror="this.outerHTML=this.alt" style="width:18px;height:18px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:5px;">'
-      : (drop.icon + ' ');
-    return `<tr>
-      <td>${iconHtml}${drop.name}${drop.qty ? ' ×' + drop.qty : ''}</td>
-      <td style="text-align:center">${count}</td>
-      <td style="text-align:center">${totalQty}</td>
-      <td style="text-align:right">${splitDisplay}</td>
-    </tr>`;
+    return '<tr><td>' + makeIcon(drop.img, drop.icon) + drop.name + (drop.qty ? ' ×' + drop.qty : '') + '</td>'
+      + '<td style="text-align:center">' + count + '</td>'
+      + '<td style="text-align:center">' + totalQty + '</td>'
+      + '<td style="text-align:right">' + splitDisplay(totalQty, perPlayer) + '</td></tr>';
   }).join('');
 
-  document.getElementById('split-content').innerHTML = `
-    ${n > 1 ? `<p class="split-note">Items that can't divide evenly are flagged — work those out between yourselves.</p>` : ''}
-    <table class="split-table">
-      <thead><tr><th>Item</th><th>Drops</th><th>Total Qty</th><th style="text-align:right">Each</th></tr></thead>
-      <tbody>${splitRows}</tbody>
-    </table>`;
+  // Alch section
+  let alchSection = '';
+  if (alchedItems.length > 0) {
+    const alchRows = alchedItems.map(drop => {
+      const count = alches[drop.id];
+      const totalGp = count * drop.alchGp;
+      const perPlayer = totalGp / n;
+      return '<tr><td>' + makeIcon(drop.img, drop.icon) + drop.name + ' <span style="color:var(--gold-dim);font-size:0.8em;">(alched)</span></td>'
+        + '<td style="text-align:center">' + count + '</td>'
+        + '<td style="text-align:center">' + totalGp.toLocaleString() + ' gp</td>'
+        + '<td style="text-align:right">' + splitDisplay(totalGp, perPlayer) + ' gp</td></tr>';
+    }).join('');
+
+    const totalPerPlayer = totalAlchGp / n;
+    const totalIsWhole = totalPerPlayer === Math.floor(totalPerPlayer);
+    const totalRemainder = totalAlchGp % n;
+    const totalDisplay = totalIsWhole
+      ? totalPerPlayer.toLocaleString() + ' gp'
+      : Math.floor(totalPerPlayer).toLocaleString() + ' gp (' + totalRemainder + ' remaining)';
+
+    alchSection = '<h4 style="font-family:Cinzel,serif;font-size:0.72rem;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;margin:1.2rem 0 0.5rem;">Alch Proceeds</h4>'
+      + '<table class="split-table">'
+      + '<thead><tr><th>Item</th><th>Alched</th><th>Total GP</th><th style="text-align:right">Each</th></tr></thead>'
+      + '<tbody>' + alchRows + '</tbody>'
+      + '<tfoot><tr style="border-top:1px solid var(--gold-dim)">'
+      + '<td colspan="2" style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--gold);">Total</td>'
+      + '<td style="text-align:center;color:var(--gold);">' + totalAlchGp.toLocaleString() + ' gp</td>'
+      + '<td style="text-align:right;color:var(--gold);">' + totalDisplay + '</td>'
+      + '</tr></tfoot></table>';
+  }
+
+  document.getElementById('split-content').innerHTML =
+    (n > 1 ? '<p class="split-note">Items that cannot divide evenly are flagged — work those out between yourselves.</p>' : '')
+    + (received.length > 0
+      ? '<table class="split-table"><thead><tr><th>Item</th><th>Drops</th><th>Total Qty</th><th style="text-align:right">Each</th></tr></thead><tbody>' + splitRows + '</tbody></table>'
+      : '')
+    + alchSection;
 }
 
 function closeTrip() {
@@ -1027,6 +1118,7 @@ function confirmEndTrip() {
   if (tripBoss) {
     const boss = tripBoss;
     state[boss].kc = 0;
+    state[boss].alches = {};
     for (const drop of DROP_TABLES[boss]) {
       state[boss].loot[drop.id] = 0;
     }
