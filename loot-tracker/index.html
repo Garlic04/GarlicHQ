@@ -918,7 +918,9 @@ function removeDrop(boss, id) {
           if (state[boss].loot[always.id] > 0) state[boss].loot[always.id]--;
         }
       }
+      if (state[boss].kc > 0) state[boss].kc--;
     }
+    renderKC(boss);
     renderLootTable(boss);
     saveState();
     showToast('Drop removed.');
@@ -930,14 +932,21 @@ function removeAlch(boss, id) {
   if ((alches[id] || 0) > 0) {
     alches[id]--;
     state[boss].alches = alches;
-    // Deduct gp from alch_coins but do NOT restore the item to loot
+    // Deduct gp from alch_coins, decrement KC so user can re-log the kill correctly
     const drop = DROP_TABLES[boss].find(d => d.id === id);
     if (drop && state[boss].loot['alch_coins'] !== undefined) {
       state[boss].loot['alch_coins'] = Math.max(0, (state[boss].loot['alch_coins'] || 0) - drop.alchGp);
     }
+    if (state[boss].kc > 0) state[boss].kc--;
+    // Also decrement always-drops so they stay in sync
+    const alwaysDrops = DROP_TABLES[boss].filter(d => d.group === 'Always');
+    for (const always of alwaysDrops) {
+      if (state[boss].loot[always.id] > 0) state[boss].loot[always.id]--;
+    }
+    renderKC(boss);
     renderLootTable(boss);
     saveState();
-    showToast('Alch removed.');
+    showToast('Alch removed. Kill count decremented — re-log the kill to correct it.');
   }
 }
 
