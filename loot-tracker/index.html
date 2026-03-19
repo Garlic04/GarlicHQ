@@ -884,16 +884,14 @@ function removeAlch(boss, id) {
   if ((alches[id] || 0) > 0) {
     alches[id]--;
     state[boss].alches = alches;
-    // Restore the item to loot and put it back on log
-    state[boss].loot[id] = (state[boss].loot[id] || 0) + 1;
-    // Also restore the alch_coins amount
+    // Deduct gp from alch_coins but do NOT restore the item to loot
     const drop = DROP_TABLES[boss].find(d => d.id === id);
     if (drop && state[boss].loot['alch_coins'] !== undefined) {
       state[boss].loot['alch_coins'] = Math.max(0, (state[boss].loot['alch_coins'] || 0) - drop.alchGp);
     }
     renderLootTable(boss);
     saveState();
-    showToast('Alch undone.');
+    showToast('Alch removed.');
   }
 }
 
