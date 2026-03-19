@@ -310,6 +310,13 @@
 
   .generate-btn:hover::before { opacity: 1; }
   .generate-btn:active { transform: translateY(1px); }
+  .generate-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none;
+  }
+  .generate-btn:disabled::before { display: none; }
 
   /* Task display */
   #task-display {
@@ -1754,7 +1761,7 @@
   <div class="error-msg" id="error-msg">Unable to generate a task. Check your stats and try again.</div>
 
   <div style="display:flex;gap:8px;align-items:stretch;">
-    <button class="generate-btn" onclick="generateTask()" style="flex:1;">⚔ Generate Task</button>
+    <button class="generate-btn" id="generate-btn" onclick="generateTask()" style="flex:1;">⚔ Generate Task</button>
     <button id="picker-charge-btn" onclick="activateTaskPicker()" title="Use a Task Picker charge" style="display:none;padding:0 14px;background:rgba(74,122,204,0.15);border:1px solid #4a7acc;border-radius:8px;color:#7aaaee;font-size:18px;cursor:pointer;transition:background 0.2s;flex-shrink:0;" onmouseover="this.style.background='rgba(74,122,204,0.3)'" onmouseout="this.style.background='rgba(74,122,204,0.15)'">🎯<span id="picker-charge-count" style="font-size:11px;vertical-align:super;margin-left:2px;"></span></button>
   </div>
 
@@ -3944,6 +3951,18 @@ function safeRerollTask() {
   showToast('Safe Reroll used — streak preserved!');
 }
 
+function updateGenerateBtn() {
+  const btn = document.getElementById('generate-btn');
+  if (!btn) return;
+  if (currentTask) {
+    btn.disabled = true;
+    btn.title = 'Complete or reroll your current task first';
+  } else {
+    btn.disabled = false;
+    btn.title = '';
+  }
+}
+
 function renderTracker() {
   document.getElementById('tracker-total').textContent  = tracker.total;
 
@@ -3983,6 +4002,7 @@ function renderTracker() {
   } else {
     badgeEl.style.display = 'none';
   }
+  updateGenerateBtn();
 }
 
 const BOSSES = ['King Black Dragon', 'Kalphite Queen'];
