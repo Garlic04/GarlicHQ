@@ -756,10 +756,11 @@ let state = {
 
 let selected = { kbd: new Set(), kq: new Set() };
 
-// init loot counts
+// init loot and alch counts
 for (const boss of ['kbd', 'kq']) {
   for (const drop of DROP_TABLES[boss]) {
     state[boss].loot[drop.id] = 0;
+    if (drop.alchGp) state[boss].alches[drop.id] = 0;
   }
 }
 
@@ -878,6 +879,24 @@ function removeDrop(boss, id) {
   }
 }
 
+function removeAlch(boss, id) {
+  const alches = state[boss].alches || {};
+  if ((alches[id] || 0) > 0) {
+    alches[id]--;
+    state[boss].alches = alches;
+    // Restore the item to loot and put it back on log
+    state[boss].loot[id] = (state[boss].loot[id] || 0) + 1;
+    // Also restore the alch_coins amount
+    const drop = DROP_TABLES[boss].find(d => d.id === id);
+    if (drop && state[boss].loot['alch_coins'] !== undefined) {
+      state[boss].loot['alch_coins'] = Math.max(0, (state[boss].loot['alch_coins'] || 0) - drop.alchGp);
+    }
+    renderLootTable(boss);
+    saveState();
+    showToast('Alch undone.');
+  }
+}
+
 function renderLootTable(boss) {
   const tbody = document.getElementById(`${boss}-loot-body`);
   const drops = DROP_TABLES[boss];
@@ -913,7 +932,7 @@ function renderLootTable(boss) {
         <td class="rate-cell">alched</td>
         <td style="text-align:right;padding-right:0.5rem;"><span class="count-badge">${n}</span></td>
         <td style="text-align:right;padding-right:0.5rem;color:var(--gold-dim);font-size:0.85rem;">${totalGp.toLocaleString()} gp</td>
-        <td style="text-align:right;"></td>
+        <td style="text-align:right;"><button class="remove-btn" onclick="removeAlch('${boss}', '${d.id}')" title="Undo one alch">−</button></td>
       </tr>`;
     }).join('');
 
@@ -987,17 +1006,32 @@ function showAlchModal(boss, queue, index) {
 }
 
 function resetBoss(boss) {
-  if (!confirm(`Reset all data for ${boss.toUpperCase()}? This cannot be undone.`)) return;
-  state[boss].kc = 0;
-  for (const drop of DROP_TABLES[boss]) {
-    state[boss].loot[drop.id] = 0;
-  }
-  selected[boss].clear();
-  renderKC(boss);
-  buildDropGrid(boss);
-  renderLootTable(boss);
-  saveState();
-  showToast('Data reset.');
+  const modal = document.getElementById('reset-modal');
+  document.getElementById('reset-modal-title').textContent = 'Reset ' + boss.toUpperCase() + '?';
+  modal.classList.add('active');
+
+  const cancelBtn = document.getElementById('reset-modal-cancel');
+  const confirmBtn = document.getElementById('reset-modal-confirm');
+  cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+  confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+
+  document.getElementById('reset-modal-cancel').addEventListener('click', () => {
+    modal.classList.remove('active');
+  });
+  document.getElementById('reset-modal-confirm').addEventListener('click', () => {
+    modal.classList.remove('active');
+    state[boss].kc = 0;
+    state[boss].alches = {};
+    for (const drop of DROP_TABLES[boss]) {
+      state[boss].loot[drop.id] = 0;
+    }
+    selected[boss].clear();
+    renderKC(boss);
+    buildDropGrid(boss);
+    renderLootTable(boss);
+    saveState();
+    showToast('Data reset.');
+  });
 }
 
 function switchBoss(boss) {
@@ -1176,6 +1210,16 @@ function confirmEndTrip() {
     <div class="modal-actions">
       <button class="modal-close-btn" id="alch-modal-no">Keep Item</button>
       <button class="modal-end-btn" id="alch-modal-yes" style="border-color:var(--gold-dim);background:rgba(200,168,75,0.12);color:var(--gold-glow);">Log Alch</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h2 id="reset-modal-title">Reset?</h2>
+    <div style="color:var(--parchment);font-size:0.88rem;margin-bottom:1.4rem;">This will clear all kills, drops and alch data for this boss. This cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="modal-close-btn" id="reset-modal-cancel">Cancel</button>
+      <button class="modal-end-btn" id="reset-modal-confirm">Reset</button>
     </div>
   </div>
 </div>
