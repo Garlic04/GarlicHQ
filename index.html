@@ -143,6 +143,12 @@
     object-fit: contain;
     opacity: 0.7;
     border-radius: 6px;
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  .divider-icon.live {
+    width: 72px;
+    height: 72px;
+    opacity: 0.85;
   }
 
   /* ── SECTION LABEL ── */
@@ -401,7 +407,7 @@
     </a>
 
     <a class="tool-card" href="world-map/">
-      <span class="card-icon"><img src="https://oldschool.runescape.wiki/images/Crandor_map_detail.png" alt="🗺️" onerror="this.outerHTML='🗺️'"></span>
+      <span class="card-icon"><img src="https://oldschool.runescape.wiki/images/World_map_icon.png" alt="🗺️" onerror="this.outerHTML='🗺️'"></span>
       <div class="card-title">World Map</div>
       <div class="card-desc">Explore the Lost City world map with points of interest, NPCs, quests and more.</div>
       <span class="card-arrow">→</span>
@@ -425,7 +431,9 @@
       const data = await res.json();
       if (data.live) {
         document.getElementById('liveBadge').classList.add('visible');
-        document.getElementById('dividerIcon').src = 'https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlic_live.png';
+        const icon = document.getElementById('dividerIcon');
+        icon.src = 'https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlic_live.png';
+        icon.classList.add('live');
       }
     } catch (e) {
       // silently fail if API unreachable
