@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loot Tracker — KBD & KQ</title>
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="GarlicHQ">
+<meta property="og:title"       content="Loot Tracker — GarlicHQ">
+<meta property="og:description" content="Track your KBD and Kalphite Queen drops and loot over time. Split loot with your party at the end of a trip.">
+<meta property="og:image"       content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
+<meta property="og:url"         content="https://garlichq.com/loot-tracker/">
+<meta name="description"        content="Track your KBD and Kalphite Queen drops and loot over time. Split loot with your party at the end of a trip.">
+<meta name="twitter:card"       content="summary">
+<meta name="twitter:title"      content="Loot Tracker — GarlicHQ">
+<meta name="twitter:description" content="Track your KBD and Kalphite Queen drops and loot over time. Split loot with your party at the end of a trip.">
+<meta name="twitter:image"      content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
 <link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -61,6 +72,40 @@
   .nav-brand span { color: var(--gold-dim); font-weight: 400; }
 
   /* ── BOSS TABS ── */
+  .row-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--gold-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+  }
+  .row-toggle:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+  .row-toggle.active {
+    border-color: var(--gold);
+    background: rgba(200,168,75,0.1);
+    color: var(--gold-glow);
+  }
+  .row-toggle img { image-rendering: pixelated; opacity: 0.7; transition: opacity 0.2s; }
+  .row-toggle.active img { opacity: 1; }
+  .tabs-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+  }
+
   .boss-tabs {
     display: flex;
     gap: 0;
@@ -555,9 +600,15 @@
 </nav>
 
 <!-- BOSS TABS -->
-<div class="boss-tabs">
-  <div class="boss-tab active" data-boss="kbd" onclick="switchBoss('kbd')"><img src="https://oldschool.runescape.wiki/images/King_Black_Dragon.png" alt="KBD" onerror="this.outerHTML='🐉'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> King Black Dragon</div>
-  <div class="boss-tab" data-boss="kq" onclick="switchBoss('kq')"><img src="https://oldschool.runescape.wiki/images/Kalphite_Queen.png" alt="KQ" onerror="this.outerHTML='🦂'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> Kalphite Queen</div>
+<div class="tabs-row">
+  <div class="boss-tabs">
+    <div class="boss-tab active" data-boss="kbd" onclick="switchBoss('kbd')"><img src="https://oldschool.runescape.wiki/images/King_Black_Dragon.png" alt="KBD" onerror="this.outerHTML='🐉'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> King Black Dragon</div>
+    <div class="boss-tab" data-boss="kq" onclick="switchBoss('kq')"><img src="https://oldschool.runescape.wiki/images/Kalphite_Queen.png" alt="KQ" onerror="this.outerHTML='🦂'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> Kalphite Queen</div>
+  </div>
+  <button class="row-toggle" id="row-toggle" onclick="toggleRoW()" title="Toggle Ring of Wealth rates">
+    <img src="https://oldschool.runescape.wiki/images/Ring_of_wealth_(5)_(v1)_detail.png" width="18" height="18" alt="RoW">
+    Ring of Wealth
+  </button>
 </div>
 
 <!-- ══════════════════ KBD ══════════════════ -->
@@ -670,7 +721,7 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'fire_rune', img: 'Fire_rune',          name: 'Fire Runes',          icon: '🔥',  qty: '105',     rate: '1/12.8',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'blood_rune', img: 'Blood_rune',         name: 'Blood Runes',         icon: '🩸',  qty: '15',      rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'law_rune', img: 'Law_rune',           name: 'Law Runes',           icon: '📜',  qty: '15',      rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'death_rune', img: 'Death_rune',         name: 'Death Runes',         icon: '💀',  qty: '7',       rate: '1/42.7',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'death_rune', img: 'Death_rune',         name: 'Death Runes',         icon: '💀',  qty: '7',       rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'adamant_axe', img: 'Adamant_axe',        name: 'Adamant Axe',         icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 768 },
     { group: 'Main Table', id: 'rune_axe', img: 'Rune_axe',           name: 'Rune Axe',            icon: '🪓',  qty: '1',       rate: '1/64',   rarity: 'rare' , alchGp: 7680 },
     { group: 'Main Table', id: 'adamantite_bar_1', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
@@ -683,38 +734,40 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'shark', img: 'Shark',              name: 'Sharks',              icon: '🦈',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 1014 },
+    // Mega Rare table (via ultra rare or gem table)
+    { group: 'Mega Rare', id: 'mr_rune_spear',    img: 'Rune_spear',       name: 'Rune Spear',         icon: '🗡️', qty: '1', rate: '~1/1800', rateNoRoW: '~1/1971', rateRoW: '~1/1800', rarity: 'vrarare', alchGp: 12480 },
+    { group: 'Mega Rare', id: 'mr_dragon_shield',  img: 'Dragon_sq_shield', name: 'Dragon Shield Half', icon: '🛡️', qty: '1', rate: '~1/3601', rateNoRoW: '~1/3942', rateRoW: '~1/3601', rarity: 'vrarare' },
+    { group: 'Mega Rare', id: 'mr_dragon_spear',   img: 'Dragon_spear',     name: 'Dragon Spear',       icon: '🗡️', qty: '1', rate: '~1/4801', rateNoRoW: '~1/5256', rateRoW: '~1/4801', rarity: 'vrarare' },
     // Ultra Rare table (8/128 chance to roll)
-    { group: 'Ultra Rare', id: 'ur_nature_rune', img: 'Nature_rune',     name: 'Nature Runes',        icon: '🍃',  qty: '67',      rate: 'ultra: 1/42.7',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_adamant_javelin', img: 'Adamant_javelin', name: 'Adamant Javelins',    icon: '🗡️',  qty: '20',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_death_rune', img: 'Death_rune',      name: 'Death Runes',         icon: '💀',  qty: '45',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_law_rune', img: 'Law_rune',        name: 'Law Runes',           icon: '📜',  qty: '45',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_arrow', img: 'Rune_arrow_detail',      name: 'Rune Arrows',         icon: '🏹',  qty: '42',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_steel_arrow', img: 'Steel_arrow_detail',     name: 'Steel Arrows',        icon: '🏹',  qty: '150',     rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_2h', img: 'Rune_2h_sword',         name: 'Rune 2H Sword',       icon: '⚔️',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' , alchGp: 38400 },
-    { group: 'Ultra Rare', id: 'ur_rune_battleaxe', img: 'Rune_battleaxe',  name: 'Rune Battleaxe',      icon: '🪓',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' , alchGp: 24960 },
-    { group: 'Ultra Rare', id: 'ur_rune_sq', img: 'Rune_sq_shield',         name: 'Rune Sq Shield',      icon: '🛡️',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'rare' , alchGp: 23040 },
+    { group: 'Ultra Rare', id: 'ur_nature_rune', img: 'Nature_rune',     name: 'Nature Runes',        icon: '🍃',  qty: '67',      rate: 'ultra: 1/683',   rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_adamant_javelin', img: 'Adamant_javelin', name: 'Adamant Javelins',    icon: '🗡️',  qty: '20',      rate: 'ultra: 1/1024',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_death_rune', img: 'Death_rune',      name: 'Death Runes',         icon: '💀',  qty: '45',      rate: 'ultra: 1/1024',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_law_rune', img: 'Law_rune',        name: 'Law Runes',           icon: '📜',  qty: '45',      rate: 'ultra: 1/1024',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_rune_arrow', img: 'Rune_arrow_detail',      name: 'Rune Arrows',         icon: '🏹',  qty: '42',      rate: 'ultra: 1/1024',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_steel_arrow', img: 'Steel_arrow_detail',     name: 'Steel Arrows',        icon: '🏹',  qty: '150',     rate: 'ultra: 1/1024',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_rune_2h', img: 'Rune_2h_sword',         name: 'Rune 2H Sword',       icon: '⚔️',  qty: '1',       rate: 'ultra: 1/683',  rarity: 'rare' , alchGp: 38400 },
+    { group: 'Ultra Rare', id: 'ur_rune_battleaxe', img: 'Rune_battleaxe',  name: 'Rune Battleaxe',      icon: '🪓',  qty: '1',       rate: 'ultra: 1/683',  rarity: 'rare' , alchGp: 24960 },
+    { group: 'Ultra Rare', id: 'ur_rune_sq', img: 'Rune_sq_shield',         name: 'Rune Sq Shield',      icon: '🛡️',  qty: '1',       rate: 'ultra: 1/1024',  rarity: 'rare' , alchGp: 23040 },
     { group: 'Ultra Rare', id: 'ur_dragon_med', img: 'Dragon_med_helm',      name: 'Dragon Med Helm',     icon: '🪖',  qty: '1',       rate: 'ultra: 1/2048', rarity: 'vrarare' },
-    { group: 'Ultra Rare', id: 'ur_rune_kite', img: 'Rune_kiteshield',       name: 'Rune Kiteshield',     icon: '🛡️',  qty: '1',       rate: 'ultra: 1/128',  rarity: 'vrarare' , alchGp: 32640 },
+    { group: 'Ultra Rare', id: 'ur_rune_kite', img: 'Rune_kiteshield',       name: 'Rune Kiteshield',     icon: '🛡️',  qty: '1',       rate: 'ultra: 1/2048',  rarity: 'vrarare' , alchGp: 32640 },
     { group: 'Alch Proceeds', id: 'alch_coins', img: 'Coins_10000', name: 'Alch Proceeds', icon: '🪙', qty: '1', rate: '', rarity: 'uncommon', alchEntry: true },
-    { group: 'Ultra Rare', id: 'ur_coins', img: 'Coins_10000',           name: 'Coins',               icon: '🪙',  qty: '3,000',   rate: 'ultra: 1/6.1', rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_keyhalf1', img: 'Loop_half_of_key',        name: 'Key Half (loop)',     icon: '🗝️',  qty: '1',       rate: 'ultra: 1/6.4', rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_keyhalf2', img: 'Tooth_half_of_key',        name: 'Key Half (tooth)',    icon: '🗝️',  qty: '1',       rate: 'ultra: 1/6.4', rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_runite_bar', img: 'Runite_bar',      name: 'Runite Bar',          icon: '🟦',  qty: '1',       rate: 'ultra: 1/25.6',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_dragonstone', img: 'Dragonstone',     name: 'Dragonstone',         icon: '💜',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'vrarare' },
-    { group: 'Ultra Rare', id: 'ur_silver_ore', img: 'Silver_ore',      name: 'Silver Ore',    icon: '⚪',  qty: '100',     rate: 'ultra: 1/64',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_coins', img: 'Coins_10000',           name: 'Coins',               icon: '🪙',  qty: '3,000',   rate: 'ultra: 1/98', rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_keyhalf1', img: 'Loop_half_of_key',        name: 'Key Half (loop)',     icon: '🗝️',  qty: '1',       rate: 'ultra: 1/102', rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_keyhalf2', img: 'Tooth_half_of_key',        name: 'Key Half (tooth)',    icon: '🗝️',  qty: '1',       rate: 'ultra: 1/102', rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_runite_bar', img: 'Runite_bar',      name: 'Runite Bar',          icon: '🟦',  qty: '1',       rate: 'ultra: 1/410',  rarity: 'rare' },
+    { group: 'Ultra Rare', id: 'ur_dragonstone', img: 'Dragonstone',     name: 'Dragonstone',         icon: '💜',  qty: '1',       rate: 'ultra: 1/1024',  rarity: 'vrarare' },
+    { group: 'Ultra Rare', id: 'ur_silver_ore', img: 'Silver_ore',      name: 'Silver Ore',    icon: '⚪',  qty: '100',     rate: 'ultra: 1/1024',  rarity: 'rare' },
     // Mega Rare table (from ultra rare)
-    { group: 'Mega Rare', id: 'mr_rune_spear', img: 'Rune_spear',      name: 'Rune Spear',          icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' , alchGp: 12480 },
-    { group: 'Mega Rare', id: 'mr_dragon_shield', img: 'Dragon_sq_shield',   name: 'Dragon Shield Half',  icon: '🛡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
-    { group: 'Mega Rare', id: 'mr_dragon_spear', img: 'Dragon_spear',    name: 'Dragon Spear',        icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
+
     // Random Jewel table (2/128)
-    { group: 'Gem Drop Table', id: 'rj_sapphire', img: 'Uncut_sapphire',        name: 'Uncut Sapphire',      icon: '🔵',  qty: '1',       rate: 'jewel: 1/4', rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_emerald', img: 'Uncut_emerald',         name: 'Uncut Emerald',       icon: '💚',  qty: '1',       rate: 'jewel: 1/8', rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_ruby', img: 'Uncut_ruby',            name: 'Uncut Ruby',          icon: '🔴',  qty: '1',       rate: 'jewel: 1/16',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_diamond', img: 'Uncut_diamond',         name: 'Uncut Diamond',       icon: '💎',  qty: '1',       rate: 'jewel: 1/64',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_javelin', img: 'Rune_javelin',         name: 'Rune Javelins',       icon: '🗡️',  qty: '5',       rate: 'jewel: 1/128',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf1', img: 'Loop_half_of_key',        name: 'Key Half (loop)',     icon: '🗝️',  qty: '1',       rate: 'jewel: 1/128',  rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf2', img: 'Tooth_half_of_key',        name: 'Key Half (tooth)',    icon: '🗝️',  qty: '1',       rate: 'jewel: 1/128',  rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_talisman', img: 'Nature_talisman',        name: 'Chaos/Nature Talisman',icon: '🔮', qty: '1',       rate: 'jewel: 1/32',  rarity: 'rare' },
+    { group: 'Gem Drop Table', id: 'rj_sapphire',  img: 'Uncut_sapphire',   name: 'Uncut Sapphire',        icon: '🔵', qty: '1', rate: '~1/80',   rateNoRoW: '~1/158', rateRoW: '~1/80',   rarity: 'uncommon' },
+    { group: 'Gem Drop Table', id: 'rj_emerald',   img: 'Uncut_emerald',    name: 'Uncut Emerald',         icon: '💚', qty: '1', rate: '~1/160',  rateNoRoW: '~1/315', rateRoW: '~1/160',  rarity: 'uncommon' },
+    { group: 'Gem Drop Table', id: 'rj_ruby',      img: 'Uncut_ruby',       name: 'Uncut Ruby',            icon: '🔴', qty: '1', rate: '~1/320',  rateNoRoW: '~1/630', rateRoW: '~1/320',  rarity: 'rare' },
+    { group: 'Gem Drop Table', id: 'rj_diamond',   img: 'Uncut_diamond',    name: 'Uncut Diamond',         icon: '💎', qty: '1', rate: '~1/1280', rateNoRoW: '~1/2520', rateRoW: '~1/1280', rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_javelin',   img: 'Rune_javelin',     name: 'Rune Javelins',         icon: '🗡️', qty: '5', rate: '~1/2560', rateNoRoW: '~1/5039', rateRoW: '~1/2560',  rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_keyhalf1',  img: 'Loop_half_of_key', name: 'Key Half (loop)',       icon: '🗝️', qty: '1', rate: '~1/2560', rateNoRoW: '~1/5039', rateRoW: '~1/2560',  rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_keyhalf2',  img: 'Tooth_half_of_key',name: 'Key Half (tooth)',      icon: '🗝️', qty: '1', rate: '~1/2560', rateNoRoW: '~1/5039', rateRoW: '~1/2560',  rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',  name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: '~1/640',  rateNoRoW: '~1/1260', rateRoW: '~1/640',   rarity: 'rare' },
   ],
   kq: [
     { group: 'Main Table', id: 'rune_chainbody', img: 'Rune_chainbody',     name: 'Rune Chainbody',      icon: '🛡️',  qty: '1',       rate: '1/9.1',  rarity: 'uncommon' },
@@ -736,14 +789,14 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'lobster', img: 'Lobster',            name: 'Lobsters',            icon: '🦞',  qty: '7',       rate: '1/64',   rarity: 'rare' },
     { group: 'Main Table', id: 'dragon_chainbody', img: 'Dragon_chainbody',   name: 'Dragon Chainbody',    icon: '🟠',  qty: '1',       rate: '1/128',   rarity: 'vrarare' },
     // Random Jewel table (6/128)
-    { group: 'Gem Drop Table', id: 'rj_sapphire',  img: 'Uncut_sapphire',    name: 'Uncut Sapphire',        icon: '🔵', qty: '1', rate: 'jewel: 1/4',   rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_emerald',   img: 'Uncut_emerald',     name: 'Uncut Emerald',         icon: '💚', qty: '1', rate: 'jewel: 1/8',   rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_ruby',      img: 'Uncut_ruby',        name: 'Uncut Ruby',            icon: '🔴', qty: '1', rate: 'jewel: 1/16',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_diamond',   img: 'Uncut_diamond',     name: 'Uncut Diamond',         icon: '💎', qty: '1', rate: 'jewel: 1/64',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_javelin',   img: 'Rune_javelin',      name: 'Rune Javelins',         icon: '🗡️', qty: '5', rate: 'jewel: 1/128', rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf1',  img: 'Loop_half_of_key',  name: 'Key Half (loop)',       icon: '🗝️', qty: '1', rate: 'jewel: 1/128', rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf2',  img: 'Tooth_half_of_key', name: 'Key Half (tooth)',      icon: '🗝️', qty: '1', rate: 'jewel: 1/128', rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',   name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: 'jewel: 1/32',  rarity: 'rare' },
+    { group: 'Gem Drop Table', id: 'rj_sapphire',  img: 'Uncut_sapphire',   name: 'Uncut Sapphire',        icon: '🔵', qty: '1', rate: '~1/43',   rateNoRoW: '~1/85',   rateRoW: '~1/43',   rarity: 'uncommon' },
+    { group: 'Gem Drop Table', id: 'rj_emerald',   img: 'Uncut_emerald',    name: 'Uncut Emerald',         icon: '💚', qty: '1', rate: '~1/87',   rateNoRoW: '~1/171', rateRoW: '~1/87',   rarity: 'uncommon' },
+    { group: 'Gem Drop Table', id: 'rj_ruby',      img: 'Uncut_ruby',       name: 'Uncut Ruby',            icon: '🔴', qty: '1', rate: '~1/173',  rateNoRoW: '~1/341', rateRoW: '~1/173',  rarity: 'rare' },
+    { group: 'Gem Drop Table', id: 'rj_diamond',   img: 'Uncut_diamond',    name: 'Uncut Diamond',         icon: '💎', qty: '1', rate: '~1/693',  rateNoRoW: '~1/1365', rateRoW: '~1/693',  rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_javelin',   img: 'Rune_javelin',     name: 'Rune Javelins',         icon: '🗡️', qty: '5', rate: '~1/1387', rateNoRoW: '~1/2731', rateRoW: '~1/1387', rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_keyhalf1',  img: 'Loop_half_of_key', name: 'Key Half (loop)',       icon: '🗝️', qty: '1', rate: '~1/1387', rateNoRoW: '~1/2731', rateRoW: '~1/1387', rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_keyhalf2',  img: 'Tooth_half_of_key',name: 'Key Half (tooth)',      icon: '🗝️', qty: '1', rate: '~1/1387', rateNoRoW: '~1/2731', rateRoW: '~1/1387', rarity: 'vrarare' },
+    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',  name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: '~1/462',  rateNoRoW: '~1/683',  rateRoW: '~1/462',  rarity: 'rare' },
   ]
 };
 
@@ -819,7 +872,7 @@ function buildDropGrid(boss) {
       ${renderIcon(drop)}
       <span>
         <span class="drop-name">${drop.name}${drop.qty ? `<span class="drop-qty"> ×${drop.qty}</span>` : ""}</span>
-        <span class="drop-rarity drop-${drop.rarity}">${drop.rate}</span>
+        <span class="drop-rarity drop-${drop.rarity}">${getDropRate(drop)}</span>
       </span>`;
     btn.onclick = () => toggleDrop(boss, drop.id, btn);
     grid.appendChild(btn);
@@ -895,6 +948,25 @@ function removeAlch(boss, id) {
   }
 }
 
+let rowEnabled = false;
+
+function toggleRoW() {
+  rowEnabled = !rowEnabled;
+  const btn = document.getElementById('row-toggle');
+  btn.classList.toggle('active', rowEnabled);
+  // Rebuild drop grids and loot tables for both bosses
+  buildDropGrid('kbd');
+  buildDropGrid('kq');
+  renderLootTable('kbd');
+  renderLootTable('kq');
+}
+
+function getDropRate(drop) {
+  if (rowEnabled && drop.rateRoW)   return drop.rateRoW;
+  if (!rowEnabled && drop.rateNoRoW) return drop.rateNoRoW;
+  return drop.rate;
+}
+
 function renderLootTable(boss) {
   const tbody = document.getElementById(`${boss}-loot-body`);
   const drops = DROP_TABLES[boss];
@@ -912,7 +984,7 @@ function renderLootTable(boss) {
     return `
       <tr>
         <td><div class="item-cell">${renderIcon(drop)} ${drop.name}${drop.qty ? `<span style="color:rgba(232,213,163,0.65);font-size:0.82em;margin-left:0.3em">×${drop.qty}</span>` : ""}</div></td>
-        <td class="rate-cell">${drop.rate}</td>
+        <td class="rate-cell">${getDropRate(drop)}</td>
         <td style="text-align:right;padding-right:0.5rem;"><span class="count-badge">${count}</span></td>
         <td style="text-align:right;padding-right:0.5rem;color:var(--gold-dim);font-size:0.85rem;">${drop.qty ? (count * parseInt(drop.qty.toString().replace(/[^0-9]/g,'')) || count) : count}</td>
         <td style="text-align:right;"><button class="remove-btn" onclick="removeDrop('${boss}', '${drop.id}')" title="Remove one">−</button></td>
@@ -1193,7 +1265,7 @@ function confirmEndTrip() {
   </div>
 </div>
   <!-- Ko-fi support button -->
-  <a href="https://ko-fi.com/garlic04" target="_blank" rel="noopener" style="position:fixed;bottom:16px;left:16px;z-index:9000;display:flex;align-items:center;gap:7px;background:rgba(20,17,9,0.92);border:1px solid rgba(200,168,75,0.35);border-radius:20px;padding:7px 13px;text-decoration:none;color:#c9a227;font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;backdrop-filter:blur(4px);transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(200,168,75,0.8)';this.style.color='#f5d76e'" onmouseout="this.style.borderColor='rgba(200,168,75,0.35)';this.style.color='#c9a227'"><img src="https://storage.ko-fi.com/cdn/cup-border.png" width="18" height="18" alt="" style="opacity:0.85;">Support</a>
+  <a href="https://ko-fi.com/garlic04" target="_blank" rel="noopener" style="position:fixed;bottom:16px;left:16px;z-index:9000;display:flex;align-items:center;gap:7px;background:rgba(20,17,9,0.92);border:1px solid rgba(200,168,75,0.35);border-radius:20px;padding:7px 13px;text-decoration:none;color:#c9a227;font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;backdrop-filter:blur(4px);transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(200,168,75,0.8)';this.style.color='#f5d76e'" onmouseout="this.style.borderColor='rgba(200,168,75,0.35)';this.style.color='#c9a227'"><img src="https://storage.ko-fi.com/cdn/cup-border.png" width="18" height="18" alt="" style="opacity:0.85;">Support the site</a>
 <div class="modal-overlay" id="alch-modal">
   <div class="modal">
     <h2>High Alch?</h2>
