@@ -37,16 +37,28 @@
     color: var(--parchment);
   }
   nav {
-    display: flex; align-items: center; gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 0.9rem 1.5rem;
     border-bottom: 1px solid var(--border);
-    background: rgba(10,8,4,0.6);
-    font-size: 0.85rem;
+    background: rgba(13,11,8,0.8);
+    backdrop-filter: blur(4px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-  nav a { color: var(--gold-dim); text-decoration: none; transition: color 0.2s; }
-  nav a:hover { color: var(--gold); }
-  nav .sep { color: var(--border); }
-  nav .current { color: var(--parchment); opacity: 0.7; }
+
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-brand span { color: var(--gold-dim); font-weight: 400; }
   .page-header { text-align: center; padding: 2.5rem 1rem 2rem; border-bottom: 1px solid var(--border); }
   .page-header h1 {
     font-family: 'Cinzel', serif; font-weight: 700;
@@ -201,9 +213,7 @@
 <body>
 
 <nav>
-  <a href="/">← Garlic</a>
-  <span class="sep">/</span>
-  <span class="current">Skill Calculators</span>
+  <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Skill Calculator</a>
 </nav>
 
 <div class="page-header">
