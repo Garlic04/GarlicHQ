@@ -718,8 +718,7 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'death_rune', img: 'Death_rune',         name: 'Death Runes',         icon: '💀',  qty: '7',       rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'adamant_axe', img: 'Adamant_axe',        name: 'Adamant Axe',         icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 768 },
     { group: 'Main Table', id: 'rune_axe', img: 'Rune_axe',           name: 'Rune Axe',            icon: '🪓',  qty: '1',       rate: '1/64',   rarity: 'rare' , alchGp: 7680 },
-    { group: 'Main Table', id: 'adamantite_bar_1', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamantite_bar_2', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '2',       rate: '1/42.7',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'adamantite_bar', img: 'Adamantite_bar',    name: 'Adamantite Bar',      icon: '⬜',  qty: '1–2',     rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'runite_bar', img: 'Runite_bar',         name: 'Runite Bar',          icon: '🟦',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'cert_coal', img: 'Coal',          name: 'Coal',          icon: '⚫',  qty: '100',     rate: '1/64',   rarity: 'rare' },
     { group: 'Main Table', id: 'cert_iron', img: 'Iron_ore',          name: 'Iron Ore',      icon: '🟫',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
@@ -729,9 +728,9 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 1014 },
     // Mega Rare table (via ultra rare or gem table)
-    { group: 'Mega Rare', id: 'mr_rune_spear',    img: 'Rune_spear',       name: 'Rune Spear',         icon: '🗡️', qty: '1', rate: '~1/1800', rateNoRoW: '~1/1971', rateRoW: '~1/1800', rarity: 'vrarare', alchGp: 12480 },
-    { group: 'Mega Rare', id: 'mr_dragon_shield',  img: 'Dragon_sq_shield', name: 'Dragon Shield Half', icon: '🛡️', qty: '1', rate: '~1/3601', rateNoRoW: '~1/3942', rateRoW: '~1/3601', rarity: 'vrarare' },
-    { group: 'Mega Rare', id: 'mr_dragon_spear',   img: 'Dragon_spear',     name: 'Dragon Spear',       icon: '🗡️', qty: '1', rate: '~1/4801', rateNoRoW: '~1/5256', rateRoW: '~1/4801', rarity: 'vrarare' },
+    { group: 'Mega Rare', id: 'mr_rune_spear',    img: 'Rune_spear',       name: 'Rune Spear',         icon: '🗡️', qty: '1', rate: '~1/2074', rateNoRoW: '~1/2127', rateRoW: '~1/2074', rarity: 'vrarare', alchGp: 12480 },
+    { group: 'Mega Rare', id: 'mr_dragon_shield',  img: 'Dragon_sq_shield', name: 'Dragon Shield Half', icon: '🛡️', qty: '1', rate: '~1/4148', rateNoRoW: '~1/4254', rateRoW: '~1/4148', rarity: 'vrarare' },
+    { group: 'Mega Rare', id: 'mr_dragon_spear',   img: 'Dragon_spear',     name: 'Dragon Spear',       icon: '🗡️', qty: '1', rate: '~1/5530', rateNoRoW: '~1/5672', rateRoW: '~1/5530', rarity: 'vrarare' },
     // Ultra Rare table (8/128 chance to roll)
     { group: 'Ultra Rare', id: 'ur_nature_rune', img: 'Nature_rune',     name: 'Nature Runes',        icon: '🍃',  qty: '67',      rate: 'ultra: 1/683',   rarity: 'rare' },
     { group: 'Ultra Rare', id: 'ur_adamant_javelin', img: 'Adamant_javelin', name: 'Adamant Javelins',    icon: '🗡️',  qty: '20',      rate: 'ultra: 1/1024',  rarity: 'rare' },
@@ -761,7 +760,7 @@ const DROP_TABLES = {
     { group: 'Gem Drop Table', id: 'rj_javelin',   img: 'Rune_javelin',     name: 'Rune Javelins',         icon: '🗡️', qty: '5', rate: '~1/2560', rateNoRoW: '~1/5039', rateRoW: '~1/2560',  rarity: 'vrarare' },
     { group: 'Gem Drop Table', id: 'rj_keyhalf1',  img: 'Loop_half_of_key', name: 'Key Half (loop)',       icon: '🗝️', qty: '1', rate: '~1/2560', rateNoRoW: '~1/5039', rateRoW: '~1/2560',  rarity: 'vrarare' },
     { group: 'Gem Drop Table', id: 'rj_keyhalf2',  img: 'Tooth_half_of_key',name: 'Key Half (tooth)',      icon: '🗝️', qty: '1', rate: '~1/2560', rateNoRoW: '~1/5039', rateRoW: '~1/2560',  rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',  name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: '~1/640',  rateNoRoW: '~1/1260', rateRoW: '~1/640',   rarity: 'rare' },
+    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',  name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: '~1/640',  rateNoRoW: '~1/1680', rateRoW: '~1/853',   rarity: 'rare' },
   ],
   kq: [
     { group: 'Main Table', id: 'rune_chainbody', img: 'Rune_chainbody',     name: 'Rune Chainbody',      icon: '🛡️',  qty: '1',       rate: '1/9.1',  rarity: 'uncommon' },
@@ -790,7 +789,7 @@ const DROP_TABLES = {
     { group: 'Gem Drop Table', id: 'rj_javelin',   img: 'Rune_javelin',     name: 'Rune Javelins',         icon: '🗡️', qty: '5', rate: '~1/1387', rateNoRoW: '~1/2731', rateRoW: '~1/1387', rarity: 'vrarare' },
     { group: 'Gem Drop Table', id: 'rj_keyhalf1',  img: 'Loop_half_of_key', name: 'Key Half (loop)',       icon: '🗝️', qty: '1', rate: '~1/1387', rateNoRoW: '~1/2731', rateRoW: '~1/1387', rarity: 'vrarare' },
     { group: 'Gem Drop Table', id: 'rj_keyhalf2',  img: 'Tooth_half_of_key',name: 'Key Half (tooth)',      icon: '🗝️', qty: '1', rate: '~1/1387', rateNoRoW: '~1/2731', rateRoW: '~1/1387', rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',  name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: '~1/462',  rateNoRoW: '~1/683',  rateRoW: '~1/462',  rarity: 'rare' },
+    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',  name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: '~1/462',  rateNoRoW: '~1/910',  rateRoW: '~1/462',  rarity: 'rare' },
   ]
 };
 
