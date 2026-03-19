@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loot Tracker — KBD & KQ</title>
+<title>Clue Scroll Tracker — Garlic</title>
 <meta property="og:type"        content="website">
 <meta property="og:site_name"   content="GarlicHQ">
 <meta property="og:title"       content="Clue Tracker — GarlicHQ">
@@ -17,1053 +17,487 @@
 <meta name="twitter:image"      content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
 <link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root {
-    --bg:         #0d0b08;
-    --bg2:        #141109;
-    --bg3:        #1a1710;
-    --gold:       #c8a84b;
-    --gold-dim:   #8a6f2e;
-    --gold-glow:  #f0cc6e;
-    --parchment:  #e8d5a3;
-    --border:     rgba(200,168,75,0.22);
-    --border-hi:  rgba(200,168,75,0.5);
-    --red:        #8b2a2a;
-    --red-dim:    rgba(139,42,42,0.3);
-    --kbd-accent: #4a8fd4;
-    --kq-accent:  #c4852a;
-  }
+  .item-img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; display: block; margin: 0 auto; }
+  .item-emoji { font-size: 1.6rem; line-height: 1; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
+  /* ── GARLIC THEME ── */
+  body.theme-garlic {
+    background-color: #0d0b08 !important;
     background-image:
-      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(200,168,75,0.06) 0%, transparent 60%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    min-height: 100vh;
-    font-family: 'IM Fell English', Georgia, serif;
-    color: var(--parchment);
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,168,75,0.07) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E") !important;
+    color: #e8d5a3 !important;
+    font-family: 'IM Fell English', Georgia, serif !important;
   }
-
-  /* ── NAV ── */
-  nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.9rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    background: rgba(13,11,8,0.8);
-    backdrop-filter: blur(4px);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  body.theme-garlic .navbar {
+    background: rgba(20,17,9,0.9) !important;
+    border-bottom: 1px solid rgba(200,168,75,0.25) !important;
   }
-
-  .nav-brand {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    color: var(--gold);
-    text-decoration: none;
+  body.theme-garlic .navbar a,
+  body.theme-garlic .navbar span { color: #c8a84b !important; }
+  body.theme-garlic .card.bg-base-200 {
+    background: rgba(20,17,9,0.85) !important;
+    border: 1px solid rgba(200,168,75,0.2) !important;
   }
-
-  .nav-brand span { color: var(--gold-dim); font-weight: 400; }
-
-  /* ── BOSS TABS ── */
-  .boss-tabs {
-    display: flex;
-    gap: 0;
-    max-width: 860px;
-    margin: 2rem auto 0;
-    padding: 0 1.5rem;
+  body.theme-garlic h1,
+  body.theme-garlic h2 {
+    font-family: 'Cinzel', serif !important;
+    color: #f0cc6e !important;
   }
-
-  .boss-tab {
-    flex: 1;
-    padding: 0.9rem 1rem;
-    border: 1px solid var(--border);
-    background: var(--bg2);
-    cursor: pointer;
-    font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--gold-dim);
-    transition: all 0.2s;
-    text-align: center;
+  body.theme-garlic h1 { font-size: 1.6rem !important; letter-spacing: 0.06em; }
+  body.theme-garlic h2 { font-size: 0.95rem !important; letter-spacing: 0.04em; font-weight: 600; }
+  body.theme-garlic p,
+  body.theme-garlic .text-sm { color: #e8d5a3 !important; }
+  body.theme-garlic .opacity-50,
+  body.theme-garlic .opacity-60 { color: #8a6f2e !important; opacity: 1 !important; }
+  body.theme-garlic .progress { background: rgba(200,168,75,0.15) !important; }
+  body.theme-garlic .progress::-webkit-progress-value { background: #c8a84b !important; }
+  body.theme-garlic .progress::-moz-progress-bar { background: #c8a84b !important; }
+  body.theme-garlic .btn-outline {
+    border-color: rgba(200,168,75,0.4) !important;
+    color: #c8a84b !important;
   }
-
-  .boss-tab:first-child { border-radius: 3px 0 0 3px; }
-  .boss-tab:last-child  { border-radius: 0 3px 3px 0; border-left: none; }
-
-  .boss-tab.active[data-boss="kbd"] {
-    background: rgba(74,143,212,0.12);
-    border-color: var(--kbd-accent);
-    color: #7ab8e8;
+  body.theme-garlic .btn-outline:hover {
+    background: rgba(200,168,75,0.1) !important;
+    border-color: #c8a84b !important;
   }
-
-  .boss-tab.active[data-boss="kq"] {
-    background: rgba(196,133,42,0.12);
-    border-color: var(--kq-accent);
-    color: #e8a84a;
+  body.theme-garlic .card.cursor-pointer { background: rgba(26,23,14,0.9) !important; border-color: transparent !important; }
+  body.theme-garlic .card.cursor-pointer.opacity-100 { opacity: 1 !important; }
+  body.theme-garlic .card.cursor-pointer.opacity-60 { opacity: 0.45 !important; }
+  body.theme-garlic .card.cursor-pointer:hover { border-color: rgba(200,168,75,0.3) !important; opacity: 1 !important; }
+  body.theme-garlic .text-xs { color: #c8a84b !important; font-size: 0.65rem !important; }
+  body.theme-garlic .badge-neutral { background: rgba(200,168,75,0.2) !important; color: #f0cc6e !important; border: none !important; }
+  body.theme-garlic .select {
+    background: rgba(20,17,9,0.9) !important;
+    border-color: rgba(200,168,75,0.4) !important;
+    color: #c8a84b !important;
   }
-
-  /* ── MAIN LAYOUT ── */
-  .tracker-wrap {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    display: none;
+  body.theme-garlic .modal-box {
+    background: #141109 !important;
+    border: 1px solid rgba(200,168,75,0.3) !important;
+    color: #e8d5a3 !important;
   }
-
-  .tracker-wrap.active { display: block; }
-
-  /* ── BOSS HEADER ── */
-  .boss-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.2rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .boss-title {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    font-weight: 900;
-    letter-spacing: 0.05em;
-  }
-
-  .boss-title.kbd { color: #7ab8e8; text-shadow: 0 0 30px rgba(74,143,212,0.4); }
-  .boss-title.kq  { color: #e8a84a; text-shadow: 0 0 30px rgba(196,133,42,0.4); }
-
-  .kc-display {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .kc-box {
-    text-align: center;
-  }
-
-  .kc-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 0.2rem;
-  }
-
-  .kc-value {
-    font-family: 'Cinzel', serif;
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: var(--gold-glow);
-    line-height: 1;
-  }
-
-  .end-trip-btn {
-    padding: 0.35rem 0.8rem;
-    border: 1px solid #a07830;
-    background: rgba(160,120,48,0.15);
-    color: #c9a227;
-    font-family: 'IM Fell English', serif;
-    font-size: 0.82rem;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-  }
-  .end-trip-btn:hover {
-    background: rgba(160,120,48,0.3);
-    border-color: var(--gold);
-  }
-
-  .reset-btn {
-    padding: 0.35rem 0.8rem;
-    border: 1px solid var(--red);
-    background: var(--red-dim);
-    color: #d47070;
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-  }
-
-  .reset-btn:hover { background: rgba(139,42,42,0.5); color: #f09090; }
-
-  /* ── LOG KILL PANEL ── */
-  .log-panel {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 1.4rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .panel-title {
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.22em;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-    margin-bottom: 1.2rem;
-  }
-
-  /* ── DROP GRID ── */
-  .drop-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 0.5rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .drop-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 0.7rem;
-    border: 1px solid var(--border);
-    background: var(--bg3);
-    color: rgba(232,213,163,0.7);
-    font-family: 'IM Fell English', serif;
-    font-size: 0.82rem;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-    text-align: left;
-    position: relative;
-    user-select: none;
-  }
-
-  .drop-btn:hover {
-    border-color: var(--gold-dim);
-    color: var(--parchment);
-    background: rgba(200,168,75,0.06);
-  }
-
-  .drop-btn.selected {
-    border-color: var(--gold);
-    background: rgba(200,168,75,0.12);
-    color: var(--gold-glow);
-  }
-
-  .drop-btn.selected::after {
-    content: '✓';
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gold);
-    font-size: 0.75rem;
-  }
-
-  .drop-icon { font-size: 1rem; flex-shrink: 0; width: 1.4rem; text-align: center; }
-  .drop-icon img { width: 20px; height: 20px; object-fit: contain; image-rendering: pixelated; vertical-align: middle; }
-
-  .drop-name {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--parchment);
-    line-height: 1.3;
-  }
-
-  .drop-qty {
-    display: inline;
-    font-size: 0.78rem;
-    color: rgba(232,213,163,0.6);
-  }
-
-  .drop-rarity {
-    font-size: 0.68rem;
-    color: var(--gold-dim);
-    display: block;
-    font-style: italic;
-    line-height: 1.3;
-  }
-
-  .drop-rare { color: #d4a04a; }
-  .drop-vrarare { color: #e87070; }
-
-  /* ── CONFIRM KILL BTN ── */
-  .confirm-btn {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid var(--gold-dim);
-    background: rgba(200,168,75,0.08);
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-  }
-
-  .confirm-btn:hover {
-    background: rgba(200,168,75,0.16);
-    border-color: var(--gold);
-    color: var(--gold-glow);
-  }
-
-  .confirm-btn.kbd-style { border-color: rgba(74,143,212,0.5); color: #7ab8e8; background: rgba(74,143,212,0.08); }
-  .confirm-btn.kbd-style:hover { background: rgba(74,143,212,0.15); border-color: var(--kbd-accent); }
-  .confirm-btn.kq-style  { border-color: rgba(196,133,42,0.5);  color: #e8a84a; background: rgba(196,133,42,0.08); }
-  .confirm-btn.kq-style:hover  { background: rgba(196,133,42,0.15); border-color: var(--kq-accent); }
-
-  /* ── LOOT TABLE ── */
-  .loot-section { }
-
-  .loot-table-wrap {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88rem;
-  }
-
-  thead {
-    background: var(--bg3);
-    border-bottom: 1px solid var(--border);
-  }
-
-  th {
-    font-family: 'Cinzel', serif;
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-    padding: 0.7rem 1rem;
-    text-align: left;
-    font-weight: 600;
-  }
-
-  th:last-child { text-align: right; }
-
-  td {
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid rgba(200,168,75,0.07);
-    color: rgba(232,213,163,0.8);
-    vertical-align: middle;
-  }
-
-  td:last-child { text-align: right; font-family: 'Cinzel', serif; color: var(--gold); }
-
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(200,168,75,0.03); }
-
-  .item-cell {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .rate-cell {
-    font-size: 0.75rem;
-    color: var(--gold-dim);
-    font-style: italic;
-  }
-
-  .drop-group-label {
-    grid-column: 1 / -1;
-    font-family: 'Cinzel', serif;
-    font-size: 0.62rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    padding: 0.5rem 0 0.2rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 0.1rem;
-  }
-
-  .drop-group-label:first-child { padding-top: 0; }
-
-  .remove-btn {
-    background: none;
-    border: none;
-    color: rgba(180,80,80,0.5);
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0 0.3rem;
-    line-height: 1;
-    transition: color 0.15s;
-  }
-  .remove-btn:hover { color: #d47070; }
-
-  .count-badge {
-    display: inline-block;
-    background: rgba(200,168,75,0.12);
-    border: 1px solid rgba(200,168,75,0.2);
-    color: var(--gold-glow);
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.1rem 0.5rem;
-    border-radius: 2px;
-    min-width: 2rem;
-    text-align: center;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 2.5rem;
-    color: var(--gold-dim);
-    font-style: italic;
-    font-size: 0.9rem;
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--bg3);
-    border: 1px solid var(--gold-dim);
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
-    padding: 0.6rem 1.4rem;
-    border-radius: 2px;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-    z-index: 999;
-    white-space: nowrap;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* ── SECTION DIVIDER ── */
-  .section-divider {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin: 1.5rem 0 1rem;
-  }
-
-  .section-divider-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
-  }
-
-  .section-divider-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.62rem;
-    letter-spacing: 0.22em;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-  }
-
-  /* ── END TRIP MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.active { display: flex; }
-  .modal {
-    background: var(--bg2);
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    padding: 1.8rem 2rem;
-    max-width: 480px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  .modal h2 {
-    font-family: 'Cinzel', serif;
-    color: var(--gold);
-    font-size: 1.2rem;
-    margin: 0 0 1rem;
-  }
-  .party-select {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.4rem;
-    flex-wrap: wrap;
-  }
-  .party-btn {
-    padding: 0.4rem 0.9rem;
-    border: 1px solid var(--border);
-    background: var(--bg3);
-    color: var(--parchment);
-    font-family: 'IM Fell English', serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-  }
-  .party-btn:hover, .party-btn.active {
-    border-color: var(--gold);
-    background: rgba(200,168,75,0.12);
-    color: var(--gold-glow);
-  }
-  .split-table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; }
-  .split-table th { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; }
-  .split-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(200,168,75,0.08); color: var(--parchment); font-size: 0.85rem; }
-  .split-note { font-size: 0.75rem; color: var(--gold-dim); font-style: italic; margin-bottom: 1.2rem; }
-  .modal-actions { display: flex; gap: 0.8rem; justify-content: flex-end; }
-  .modal-close-btn {
-    padding: 0.4rem 1rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--parchment);
-    font-family: 'IM Fell English', serif;
-    font-size: 0.85rem;
-    cursor: pointer;
-    border-radius: 2px;
-  }
-  .modal-close-btn:hover { border-color: var(--gold-dim); }
-  .modal-end-btn {
-    padding: 0.4rem 1rem;
-    border: 1px solid #c0392b;
-    background: rgba(192,57,43,0.15);
-    color: #e07060;
-    font-family: 'IM Fell English', serif;
-    font-size: 0.85rem;
-    cursor: pointer;
-    border-radius: 2px;
-  }
-  .modal-end-btn:hover { background: rgba(192,57,43,0.3); }
+  body.theme-garlic .modal-box h3 { color: #f0cc6e !important; font-family: 'Cinzel', serif !important; }
 </style>
 </head>
-<body>
+<body data-theme="dark" class="theme-garlic min-h-screen">
 
-<nav>
-  <a class="nav-brand" href="/">← <span>Garlic</span> / Loot Tracker</a>
-</nav>
-
-<!-- BOSS TABS -->
-<div class="boss-tabs">
-  <div class="boss-tab active" data-boss="kbd" onclick="switchBoss('kbd')"><img src="https://oldschool.runescape.wiki/images/King_Black_Dragon.png" alt="KBD" onerror="this.outerHTML='🐉'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> King Black Dragon</div>
-  <div class="boss-tab" data-boss="kq" onclick="switchBoss('kq')"><img src="https://oldschool.runescape.wiki/images/Kalphite_Queen.png" alt="KQ" onerror="this.outerHTML='🦂'" style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px;"> Kalphite Queen</div>
+<div class="navbar bg-base-200 px-4">
+  <div class="flex-1">
+    <a href="/" class="text-sm opacity-50 hover:opacity-100">← Garlic</a>
+    <span class="mx-2 opacity-30">/</span>
+    <span class="text-sm">Clue Scroll Tracker</span>
+  </div>
+  <div class="flex-none">
+    <select class="select select-sm select-bordered" onchange="setTheme(this.value)">
+      <option value="garlic" selected>Garlic</option>
+      <option value="retro">retro</option>
+      <option value="dark">dark</option>
+      <option value="light">light</option>
+      <option value="cupcake">cupcake</option>
+      <option value="bumblebee">bumblebee</option>
+      <option value="synthwave">synthwave</option>
+      <option value="cyberpunk">cyberpunk</option>
+      <option value="halloween">halloween</option>
+      <option value="forest">forest</option>
+      <option value="luxury">luxury</option>
+      <option value="dracula">dracula</option>
+      <option value="night">night</option>
+      <option value="coffee">coffee</option>
+    </select>
+  </div>
 </div>
 
-<!-- ══════════════════ KBD ══════════════════ -->
-<div class="tracker-wrap active" id="tracker-kbd">
-  <div class="boss-header">
-    <div class="boss-title kbd">King Black Dragon</div>
-    <div class="kc-display">
-      <div class="kc-box">
-        <span class="kc-label">Kill Count</span>
-        <div class="kc-value" id="kbd-kc">0</div>
+<div class="p-6 max-w-5xl mx-auto">
+  <h1 class="text-3xl font-bold text-center mb-1">Clue Scroll Tracker</h1>
+  <p class="text-center opacity-50 text-sm mb-6">Track your unique rewards from clue scrolls</p>
+
+
+
+  <!-- EASY -->
+  <!-- Clue Counter -->
+  <div class="card bg-base-200 shadow p-4 mb-6">
+    <h2 class="text-lg font-semibold mb-4">Clues Completed</h2>
+    <div class="flex flex-wrap gap-6">
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Easy</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('easy', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-easy">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('easy', 1)">+</button>
+        </div>
       </div>
-      <button class="reset-btn" onclick="resetBoss('kbd')">Reset</button>
-      <button class="end-trip-btn" onclick="endTrip('kbd')">End Trip</button>
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Medium</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('medium', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-medium">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('medium', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px]">
+        <span class="text-sm opacity-60">Hard</span>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('hard', -1)">−</button>
+          <span class="text-xl font-bold w-10 text-center" id="count-hard">0</span>
+          <button class="btn btn-sm btn-outline px-3" onclick="adjustCount('hard', 1)">+</button>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2 min-w-[80px] ml-auto">
+        <span class="text-sm opacity-60">Total</span>
+        <span class="text-xl font-bold" id="count-total">0</span>
+      </div>
     </div>
   </div>
 
-  <!-- LOG KILL -->
-  <div class="log-panel">
-    <div class="panel-title">Log a Kill — select drops received, then confirm</div>
-    <div class="drop-grid" id="kbd-drop-grid"></div>
-    <button class="confirm-btn kbd-style" onclick="confirmKill('kbd')">⚔ Confirm Kill</button>
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-easy">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Easy Clue Rewards</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-easy"><span>0</span> / 13</p>
+          <progress class="progress progress-accent w-48" id="bar-easy" value="0" max="13"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('easy')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-easy"></div>
   </div>
 
-  <!-- LOOT LOG -->
-  <div class="section-divider">
-    <div class="section-divider-line"></div>
-    <div class="section-divider-label">Loot Log</div>
-    <div class="section-divider-line"></div>
+  <!-- MEDIUM -->
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-medium">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Medium Clue Rewards</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-medium"><span>0</span> / 12</p>
+          <progress class="progress progress-accent w-48" id="bar-medium" value="0" max="12"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('medium')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-medium"></div>
   </div>
 
-  <div class="loot-table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Drop rate</th>
-          <th>Drops</th>
-          <th>Total Qty</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="kbd-loot-body">
-        <tr><td colspan="4" class="empty-state">No kills logged yet.</td></tr>
-      </tbody>
-    </table>
+  <!-- HARD -->
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-hard">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Hard Clue Rewards</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-hard"><span>0</span> / 25</p>
+          <progress class="progress progress-accent w-48" id="bar-hard" value="0" max="25"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('hard')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-hard"></div>
   </div>
 </div>
 
-<!-- ══════════════════ KQ ══════════════════ -->
-<div class="tracker-wrap" id="tracker-kq">
-  <div class="boss-header">
-    <div class="boss-title kq">Kalphite Queen</div>
-    <div class="kc-display">
-      <div class="kc-box">
-        <span class="kc-label">Kill Count</span>
-        <div class="kc-value" id="kq-kc">0</div>
-      </div>
-      <button class="reset-btn" onclick="resetBoss('kq')">Reset</button>
-      <button class="end-trip-btn" onclick="endTrip('kq')">End Trip</button>
+<div id="toast" class="toast toast-bottom toast-center hidden">
+  <div class="alert alert-success text-sm" id="toast-msg"></div>
+</div>
+
+
+<dialog id="item-popup" class="modal">
+  <div class="modal-box text-center">
+    <h3 class="font-bold text-lg mb-1" id="popup-name"></h3>
+    <img class="item-img mx-auto my-2" id="popup-img" src="" alt="">
+    <div class="text-4xl font-bold my-2" id="popup-count">1</div>
+    <p class="text-sm opacity-50 mb-4">times obtained</p>
+    <div class="flex gap-3 justify-center mb-4">
+      <button class="btn btn-error btn-outline" onclick="popupAdjust(-1)">− Remove</button>
+      <button class="btn btn-success btn-outline" onclick="popupAdjust(1)">+ Add</button>
+    </div>
+    <div class="modal-action justify-center">
+      <button class="btn btn-sm btn-ghost" onclick="closePopup()">Close</button>
     </div>
   </div>
-
-  <!-- LOG KILL -->
-  <div class="log-panel">
-    <div class="panel-title">Log a Kill — select drops received, then confirm</div>
-    <div class="drop-grid" id="kq-drop-grid"></div>
-    <button class="confirm-btn kq-style" onclick="confirmKill('kq')">⚔ Confirm Kill</button>
-  </div>
-
-  <!-- LOOT LOG -->
-  <div class="section-divider">
-    <div class="section-divider-line"></div>
-    <div class="section-divider-label">Loot Log</div>
-    <div class="section-divider-line"></div>
-  </div>
-
-  <div class="loot-table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Drop rate</th>
-          <th>Drops</th>
-          <th>Total Qty</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="kq-loot-body">
-        <tr><td colspan="4" class="empty-state">No kills logged yet.</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
+  <form method="dialog" class="modal-backdrop"><button onclick="closePopup()">close</button></form>
+</dialog>
 
 <script>
-// ── DROP TABLE DATA ────────────────────────────────────────────────────────────
-
-const DROP_TABLES = {
-  kbd: [
-    { group: 'Always', id: 'dragon_bones', img: 'Dragon_bones',       name: 'Dragon Bones',        icon: '🦴',  qty: '1',   rate: 'always',  rarity: 'uncommon' },
-    { group: 'Always', id: 'black_dragonhide', img: 'Black_dragonhide',   name: 'Black Dragonhide',    icon: '🟫',  qty: '2',   rate: 'always',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'rune_longsword', img: 'Rune_longsword',     name: 'Rune Longsword',      icon: '⚔️',  qty: '1',       rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamant_platebody', img: 'Adamant_platebody',  name: 'Adamant Platebody',   icon: '🛡️',  qty: '1',       rate: '1/14.2',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'dragon_med_helm', img: 'Dragon_med_helm',    name: 'Dragon Med Helm',     icon: '🪖',  qty: '1',       rate: '1/128',   rarity: 'rare' },
-    { group: 'Main Table', id: 'bronze_arrow', img: 'Bronze_arrow_detail',       name: 'Bronze Arrows',       icon: '🏹',  qty: '310',     rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'iron_arrow', img: 'Iron_arrow_detail',         name: 'Iron Arrows',         icon: '🏹',  qty: '690',     rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'air_rune', img: 'Air_rune',           name: 'Air Runes',           icon: '💨',  qty: '105',     rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'fire_rune', img: 'Fire_rune',          name: 'Fire Runes',          icon: '🔥',  qty: '105',     rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'blood_rune', img: 'Blood_rune',         name: 'Blood Runes',         icon: '🩸',  qty: '15',      rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'law_rune', img: 'Law_rune',           name: 'Law Runes',           icon: '📜',  qty: '15',      rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'death_rune', img: 'Death_rune',         name: 'Death Runes',         icon: '💀',  qty: '7',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamant_axe', img: 'Adamant_axe',        name: 'Adamant Axe',         icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'rune_axe', img: 'Rune_axe',           name: 'Rune Axe',            icon: '🪓',  qty: '1',       rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'adamantite_bar_1', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamantite_bar_2', img: 'Adamantite_bar',   name: 'Adamantite Bar',      icon: '⬜',  qty: '2',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'runite_bar', img: 'Runite_bar',         name: 'Runite Bar',          icon: '🟦',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'cert_coal', img: 'Coal',          name: 'Coal',          icon: '⚫',  qty: '100',     rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'cert_iron', img: 'Iron_ore',          name: 'Iron Ore',      icon: '🟫',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'cert_yew', img: 'Yew_logs',           name: 'Yew Logs',      icon: '🌲',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'amulet_strength', img: 'Amulet_of_strength',    name: 'Amulet of Strength',  icon: '📿',  qty: '1',       rate: '1/18.3',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'shark', img: 'Shark',              name: 'Sharks',              icon: '🦈',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'oyster_pearls', img: 'Big_bones',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    // Ultra Rare table (8/128 chance to roll)
-    { group: 'Ultra Rare', id: 'ur_nature_rune', img: 'Nature_rune',     name: 'Nature Runes',        icon: '🍃',  qty: '67',      rate: 'ultra: 1/42.7',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_adamant_javelin', img: 'Adamant_javelin', name: 'Adamant Javelins',    icon: '🗡️',  qty: '20',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_death_rune', img: 'Death_rune',      name: 'Death Runes',         icon: '💀',  qty: '45',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_law_rune', img: 'Law_rune',        name: 'Law Runes',           icon: '📜',  qty: '45',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_arrow', img: 'Rune_arrow_detail',      name: 'Rune Arrows',         icon: '🏹',  qty: '42',      rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_steel_arrow', img: 'Steel_arrow_detail',     name: 'Steel Arrows',        icon: '🏹',  qty: '150',     rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_2h', img: 'Rune_2h_sword',         name: 'Rune 2H Sword',       icon: '⚔️',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_battleaxe', img: 'Rune_battleaxe',  name: 'Rune Battleaxe',      icon: '🪓',  qty: '1',       rate: 'ultra: 1/42.7',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_rune_sq', img: 'Rune_sq_shield',         name: 'Rune Sq Shield',      icon: '🛡️',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_dragon_med', img: 'Dragon_med_helm',      name: 'Dragon Med Helm',     icon: '🪖',  qty: '1',       rate: 'ultra: 1/128',  rarity: 'vrarare' },
-    { group: 'Ultra Rare', id: 'ur_rune_kite', img: 'Rune_kiteshield',       name: 'Rune Kiteshield',     icon: '🛡️',  qty: '1',       rate: 'ultra: 1/128',  rarity: 'vrarare' },
-    { group: 'Ultra Rare', id: 'ur_coins', img: 'Coins_10000',           name: 'Coins',               icon: '🪙',  qty: '3,000',   rate: 'ultra: 1/6.1', rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_keyhalf1', img: 'Loop_half_of_key',        name: 'Key Half (loop)',     icon: '🗝️',  qty: '1',       rate: 'ultra: 1/6.4', rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_keyhalf2', img: 'Tooth_half_of_key',        name: 'Key Half (tooth)',    icon: '🗝️',  qty: '1',       rate: 'ultra: 1/6.4', rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_runite_bar', img: 'Runite_bar',      name: 'Runite Bar',          icon: '🟦',  qty: '1',       rate: 'ultra: 1/25.6',  rarity: 'rare' },
-    { group: 'Ultra Rare', id: 'ur_dragonstone', img: 'Dragonstone',     name: 'Dragonstone',         icon: '💜',  qty: '1',       rate: 'ultra: 1/64',  rarity: 'vrarare' },
-    { group: 'Ultra Rare', id: 'ur_silver_ore', img: 'Silver_ore',      name: 'Silver Ore',    icon: '⚪',  qty: '100',     rate: 'ultra: 1/64',  rarity: 'rare' },
-    // Mega Rare table (from ultra rare)
-    { group: 'Mega Rare', id: 'mr_rune_spear', img: 'Rune_spear',      name: 'Rune Spear',          icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
-    { group: 'Mega Rare', id: 'mr_dragon_shield', img: 'Dragon_sq_shield',   name: 'Dragon Shield Half',  icon: '🛡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
-    { group: 'Mega Rare', id: 'mr_dragon_spear', img: 'Dragon_spear',    name: 'Dragon Spear',        icon: '🗡️',  qty: '1',       rate: 'mega rare',     rarity: 'vrarare' },
-    // Random Jewel table (2/128)
-    { group: 'Gem Drop Table', id: 'rj_sapphire', img: 'Uncut_sapphire',        name: 'Uncut Sapphire',      icon: '🔵',  qty: '1',       rate: 'jewel: 1/4', rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_emerald', img: 'Uncut_emerald',         name: 'Uncut Emerald',       icon: '💚',  qty: '1',       rate: 'jewel: 1/8', rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_ruby', img: 'Uncut_ruby',            name: 'Uncut Ruby',          icon: '🔴',  qty: '1',       rate: 'jewel: 1/16',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_diamond', img: 'Uncut_diamond',         name: 'Uncut Diamond',       icon: '💎',  qty: '1',       rate: 'jewel: 1/64',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_javelin', img: 'Rune_javelin',         name: 'Rune Javelins',       icon: '🗡️',  qty: '5',       rate: 'jewel: 1/128',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf1', img: 'Loop_half_of_key',        name: 'Key Half (loop)',     icon: '🗝️',  qty: '1',       rate: 'jewel: 1/128',  rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf2', img: 'Tooth_half_of_key',        name: 'Key Half (tooth)',    icon: '🗝️',  qty: '1',       rate: 'jewel: 1/128',  rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_talisman', img: 'Nature_talisman',        name: 'Chaos/Nature Talisman',icon: '🔮', qty: '1',       rate: 'jewel: 1/32',  rarity: 'rare' },
+const REWARDS = {
+  easy: [
+    { id: 'black_platebody_t',  name: 'Black Platebody (t)',  img: 'Black_platebody_(t)' },
+    { id: 'black_platelegs_t',  name: 'Black Platelegs (t)',  img: 'Black_platelegs_(t)' },
+    { id: 'black_full_helm_t',  name: 'Black Full Helm (t)',  img: 'Black_full_helm_(t)' },
+    { id: 'black_kiteshield_t', name: 'Black Kiteshield (t)', img: 'Black_kiteshield_(t)' },
+    { id: 'black_platebody_g',  name: 'Black Platebody (g)',  img: 'Black_platebody_(g)' },
+    { id: 'black_platelegs_g',  name: 'Black Platelegs (g)',  img: 'Black_platelegs_(g)' },
+    { id: 'black_full_helm_g',  name: 'Black Full Helm (g)',  img: 'Black_full_helm_(g)' },
+    { id: 'black_kiteshield_g', name: 'Black Kiteshield (g)', img: 'Black_kiteshield_(g)' },
+    { id: 'highwayman_mask',    name: 'Highwayman Mask',      img: 'Highwayman_mask' },
+    { id: 'blue_beret',         name: 'Blue Beret',           img: 'Blue_beret' },
+    { id: 'black_beret',        name: 'Black Beret',          img: 'Black_beret' },
+    { id: 'white_beret',        name: 'White Beret',          img: 'White_beret' },
+    { id: 'wizard_boots',       name: 'Wizard Boots',         img: 'Wizard_boots' },
   ],
-  kq: [
-    { group: 'Main Table', id: 'rune_chainbody', img: 'Rune_chainbody',     name: 'Rune Chainbody',      icon: '🛡️',  qty: '1',       rate: '1/9.1',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'lava_battlestaff', img: 'Lava_battlestaff',   name: 'Lava Battlestaff',    icon: '🔱',  qty: '1',       rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'rune_warhammer', img: 'Rune_warhammer',     name: 'Rune Warhammer',      icon: '🔨',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'rune_axe', img: 'Rune_axe',           name: 'Rune Axe',            icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'adamant_spear', img: 'Adamant_spear',      name: 'Adamant Spear',       icon: '🗡️',  qty: '1',       rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'mithril_arrow', img: 'Mithril_arrow_detail',      name: 'Mithril Arrows',      icon: '🏹',  qty: '500',     rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'iron_arrow', img: 'Iron_arrow_detail',         name: 'Iron Arrows',         icon: '🏹',  qty: '1–335',   rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'rune_arrow', img: 'Rune_arrow_detail',         name: 'Rune Arrows',         icon: '🏹',  qty: '100',     rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'oyster_pearls', img: 'Big_bones',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '40',      rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'blood_rune', img: 'Blood_rune',         name: 'Blood Runes',         icon: '🩸',  qty: '19',      rate: '1/6.4',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'nature_rune', img: 'Nature_rune',        name: 'Nature Runes',        icon: '🍃',  qty: '75',      rate: '1/9.1',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'fire_rune', img: 'Fire_rune',          name: 'Fire Runes',          icon: '🔥',  qty: '600',     rate: '1/12.8',  rarity: 'uncommon' },
-    { group: 'Main Table', id: 'law_rune', img: 'Law_rune',           name: 'Law Runes',           icon: '📜',  qty: '20',      rate: '1/25.6',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'death_rune', img: 'Death_rune',         name: 'Death Runes',         icon: '💀',  qty: '30',      rate: '1/42.7',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'cert_wine_zamorak', img: 'Wine_of_zamorak',  name: 'Wine of Zamorak',icon: '🍷', qty: '20', rate: '1/12.8', rarity: 'uncommon' },
-    { group: 'Main Table', id: 'amulet_power', img: 'Amulet_of_power',       name: 'Amulet of Power',     icon: '📿',  qty: '1',       rate: '1/18.3',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'lobster', img: 'Lobster',            name: 'Lobsters',            icon: '🦞',  qty: '7',       rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'dragon_chainbody', img: 'Dragon_chainbody',   name: 'Dragon Chainbody',    icon: '🟠',  qty: '1',       rate: '1/128',   rarity: 'vrarare' },
-    // Random Jewel table (6/128)
-    { group: 'Gem Drop Table', id: 'rj_sapphire',  img: 'Uncut_sapphire',    name: 'Uncut Sapphire',        icon: '🔵', qty: '1', rate: 'jewel: 1/4',   rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_emerald',   img: 'Uncut_emerald',     name: 'Uncut Emerald',         icon: '💚', qty: '1', rate: 'jewel: 1/8',   rarity: 'uncommon' },
-    { group: 'Gem Drop Table', id: 'rj_ruby',      img: 'Uncut_ruby',        name: 'Uncut Ruby',            icon: '🔴', qty: '1', rate: 'jewel: 1/16',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_diamond',   img: 'Uncut_diamond',     name: 'Uncut Diamond',         icon: '💎', qty: '1', rate: 'jewel: 1/64',  rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_javelin',   img: 'Rune_javelin',      name: 'Rune Javelins',         icon: '🗡️', qty: '5', rate: 'jewel: 1/128', rarity: 'rare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf1',  img: 'Loop_half_of_key',  name: 'Key Half (loop)',       icon: '🗝️', qty: '1', rate: 'jewel: 1/128', rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_keyhalf2',  img: 'Tooth_half_of_key', name: 'Key Half (tooth)',      icon: '🗝️', qty: '1', rate: 'jewel: 1/128', rarity: 'vrarare' },
-    { group: 'Gem Drop Table', id: 'rj_talisman',  img: 'Nature_talisman',   name: 'Chaos/Nature Talisman', icon: '🔮', qty: '1', rate: 'jewel: 1/32',  rarity: 'rare' },
-  ]
+  medium: [
+    { id: 'ranger_boots',        name: 'Ranger Boots',         img: 'Ranger_boots' },
+    { id: 'adamant_full_helm_t', name: 'Adamant Full Helm (t)',img: 'Adamant_full_helm_(t)' },
+    { id: 'adamant_platebody_t', name: 'Adamant Platebody (t)',img: 'Adamant_platebody_(t)' },
+    { id: 'adamant_platelegs_t', name: 'Adamant Platelegs (t)',img: 'Adamant_platelegs_(t)' },
+    { id: 'adamant_kite_t',      name: 'Adamant Kiteshield (t)',img: 'Adamant_kiteshield_(t)' },
+    { id: 'adamant_full_helm_g', name: 'Adamant Full Helm (g)',img: 'Adamant_full_helm_(g)' },
+    { id: 'adamant_platebody_g', name: 'Adamant Platebody (g)',img: 'Adamant_platebody_(g)' },
+    { id: 'adamant_platelegs_g', name: 'Adamant Platelegs (g)',img: 'Adamant_platelegs_(g)' },
+    { id: 'adamant_kite_g',      name: 'Adamant Kiteshield (g)',img: 'Adamant_kiteshield_(g)' },
+    { id: 'red_headband',        name: 'Red Headband',          img: 'Red_headband' },
+    { id: 'black_headband',      name: 'Black Headband',        img: 'Black_headband' },
+    { id: 'brown_headband',      name: 'Brown Headband',        img: 'Brown_headband' },
+  ],
+  hard: [
+    { id: 'robin_hood_hat',      name: "Robin Hood Hat",        img: 'Robin_hood_hat' },
+    { id: 'rune_full_helm_t',    name: 'Rune Full Helm (t)',    img: 'Rune_full_helm_(t)' },
+    { id: 'rune_platebody_t',    name: 'Rune Platebody (t)',    img: 'Rune_platebody_(t)' },
+    { id: 'rune_platelegs_t',    name: 'Rune Platelegs (t)',    img: 'Rune_platelegs_(t)' },
+    { id: 'rune_kiteshield_t',   name: 'Rune Kiteshield (t)',   img: 'Rune_kiteshield_(t)' },
+    { id: 'rune_full_helm_g',    name: 'Rune Full Helm (g)',    img: 'Rune_full_helm_(g)' },
+    { id: 'rune_platebody_g',    name: 'Rune Platebody (g)',    img: 'Rune_platebody_(g)' },
+    { id: 'rune_platelegs_g',    name: 'Rune Platelegs (g)',    img: 'Rune_platelegs_(g)' },
+    { id: 'rune_kiteshield_g',   name: 'Rune Kiteshield (g)',   img: 'Rune_kiteshield_(g)' },
+    { id: 'pirates_hat',         name: "Pirate's Hat",          img: 'Pirates_hat', imgUrl: 'https://oldschool.runescape.wiki/w/Special:FilePath/Pirate%27s_hat.png' },
+    { id: 'tan_cavalier',        name: 'Tan Cavalier',          img: 'Tan_cavalier' },
+    { id: 'dark_cavalier',       name: 'Dark Cavalier',         img: 'Dark_cavalier' },
+    { id: 'black_cavalier',      name: 'Black Cavalier',        img: 'Black_cavalier' },
+    { id: 'zamorak_full_helm',   name: 'Zamorak Full Helm',     img: 'Zamorak_full_helm' },
+    { id: 'zamorak_platebody',   name: 'Zamorak Platebody',     img: 'Zamorak_platebody' },
+    { id: 'zamorak_platelegs',   name: 'Zamorak Platelegs',     img: 'Zamorak_platelegs' },
+    { id: 'zamorak_kiteshield',  name: 'Zamorak Kiteshield',    img: 'Zamorak_kiteshield' },
+    { id: 'guthix_full_helm',    name: 'Guthix Full Helm',      img: 'Guthix_full_helm' },
+    { id: 'guthix_platebody',    name: 'Guthix Platebody',      img: 'Guthix_platebody' },
+    { id: 'guthix_platelegs',    name: 'Guthix Platelegs',      img: 'Guthix_platelegs' },
+    { id: 'guthix_kiteshield',   name: 'Guthix Kiteshield',     img: 'Guthix_kiteshield' },
+    { id: 'saradomin_full_helm', name: 'Saradomin Full Helm',   img: 'Saradomin_full_helm' },
+    { id: 'saradomin_platebody', name: 'Saradomin Platebody',   img: 'Saradomin_platebody' },
+    { id: 'saradomin_platelegs', name: 'Saradomin Platelegs',   img: 'Saradomin_platelegs' },
+    { id: 'saradomin_kiteshield',name: 'Saradomin Kiteshield',  img: 'Saradomin_kiteshield' },
+  ],
 };
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-
-let state = {
-  kbd: { kc: 0, loot: {} },
-  kq:  { kc: 0, loot: {} }
+// State: obtained = Set of obtained ids, counts = {id: number}
+const state = {
+  easy:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-easy-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-easy-cnt')   || '{}') },
+  medium: { obtained: new Set(JSON.parse(localStorage.getItem('clue-medium-obt') || '[]')), counts: JSON.parse(localStorage.getItem('clue-medium-cnt') || '{}') },
+  hard:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-hard-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-hard-cnt')   || '{}') },
 };
 
-let selected = { kbd: new Set(), kq: new Set() };
 
-// init loot counts
-for (const boss of ['kbd', 'kq']) {
-  for (const drop of DROP_TABLES[boss]) {
-    state[boss].loot[drop.id] = 0;
-  }
+// Clue completion counts
+const clueCounts = {
+  easy:   parseInt(localStorage.getItem('clue-done-easy')   || '0'),
+  medium: parseInt(localStorage.getItem('clue-done-medium') || '0'),
+  hard:   parseInt(localStorage.getItem('clue-done-hard')   || '0'),
+};
+
+function adjustCount(tier, delta) {
+  clueCounts[tier] = Math.max(0, clueCounts[tier] + delta);
+  localStorage.setItem('clue-done-' + tier, clueCounts[tier]);
+  updateCountDisplay();
 }
 
-// ── STORAGE ───────────────────────────────────────────────────────────────────
+function updateCountDisplay() {
+  ['easy', 'medium', 'hard'].forEach(tier => {
+    document.getElementById('count-' + tier).textContent = clueCounts[tier];
+  });
+  const total = clueCounts.easy + clueCounts.medium + clueCounts.hard;
+  document.getElementById('count-total').textContent = total;
+}
 
 function saveState() {
-  try { localStorage.setItem('loot_tracker', JSON.stringify(state)); } catch(e) {}
+  ['easy','medium','hard'].forEach(tier => {
+    localStorage.setItem('clue-' + tier + '-obt', JSON.stringify([...state[tier].obtained]));
+    localStorage.setItem('clue-' + tier + '-cnt', JSON.stringify(state[tier].counts));
+  });
 }
 
-function loadState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('loot_tracker'));
-    if (saved) {
-      for (const boss of ['kbd', 'kq']) {
-        if (saved[boss]) {
-          state[boss].kc = saved[boss].kc || 0;
-          for (const drop of DROP_TABLES[boss]) {
-            state[boss].loot[drop.id] = saved[boss].loot?.[drop.id] || 0;
-          }
-        }
-      }
-    }
-  } catch(e) {}
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-
-
-function renderIcon(drop) {
-  if (drop.img) {
-    return `<span class="drop-icon"><img src="https://oldschool.runescape.wiki/images/${drop.img}.png" alt="${drop.icon}" onerror="this.parentElement.textContent='${drop.icon}'">${'&zwnj;'}</span>`;
-  }
-  return `<span class="drop-icon">${drop.icon}</span>`;
-}
-
-function buildDropGrid(boss) {
-  const grid = document.getElementById(`${boss}-drop-grid`);
+function buildGrid(tier) {
+  const grid = document.getElementById('grid-' + tier);
   grid.innerHTML = '';
-  let lastGroup = null;
-  for (const drop of DROP_TABLES[boss]) {
-    // Always-drops are auto-logged, don't show in selector
-    if (drop.group === 'Always') continue;
-    if (drop.group !== lastGroup) {
-      lastGroup = drop.group;
-      const label = document.createElement('div');
-      label.className = 'drop-group-label';
-      label.textContent = drop.group;
-      grid.appendChild(label);
+  for (const item of REWARDS[tier]) {
+    const card = document.createElement('div');
+    const isObtained = state[tier].obtained.has(item.id);
+    const count = state[tier].counts[item.id] || 1;
+    card.className = 'card card-compact bg-base-200 cursor-pointer border-2 border-transparent transition-all text-center p-2 relative ' + (isObtained ? 'opacity-100' : 'opacity-60 hover:opacity-100');
+    card.dataset.id = item.id;
+
+    const imgEl = document.createElement('img');
+    imgEl.className = 'item-img';
+    imgEl.alt = item.name;
+    imgEl.onerror = function() {
+      const em = document.createElement('span');
+      em.className = 'item-emoji';
+      em.textContent = '🗡️';
+      this.replaceWith(em);
+    };
+    imgEl.src = item.imgUrl || `https://oldschool.runescape.wiki/images/${item.img}.png`;
+
+    const name = document.createElement('div');
+    name.className = 'text-xs mt-1 leading-tight';
+    name.textContent = item.name;
+
+    card.appendChild(imgEl);
+    card.appendChild(name);
+    if (isObtained && count > 1) {
+      const countBadge = document.createElement('div');
+      countBadge.className = 'badge badge-neutral badge-sm absolute top-1 right-1';
+      countBadge.textContent = 'x' + count;
+      card.appendChild(countBadge);
     }
-    const btn = document.createElement('button');
-    btn.className = 'drop-btn' + (selected[boss].has(drop.id) ? ' selected' : '');
-    btn.dataset.id = drop.id;
-    btn.innerHTML = `
-      ${renderIcon(drop)}
-      <span>
-        <span class="drop-name">${drop.name}${drop.qty ? `<span class="drop-qty"> ×${drop.qty}</span>` : ""}</span>
-        <span class="drop-rarity drop-${drop.rarity}">${drop.rate}</span>
-      </span>`;
-    btn.onclick = () => toggleDrop(boss, drop.id, btn);
-    grid.appendChild(btn);
+    card.onclick = () => toggleItem(tier, item.id, card);
+    grid.appendChild(card);
   }
+  updateProgress(tier);
 }
 
-function toggleDrop(boss, id, btn) {
-  // Find the group of the clicked drop
-  const drop = DROP_TABLES[boss].find(d => d.id === id);
-  const group = drop ? drop.group : null;
+let popupTier = null;
+let popupId = null;
 
-  // Always-drops can't be manually toggled
-  if (group === 'Always') return;
-
-  if (selected[boss].has(id)) {
-    // Deselect
-    selected[boss].delete(id);
-    btn.classList.remove('selected');
+function toggleItem(tier, id, card) {
+  if (state[tier].obtained.has(id)) {
+    // Already obtained — open popup
+    openPopup(tier, id);
   } else {
-    // Deselect any other drop in the same group first
-    if (group) {
-      const sameGroup = DROP_TABLES[boss].filter(d => d.group === group && d.id !== id);
-      for (const other of sameGroup) {
-        if (selected[boss].has(other.id)) {
-          selected[boss].delete(other.id);
-          const otherBtn = document.querySelector(`#${boss}-drop-grid [data-id="${other.id}"]`);
-          if (otherBtn) otherBtn.classList.remove('selected');
-        }
-      }
-    }
-    selected[boss].add(id);
-    btn.classList.add('selected');
-  }
-}
-
-function renderKC(boss) {
-  document.getElementById(`${boss}-kc`).textContent = state[boss].kc;
-}
-
-function removeDrop(boss, id) {
-  if (state[boss].loot[id] > 0) {
-    state[boss].loot[id]--;
-    renderLootTable(boss);
+    // Not obtained — mark directly
+    state[tier].obtained.add(id);
+    state[tier].counts[id] = 1;
     saveState();
-    showToast('Drop removed.');
+    buildGrid(tier);
+    showToast('Marked as obtained!');
   }
 }
 
-function renderLootTable(boss) {
-  const tbody = document.getElementById(`${boss}-loot-body`);
-  const drops = DROP_TABLES[boss];
-  const received = drops.filter(d => state[boss].loot[d.id] > 0);
-
-  if (received.length === 0 && state[boss].kc === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No kills logged yet.</td></tr>`;
-    return;
-  }
-
-  const rows = drops.map(drop => {
-    const count = state[boss].loot[drop.id];
-    if (count === 0) return '';
-    return `
-      <tr>
-        <td><div class="item-cell">${renderIcon(drop)} ${drop.name}${drop.qty ? `<span style="color:rgba(232,213,163,0.65);font-size:0.82em;margin-left:0.3em">×${drop.qty}</span>` : ""}</div></td>
-        <td class="rate-cell">${drop.rate}</td>
-        <td style="text-align:right;padding-right:0.5rem;"><span class="count-badge">${count}</span></td>
-        <td style="text-align:right;padding-right:0.5rem;color:var(--gold-dim);font-size:0.85rem;">${drop.qty ? (count * parseInt(drop.qty.toString().replace(/[^0-9]/g,'')) || count) : count}</td>
-        <td style="text-align:right;"><button class="remove-btn" onclick="removeDrop('${boss}', '${drop.id}')" title="Remove one">−</button></td>
-      </tr>`;
-  }).filter(Boolean).join('');
-
-  tbody.innerHTML = rows || `<tr><td colspan="4" class="empty-state" style="color:var(--gold-dim);font-style:italic">No drops recorded yet — kills logged but nothing selected.</td></tr>`;
+function openPopup(tier, id) {
+  popupTier = tier;
+  popupId = id;
+  const item = REWARDS[tier].find(r => r.id === id);
+  const count = state[tier].counts[id] || 1;
+  document.getElementById('popup-name').textContent = item.name;
+  document.getElementById('popup-count').textContent = count;
+  const img = document.getElementById('popup-img');
+  img.src = item.imgUrl || `https://oldschool.runescape.wiki/images/${item.img}.png`;
+  img.onerror = function() { this.style.display = 'none'; };
+  img.style.display = 'block';
+  document.getElementById('item-popup').showModal();
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────────────────
+function popupAdjust(delta) {
+  const tier = popupTier;
+  const id = popupId;
+  if (!tier || !id) return;
 
-function confirmKill(boss) {
-  state[boss].kc++;
-
-  // Auto-log always-drops
-  const alwaysDrops = DROP_TABLES[boss].filter(d => d.group === 'Always');
-  for (const drop of alwaysDrops) {
-    if (state[boss].loot[drop.id] !== undefined) {
-      state[boss].loot[drop.id]++;
+  if (delta === -1) {
+    const current = state[tier].counts[id] || 1;
+    if (current <= 1) {
+      // Count would hit 0 — unmark entirely
+      state[tier].obtained.delete(id);
+      delete state[tier].counts[id];
+      saveState();
+      buildGrid(tier);
+      closePopup();
+      showToast('Unmarked.');
+    } else {
+      // Decrement count
+      state[tier].counts[id] = current - 1;
+      document.getElementById('popup-count').textContent = state[tier].counts[id];
+      saveState();
+      buildGrid(tier);
+      showToast('Count updated!');
     }
+  } else {
+    // Plus: increment count
+    state[tier].counts[id] = (state[tier].counts[id] || 1) + 1;
+    document.getElementById('popup-count').textContent = state[tier].counts[id];
+    saveState();
+    buildGrid(tier);
+    showToast('Count updated!');
   }
+}
 
-  for (const id of selected[boss]) {
-    if (state[boss].loot[id] !== undefined) {
-      state[boss].loot[id]++;
-    }
-  }
+function closePopup() {
+  document.getElementById('item-popup').close();
+  popupTier = null;
+  popupId = null;
+}
 
-  const dropCount = selected[boss].size;
-  selected[boss].clear();
 
-  renderKC(boss);
-  buildDropGrid(boss);
-  renderLootTable(boss);
+
+function updateProgress(tier) {
+  const count = state[tier].obtained.size;
+  const total = REWARDS[tier].length;
+  const el = document.querySelector(`#progress-${tier} span`);
+  if (el) el.textContent = count;
+  const bar = document.getElementById('bar-' + tier);
+  if (bar) bar.value = count;
+}
+
+function resetTier(tier) {
+  if (!confirm(`Reset all ${tier} clue data?`)) return;
+  state[tier].obtained.clear();
+  state[tier].counts = {};
   saveState();
-
-  const msg = dropCount > 0
-    ? `Kill logged! ${dropCount} drop${dropCount > 1 ? 's' : ''} recorded.`
-    : `Kill logged. No drops selected.`;
-  showToast(msg);
+  buildGrid(tier);
+  showToast('Reset.');
 }
 
-function resetBoss(boss) {
-  if (!confirm(`Reset all data for ${boss.toUpperCase()}? This cannot be undone.`)) return;
-  state[boss].kc = 0;
-  for (const drop of DROP_TABLES[boss]) {
-    state[boss].loot[drop.id] = 0;
-  }
-  selected[boss].clear();
-  renderKC(boss);
-  buildDropGrid(boss);
-  renderLootTable(boss);
-  saveState();
-  showToast('Data reset.');
-}
 
-function switchBoss(boss) {
-  document.querySelectorAll('.boss-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tracker-wrap').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.boss-tab[data-boss="${boss}"]`).classList.add('active');
-  document.getElementById(`tracker-${boss}`).classList.add('active');
-}
 
+let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  const m = document.getElementById('toast-msg');
+  m.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2000);
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
+// Init
+buildGrid('easy');
+buildGrid('medium');
+buildGrid('hard');
 
-loadState();
-buildDropGrid('kbd');
-buildDropGrid('kq');
-renderKC('kbd');
-renderKC('kq');
-renderLootTable('kbd');
-renderLootTable('kq');
-
-let tripBoss = null;
-let tripParty = 1;
-
-function endTrip(boss) {
-  tripBoss = boss;
-  tripParty = 1;
-  document.querySelectorAll('.party-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
-  renderSplit();
-  document.getElementById('trip-modal').classList.add('active');
-}
-
-function setParty(n) {
-  tripParty = n;
-  document.querySelectorAll('.party-btn').forEach((b,i) => b.classList.toggle('active', i === n-1));
-  renderSplit();
-}
-
-function renderSplit() {
-  const boss = tripBoss;
-  const drops = DROP_TABLES[boss];
-  const n = tripParty;
-  const received = drops.filter(d => state[boss].loot[d.id] > 0);
-
-  if (received.length === 0) {
-    document.getElementById('split-content').innerHTML = '<p style="color:var(--gold-dim);font-style:italic;font-size:0.85rem;">No drops recorded this trip.</p>';
-    return;
+function setTheme(val) {
+  if (val === 'garlic') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.body.classList.add('theme-garlic');
+  } else {
+    document.body.setAttribute('data-theme', val);
+    document.body.classList.remove('theme-garlic');
   }
-
-  const splitRows = received.map(drop => {
-    const count = state[boss].loot[drop.id];
-    const qtyNum = drop.qty ? (parseInt(drop.qty.toString().replace(/[^0-9]/g,'')) || 1) : 1;
-    const totalQty = count * qtyNum;
-    const perPlayer = totalQty / n;
-    const isWholeNumber = perPlayer === Math.floor(perPlayer);
-    const remainder = totalQty % n;
-    const splitDisplay = isWholeNumber
-      ? perPlayer.toString()
-      : `<span style="display:block;line-height:1.3">${Math.floor(perPlayer)}</span><span style="display:block;color:var(--gold-dim);font-size:0.75em;line-height:1.3">(${remainder} remaining)</span>`;
-    return `<tr>
-      <td>${drop.icon} ${drop.name}${drop.qty ? ` ×${drop.qty}` : ''}</td>
-      <td style="text-align:center">${count}</td>
-      <td style="text-align:center">${totalQty}</td>
-      <td style="text-align:right">${splitDisplay}</td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('split-content').innerHTML = `
-    ${n > 1 ? `<p class="split-note">Items that can't divide evenly are flagged — work those out between yourselves.</p>` : ''}
-    <table class="split-table">
-      <thead><tr><th>Item</th><th>Drops</th><th>Total Qty</th><th style="text-align:right">Each</th></tr></thead>
-      <tbody>${splitRows}</tbody>
-    </table>`;
+  localStorage.setItem('clue-theme', val);
 }
 
-function closeTrip() {
-  document.getElementById('trip-modal').classList.remove('active');
-  tripBoss = null;
-}
-
-function confirmEndTrip() {
-  if (tripBoss) {
-    const boss = tripBoss;
-    state[boss].kc = 0;
-    for (const drop of DROP_TABLES[boss]) {
-      state[boss].loot[drop.id] = 0;
-    }
-    selected[boss].clear();
-    renderKC(boss);
-    buildDropGrid(boss);
-    renderLootTable(boss);
-    saveState();
-    showToast('Trip ended. Data reset.');
-  }
-  document.getElementById('trip-modal').classList.remove('active');
-  tripBoss = null;
-}
+// Restore saved theme
+const savedTheme = localStorage.getItem('clue-theme') || 'garlic';
+updateCountDisplay();
+setTheme(savedTheme);
+const sel = document.querySelector('.select');
+if (sel) sel.value = savedTheme;
 
 </script>
 
-<!-- ── END TRIP MODAL ── -->
-<div class="modal-overlay" id="trip-modal">
-  <div class="modal">
-    <h2>End Trip</h2>
-    <div style="color:var(--parchment);font-size:0.9rem;margin-bottom:1rem;">How many players in the party?</div>
-    <div class="party-select" id="party-select">
-      <button class="party-btn active" onclick="setParty(1)">1</button>
-      <button class="party-btn" onclick="setParty(2)">2</button>
-      <button class="party-btn" onclick="setParty(3)">3</button>
-      <button class="party-btn" onclick="setParty(4)">4</button>
-      <button class="party-btn" onclick="setParty(5)">5</button>
+<dialog id="item-popup" class="modal">
+  <div class="modal-box text-center">
+    <h3 class="font-bold text-lg mb-1" id="popup-name"></h3>
+    <img class="item-img mx-auto my-2" id="popup-img" src="" alt="">
+    <div class="text-4xl font-bold my-2" id="popup-count">1</div>
+    <p class="text-sm opacity-50 mb-4">times obtained</p>
+    <div class="flex gap-3 justify-center mb-4">
+      <button class="btn btn-error btn-outline" onclick="popupAdjust(-1)">− Remove</button>
+      <button class="btn btn-success btn-outline" onclick="popupAdjust(1)">+ Add</button>
     </div>
-    <div id="split-content"></div>
-    <div class="modal-actions">
-      <button class="modal-close-btn" onclick="closeTrip()">Keep Session</button>
-      <button class="modal-end-btn" onclick="confirmEndTrip()">End & Reset</button>
+    <div class="modal-action justify-center">
+      <button class="btn btn-sm btn-ghost" onclick="closePopup()">Close</button>
     </div>
   </div>
-</div>
+  <form method="dialog" class="modal-backdrop"><button onclick="closePopup()">close</button></form>
+</dialog>
   <!-- Ko-fi support button -->
   <a href="https://ko-fi.com/garlic04" target="_blank" rel="noopener" style="position:fixed;bottom:16px;left:16px;z-index:9000;display:flex;align-items:center;gap:7px;background:rgba(20,17,9,0.92);border:1px solid rgba(200,168,75,0.35);border-radius:20px;padding:7px 13px;text-decoration:none;color:#c9a227;font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;backdrop-filter:blur(4px);transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(200,168,75,0.8)';this.style.color='#f5d76e'" onmouseout="this.style.borderColor='rgba(200,168,75,0.35)';this.style.color='#c9a227'"><img src="https://storage.ko-fi.com/cdn/cup-border.png" width="18" height="18" alt="" style="opacity:0.85;">Support the site</a>
 </body>
