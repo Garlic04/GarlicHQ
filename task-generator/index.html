@@ -16,7 +16,7 @@
 <meta name="twitter:description" content="Generate randomised combat and skilling tasks for Lost City. Track streaks, points, contracts and more.">
 <meta name="twitter:image"      content="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
 <link rel="icon" type="image/png" href="https://oldschool.runescape.wiki/images/Garlic.png">
-<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=MedievalSharp&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0d0b08;
@@ -1454,10 +1454,35 @@
   }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,11,8,0.8);
+    backdrop-filter: blur(4px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-brand span { color: var(--gold-dim); font-weight: 400; }
 </style>
 </head>
 <body>
-<a href="/" style="position:fixed;top:1rem;left:1rem;z-index:999;font-size:0.8rem;opacity:0.5;color:var(--gold);text-decoration:none;letter-spacing:0.05em;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">← Garlic</a>
+<nav>
+  <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Task Generator</a>
+</nav>
 <div class="page">
 
   <header>
