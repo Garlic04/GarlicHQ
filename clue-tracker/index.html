@@ -110,7 +110,7 @@
 
 <nav>
   <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Clue Tracker</a>
-  <select class="select select-sm" onchange="setTheme(this.value)" style="font-size:0.75rem;padding:3px 8px;border-radius:3px;border:1px solid rgba(200,168,75,0.3);background:rgba(13,11,8,0.8);color:#c8a84b;font-family:'Cinzel',serif;letter-spacing:0.05em;cursor:pointer;">
+  <select onchange="setTheme(this.value)" style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.06em;padding:5px 10px;border-radius:3px;border:1px solid rgba(200,168,75,0.5);background:#1a1510;color:#f0cc6e;cursor:pointer;outline:none;appearance:auto;">
     <option value="garlic">Garlic</option>
     <option value="dark">Dark</option>
     <option value="light">Light</option>
@@ -485,7 +485,7 @@ function setTheme(val) {
 const savedTheme = localStorage.getItem('clue-theme') || 'garlic';
 updateCountDisplay();
 setTheme(savedTheme);
-const sel = document.querySelector('nav .select');
+const sel = document.querySelector('nav select');
 if (sel) sel.value = savedTheme;
 
 </script>
