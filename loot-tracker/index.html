@@ -251,7 +251,10 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 0.5rem;
     margin-bottom: 1.2rem;
-  }
+    max-height: 340px;
+  overflow-y: auto;
+  margin-bottom: 0.8rem;
+}
 
   .drop-btn {
     display: flex;
@@ -707,7 +710,7 @@ const DROP_TABLES = {
     { group: 'Always', id: 'dragon_bones', img: 'Dragon_bones',       name: 'Dragon Bones',        icon: '🦴',  qty: '1',   rate: 'always',  rarity: 'uncommon' },
     { group: 'Always', id: 'black_dragonhide', img: 'Black_dragonhide',   name: 'Black Dragonhide',    icon: '🟫',  qty: '1',   rate: 'always',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'rune_longsword', img: 'Rune_longsword',     name: 'Rune Longsword',      icon: '⚔️',  qty: '1',       rate: '1/12.8',  rarity: 'uncommon' , alchGp: 19200 },
-    { group: 'Main Table', id: 'adamant_platebody', img: 'Adamant_platebody',  name: 'Adamant Platebody',   icon: '🛡️',  qty: '1',       rate: '1/14.2',   rarity: 'uncommon' , alchGp: 9984 },
+    { group: 'Main Table', id: 'adamant_platebody', img: 'Adamant_platebody',  name: 'Adamant Platebody',   icon: '🛡️',  qty: '1',       rate: '1/14.2',   rarity: 'uncommon' , alchGp: 7680 },
     { group: 'Main Table', id: 'dragon_med_helm', img: 'Dragon_med_helm',    name: 'Dragon Med Helm',     icon: '🪖',  qty: '1',       rate: '1/128',   rarity: 'rare' },
     { group: 'Main Table', id: 'bronze_arrow', img: 'Bronze_arrow_detail',       name: 'Bronze Arrows',       icon: '🏹',  qty: '310',     rate: '1/12.8',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'iron_arrow', img: 'Iron_arrow_detail',         name: 'Iron Arrows',         icon: '🏹',  qty: '690',     rate: '1/12.8',  rarity: 'uncommon' },
@@ -725,7 +728,7 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'cert_yew', img: 'Yew_logs',           name: 'Yew Logs',      icon: '🌲',  qty: '100',     rate: '1/25.6',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'amulet_strength', img: 'Amulet_of_strength',    name: 'Amulet of Strength',  icon: '📿',  qty: '1',       rate: '1/18.3',   rarity: 'uncommon' , alchGp: 1215 },
     { group: 'Main Table', id: 'shark', img: 'Shark',              name: 'Sharks',              icon: '🦈',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
-    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '4',       rate: '1/32',   rarity: 'uncommon', alchGp: 3360 },
     { group: 'Main Table', id: 'mithril_battleaxe', img: 'Mithril_battleaxe',  name: 'Mithril Battleaxe',   icon: '🪓',  qty: '1',       rate: '1/42.7',   rarity: 'uncommon' , alchGp: 1014 },
     // Mega Rare table (via ultra rare or gem table)
     { group: 'Mega Rare', id: 'mr_rune_spear',    img: 'Rune_spear',       name: 'Rune Spear',         icon: '🗡️', qty: '1', rate: '~1/2074', rateNoRoW: '~1/2127', rateRoW: '~1/2074', rarity: 'vrarare', alchGp: 12480 },
@@ -771,7 +774,7 @@ const DROP_TABLES = {
     { group: 'Main Table', id: 'mithril_arrow', img: 'Mithril_arrow_detail',      name: 'Mithril Arrows',      icon: '🏹',  qty: '500',     rate: '1/12.8',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'iron_arrow', img: 'Iron_arrow_detail',         name: 'Iron Arrows',         icon: '🏹',  qty: '1–335',   rate: '1/42.7',   rarity: 'uncommon' },
     { group: 'Main Table', id: 'rune_arrow', img: 'Rune_arrow_detail',         name: 'Rune Arrows',         icon: '🏹',  qty: '100',     rate: '1/64',   rarity: 'rare' },
-    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '40',      rate: '1/42.7',   rarity: 'uncommon' },
+    { group: 'Main Table', id: 'oyster_pearls', img: 'Oyster_pearl',      name: 'Big Oyster Pearls',   icon: '🦪',  qty: '40',      rate: '1/42.7',   rarity: 'uncommon', alchGp: 33600 },
     { group: 'Main Table', id: 'blood_rune', img: 'Blood_rune',         name: 'Blood Runes',         icon: '🩸',  qty: '19',      rate: '1/6.4',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'nature_rune', img: 'Nature_rune',        name: 'Nature Runes',        icon: '🍃',  qty: '75',      rate: '1/9.1',  rarity: 'uncommon' },
     { group: 'Main Table', id: 'fire_rune', img: 'Fire_rune',          name: 'Fire Runes',          icon: '🔥',  qty: '600',     rate: '1/12.8',  rarity: 'uncommon' },
