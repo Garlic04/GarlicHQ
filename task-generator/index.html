@@ -1783,6 +1783,16 @@
       <div class="task-desc" id="task-desc">Head to Lumbridge and slay some cattle.</div>
       <div id="task-chain-steps" style="display:none;margin-top:10px;width:100%;"></div>
       <div class="task-notes" id="task-notes" style="display:none"></div>
+      <div id="kill-counter" style="display:none;margin-top:14px;width:100%;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+          <button onclick="adjustKills(-1)" style="width:32px;height:32px;font-size:18px;background:rgba(200,168,75,0.08);border:1px solid var(--border);border-radius:4px;color:var(--gold-dim);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--gold-dim)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--gold-dim)'">−</button>
+          <div style="text-align:center;min-width:80px;">
+            <div id="kill-count-display" style="font-family:'Share Tech Mono',monospace;font-size:22px;color:var(--gold);letter-spacing:2px;">0</div>
+            <div id="kill-count-target" style="font-size:11px;color:var(--text-dim);letter-spacing:0.05em;margin-top:2px;">/ 0 kills</div>
+          </div>
+          <button onclick="adjustKills(1)" style="width:32px;height:32px;font-size:18px;background:rgba(200,168,75,0.08);border:1px solid var(--border);border-radius:4px;color:var(--gold-dim);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--gold-dim)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--gold-dim)'">+</button>
+        </div>
+      </div>
     </div>
     <div class="task-actions">
       <button class="action-btn complete" onclick="completeTask()">✓ Mark Complete</button>
@@ -4352,6 +4362,23 @@ function skillLabel(skill) {
   return map[skill] || 'Gather';
 }
 
+let killCount = 0;
+let killTarget = 0;
+
+function adjustKills(delta) {
+  killCount = Math.max(0, killCount + delta);
+  updateKillCounter();
+}
+
+function updateKillCounter() {
+  const display = document.getElementById('kill-count-display');
+  const target  = document.getElementById('kill-count-target');
+  if (!display) return;
+  display.textContent = killCount;
+  display.style.color = killTarget > 0 && killCount >= killTarget ? '#4caf6e' : 'var(--gold)';
+  target.textContent = killTarget > 0 ? `/ ${killTarget} kills` : 'kills';
+}
+
 function renderTask(task) {
   document.getElementById('task-display').style.display = 'block';
   document.getElementById('task-title').textContent = task.title;
@@ -4360,6 +4387,13 @@ function renderTask(task) {
   const badge = document.getElementById('task-badge');
   badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : task.type === 'clue' ? '🗺 Clue Task' : task.type === 'quest' ? '📜 Quest Task' : '🛠 Skilling Task';
   badge.className = 'task-type-badge ' + task.type;
+
+  // Kill counter — show for combat tasks with a numeric target
+  killCount = 0;
+  killTarget = task.type === 'combat' ? extractKillCount(task) : 0;
+  const counterEl = document.getElementById('kill-counter');
+  if (counterEl) counterEl.style.display = (task.type === 'combat' && killTarget > 1) ? 'block' : 'none';
+  updateKillCounter();
 
   const notesEl = document.getElementById('task-notes');
   if (task.note) {
@@ -4483,6 +4517,7 @@ function completeTask() {
     : `Task complete! +${earned} points. Streak: ${tracker.streak} 🗡`;
   showToast(msg);
 
+  killCount = 0;
   currentTask = null;
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
