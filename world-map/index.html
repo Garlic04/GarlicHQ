@@ -583,9 +583,7 @@ function toggleAllPins() {
   btn.textContent = allPinsVisible ? 'Hide Pins' : 'Show Pins';
   btn.style.borderColor = allPinsVisible ? 'var(--border)' : 'var(--gold-dim)';
   btn.style.color = allPinsVisible ? 'var(--text-dim)' : 'var(--gold)';
-  pinEls.forEach(({ el }) => {
-    el.style.display = allPinsVisible ? '' : 'none';
-  });
+  updatePinVisibility();
 }
 
 function updatePinVisibility() {
