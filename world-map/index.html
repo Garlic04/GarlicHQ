@@ -531,10 +531,13 @@ async function loadFromData(data) {
 }
 
 function loadMapData(data) {
-  // Verdant Atlas export: { pins: [...], maps: [...], ... }
-  // pins may be at top level or nested
-  // pins are top-level in the export
-  const pins = data.pins ?? data.markers ?? [];
+  // Verdant Atlas export — handle multiple structures:
+  // 1. Array of worlds: [{ pins: [...], maps: [...] }]
+  // 2. Single world object: { pins: [...], maps: [...] }
+  // 3. Legacy: { pins: [...] }
+  let world = data;
+  if (Array.isArray(data)) world = data[0];
+  const pins = world.pins ?? world.markers ?? [];
   allPins = pins.filter(p => !p.hidden);
 
   // Collect unique types
