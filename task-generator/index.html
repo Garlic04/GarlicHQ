@@ -4347,6 +4347,7 @@ function generateTask(isReroll = false) {
 
   currentTask = task;
   dbPut('settings', 'currentTask', task);
+  updateGenerateBtn();
   switchTab('tasks');
   renderTask(task);
   pushToOverlay(task);
@@ -4362,11 +4363,11 @@ function skillLabel(skill) {
   return map[skill] || 'Gather';
 }
 
-let killCount = 0;
+let playerKillCount = 0;
 let killTarget = 0;
 
 function adjustKills(delta) {
-  killCount = Math.max(0, killCount + delta);
+  playerKillCount = Math.max(0, playerKillCount + delta);
   updateKillCounter();
 }
 
@@ -4374,8 +4375,8 @@ function updateKillCounter() {
   const display = document.getElementById('kill-count-display');
   const target  = document.getElementById('kill-count-target');
   if (!display) return;
-  display.textContent = killCount;
-  display.style.color = killTarget > 0 && killCount >= killTarget ? '#4caf6e' : 'var(--gold)';
+  display.textContent = playerKillCount;
+  display.style.color = killTarget > 0 && playerKillCount >= killTarget ? '#4caf6e' : 'var(--gold)';
   target.textContent = killTarget > 0 ? `/ ${killTarget} kills` : 'kills';
 }
 
@@ -4389,7 +4390,7 @@ function renderTask(task) {
   badge.className = 'task-type-badge ' + task.type;
 
   // Kill counter — show for combat tasks with a numeric target
-  killCount = 0;
+  playerKillCount = 0;
   killTarget = task.type === 'combat' ? extractKillCount(task) : 0;
   const counterEl = document.getElementById('kill-counter');
   if (counterEl) counterEl.style.display = (task.type === 'combat' && killTarget > 1) ? 'block' : 'none';
@@ -4484,32 +4485,34 @@ function renderTask(task) {
 
 function completeTask() {
   if (!currentTask) return;
+  const taskToComplete = currentTask;
+  currentTask = null; // Guard immediately to prevent double-fire
 
   tracker.total++;
   tracker.streak++;
   if (tracker.total > (tracker.highWater || 0)) tracker.highWater = tracker.total;
-  if (currentTask && currentTask.type === 'combat' && ['King Black Dragon','Kalphite Queen'].includes(currentTask.name)) tracker.bossKills = (tracker.bossKills || 0) + 1;
+  if (taskToComplete.type === 'combat' && ['King Black Dragon','Kalphite Queen'].includes(taskToComplete.name)) tracker.bossKills = (tracker.bossKills || 0) + 1;
 
   // Mark quest as completed so it won't appear again
-  if (currentTask.type === 'quest' && currentTask.questName) {
-    completedQuests.add(currentTask.questName);
+  if (taskToComplete.type === 'quest' && taskToComplete.questName) {
+    completedQuests.add(taskToComplete.questName);
     saveCompletedQuests();
     updateQuestChecklist();
   }
 
-  const base    = taskPointValue(currentTask);
+  const base    = taskPointValue(taskToComplete);
   const isBonus = tracker.streak % STREAK_BONUS_AT === 0;
   const earned  = applyPrestigeMultiplier(isBonus ? base * BONUS_MULTIPLIER : base);
   tracker.points += earned;
 
   saveTracker();
   renderTracker();
-  logTask(currentTask, earned, isBonus).then(() => loadTaskLog());
+  logTask(taskToComplete, earned, isBonus).then(() => loadTaskLog());
 
   // Contract progress
-  const contractType = currentTask.chain ? 'chain' : currentTask.type;
-  const killCount = extractKillCount(currentTask);
-  progressContract(contractType, currentTask.name, killCount);
+  const contractType = taskToComplete.chain ? 'chain' : taskToComplete.type;
+  const taskKillCount = extractKillCount(taskToComplete);
+  progressContract(contractType, taskToComplete.name, taskKillCount);
   rollRareDrop();
 
   const msg = isBonus
@@ -4517,8 +4520,7 @@ function completeTask() {
     : `Task complete! +${earned} points. Streak: ${tracker.streak} 🗡`;
   showToast(msg);
 
-  killCount = 0;
-  currentTask = null;
+  playerKillCount = 0;
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
   pushToOverlay(null);
@@ -4531,7 +4533,7 @@ function extractKillCount(task) {
   const m = task.title.match(/Kill\s+(\d+)/i);
   if (m) return parseInt(m[1]);
   // Chain combat: try step 1 count if available
-  if (task.chain && task.chain.step1) {
+  if (task.chain && task.chain.step1 && typeof task.chain.step1 === 'string') {
     const m2 = task.chain.step1.match(/(\d+)/);
     if (m2) return parseInt(m2[1]);
   }
