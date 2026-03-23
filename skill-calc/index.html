@@ -198,6 +198,13 @@
     color: var(--parchment); font-family: 'Segoe UI', system-ui, sans-serif;
     font-size: 0.95rem;
   }
+  .lookup-bar input:-webkit-autofill,
+  .lookup-bar input:-webkit-autofill:hover,
+  .lookup-bar input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #14110a inset;
+    -webkit-text-fill-color: var(--parchment);
+    caret-color: var(--parchment);
+  }
   .lookup-bar input::placeholder { color: var(--gold-dim); opacity: 0.6; }
   .lookup-bar button {
     background: rgba(200,168,75,0.12); border: 1px solid var(--border);
