@@ -1045,18 +1045,19 @@
   }
   .milestones-tab:hover .milestones-panel,
   .milestones-tab.open .milestones-panel {
-    width: 340px;
+    width: clamp(220px, 30vw, 340px);
     border-width: 1px;
     box-shadow: -4px 0 20px rgba(0,0,0,0.6);
   }
   .milestones-inner {
-    width: 340px;
-    padding: 1rem 1.2rem;
+    width: clamp(220px, 30vw, 340px);
+    padding: clamp(0.6rem, 1.5vh, 1rem) clamp(0.7rem, 1.5vw, 1.2rem);
     flex-shrink: 0;
+    font-size: clamp(0.7rem, 1.5vh, 0.85rem);
   }
   .milestones-title {
     font-family: 'Cinzel', serif;
-    font-size: 0.78rem;
+    font-size: clamp(0.62rem, 1.2vh, 0.78rem);
     letter-spacing: 0.15em;
     color: var(--gold);
     text-transform: uppercase;
@@ -1206,7 +1207,7 @@
   .shop-buy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* ── Collection Tab ─────────────────────────────── */
-  .collection-tab { display: flex; align-items: stretch; }
+  .collection-tab { display: flex; align-items: stretch; min-height: 0; }
   .collection-tab:hover, .collection-tab.open { z-index: 2; position: relative; }
   .collection-trigger {
     writing-mode: vertical-rl; text-orientation: mixed;
@@ -1226,9 +1227,9 @@
     display: flex; flex-direction: column;
   }
   .collection-tab:hover .collection-panel, .collection-tab.open .collection-panel {
-    width: 280px; border-width: 1px; box-shadow: -4px 0 20px rgba(0,0,0,0.6);
+    width: clamp(200px, 26vw, 280px); border-width: 1px; box-shadow: -4px 0 20px rgba(0,0,0,0.6);
   }
-  .collection-inner { width: 280px; padding: 1rem 1.2rem; flex-shrink: 0; }
+  .collection-inner { width: clamp(200px, 26vw, 280px); padding: clamp(0.6rem, 1.5vh, 1rem) clamp(0.7rem, 1.5vw, 1.2rem); flex-shrink: 0; font-size: clamp(0.7rem, 1.5vh, 0.85rem); }
   .collection-title {
     font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.15em;
     color: var(--gold); text-transform: uppercase; margin-bottom: 4px; white-space: nowrap;
@@ -3874,11 +3875,31 @@ function scaleSideTabs() {
   const wrapper = document.getElementById('side-tabs-wrapper');
   if (!wrapper) return;
   const vh = window.innerHeight;
+  const NAV_H = 58; // approximate nav height in px
+
   // Measure natural height
   wrapper.style.transform = 'translateY(-50%)';
   const naturalH = wrapper.scrollHeight;
+
+  let scale = 1;
   if (naturalH > vh * 0.92) {
-    const scale = (vh * 0.92) / naturalH;
+    scale = (vh * 0.92) / naturalH;
+  }
+
+  // After scaling, check if the top would clip under the nav
+  const scaledH = naturalH * scale;
+  const centerY = vh / 2;
+  const topEdge = centerY - scaledH / 2;
+
+  if (topEdge < NAV_H) {
+    // Shift the wrapper down so its top sits just below the nav
+    const offset = NAV_H - topEdge;
+    wrapper.style.top = `calc(50% + ${offset}px)`;
+  } else {
+    wrapper.style.top = '50%';
+  }
+
+  if (scale < 1) {
     wrapper.style.transform = `translateY(-50%) scale(${scale.toFixed(3)})`;
     wrapper.style.transformOrigin = 'right center';
   } else {
