@@ -1799,6 +1799,10 @@
       <button class="action-btn complete" onclick="completeTask()">✓ Mark Complete</button>
       <button class="action-btn reroll" onclick="rerollTask()">↺ Reroll</button><button class="safe-reroll-btn" id="safe-reroll-btn" onclick="safeRerollTask()">🛡 Safe Reroll (<span id="safe-reroll-count">0</span>)</button>
     </div>
+    <div id="extender-actions" style="display:none;margin-top:8px;gap:6px;justify-content:center;">
+      <button id="extend-btn" onclick="applyExtender(1.5)" style="flex:1;padding:6px 10px;background:rgba(74,162,74,0.12);border:1px solid #4a8a4a;border-radius:6px;color:#6abf6a;font-size:12px;font-family:inherit;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(74,162,74,0.25)'" onmouseout="this.style.background='rgba(74,162,74,0.12)'">📏 +50% Extend</button>
+      <button id="reduce-btn" onclick="applyExtender(0.5)" style="flex:1;padding:6px 10px;background:rgba(162,100,74,0.12);border:1px solid #8a5a4a;border-radius:6px;color:#bf8a6a;font-size:12px;font-family:inherit;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(162,100,74,0.25)'" onmouseout="this.style.background='rgba(162,100,74,0.12)'">📏 −50% Reduce</button>
+    </div>
   </div>
 
   <!-- Daily Task -->
@@ -1975,6 +1979,15 @@
           <span class="shop-cost">25 pts</span>
           <span class="shop-stock">Held: <span id="shop-safe-reroll-count">0</span> / 5</span>
           <button class="shop-buy-btn" id="shop-buy-btn" onclick="buyReroll()">Buy</button>
+        </div>
+      </div>
+      <div class="shop-item" id="shop-extender-item">
+        <div class="shop-item-name">📏 Task Extender / Reducer</div>
+        <div class="shop-item-desc">Increase or decrease your current task's count by 50%. One use per task.</div>
+        <div class="shop-item-footer">
+          <span class="shop-cost">40 pts</span>
+          <span class="shop-stock">Held: <span id="shop-extender-count">0</span></span>
+          <button class="shop-buy-btn" id="shop-extender-buy-btn" onclick="buyExtender()">Buy</button>
         </div>
       </div>
       <div class="shop-item" id="shop-picker-item">
@@ -2478,7 +2491,7 @@ const BASE_POINTS = {
 const BONUS_MULTIPLIER = 2;   // every 10th streak task doubles points
 const STREAK_BONUS_AT  = 10;  // milestone interval
 
-let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0, prestige: 0, highWater: 0 };
+let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0, prestige: 0, highWater: 0, extenderCharges: 0 };
 let currentTask = null;  // track whether a task is pending completion
 let completedQuests = new Set(); // set of quest names the player has finished
 
@@ -2698,6 +2711,7 @@ function renderMilestones() {
 
 
 const SAFE_REROLL_COST = 25;
+const EXTENDER_COST    = 40;
 const SAFE_REROLL_MAX  = 5;
 const CHALLENGE_MULTIPLIER = 1.75;
 
@@ -2991,6 +3005,8 @@ async function loadDailyTask() {
     const d = await dbGet('settings', 'dailyDateKey');
     const done = await dbGet('settings', 'dailyDone');
     if (t)    dailyTask    = t;
+    const tm = await dbGet('settings', 'taskModified');
+    if (tm) taskModified = tm;
     if (d)    dailyDateKey = d;
     if (done !== null && done !== undefined) dailyDone = done;
     // If it's a new day, clear the stored task so the roll button shows
@@ -3496,10 +3512,13 @@ function selectPickerTask(task) {
   pickerActive = false;
   document.getElementById('task-picker-modal').style.display = 'none';
   currentTask = task;
+  taskModified = false;
   dbPut('settings', 'currentTask', task);
+  dbDelete('settings', 'taskModified');
   renderTask(task);
   renderPickerBtn();
   renderShop();
+  updateExtenderButtons();
   pushToOverlay(task);
 }
 
@@ -3914,6 +3933,78 @@ function scaleSideTabs() {
 
 window.addEventListener('resize', scaleSideTabs);
 
+function buyExtender() {
+  if (tracker.points < EXTENDER_COST) return;
+  tracker.points -= EXTENDER_COST;
+  tracker.extenderCharges = (tracker.extenderCharges || 0) + 1;
+  saveTracker();
+  renderShop();
+  renderTracker();
+  if (currentTask) renderTask(currentTask);
+  updateExtenderButtons();
+  showToast('Task Extender/Reducer purchased!');
+}
+
+function applyExtender(multiplier) {
+  if (!currentTask) return;
+  if (taskModified) { showToast('This task has already been modified.'); return; }
+  const charges = tracker.extenderCharges || 0;
+  if (charges < 1) { showToast('No extender charges held.'); return; }
+
+  const isExtend = multiplier > 1;
+
+  // Extract current count from title or chain.count
+  let currentCount = currentTask.count;
+  if (currentCount === undefined && currentTask.title) {
+    const m = currentTask.title.match(/\d+/);
+    currentCount = m ? parseInt(m[0]) : null;
+  }
+  if (!currentCount) { showToast('Could not determine task count.'); return; }
+
+  const newCount = Math.max(1, Math.round(currentCount * multiplier));
+
+  // Update wherever count lives
+  if (currentTask.count !== undefined) currentTask.count = newCount;
+  if (currentTask.chain && currentTask.chain.count !== undefined) currentTask.chain.count = newCount;
+
+  // Update title — replace the first number
+  if (currentTask.title) {
+    currentTask.title = currentTask.title.replace(/\d+/, String(newCount));
+  }
+
+  // Update chain step1 title too if it contains the count
+  if (currentTask.chain && currentTask.chain.step1 && currentTask.chain.step1.title) {
+    currentTask.chain.step1.title = currentTask.chain.step1.title.replace(/\d+/, String(newCount));
+  }
+
+  // Update kill counter target
+  killTarget = newCount;
+
+  tracker.extenderCharges = Math.max(0, charges - 1);
+  taskModified = true;
+  dbPut('settings', 'currentTask', currentTask);
+  dbPut('settings', 'taskModified', true);
+  saveTracker();
+  renderTask(currentTask);
+  renderShop();
+  updateExtenderButtons();
+  showToast(isExtend ? 'Task extended by 50%!' : 'Task reduced by 50%!');
+}
+
+function updateExtenderButtons() {
+  const wrap = document.getElementById('extender-actions');
+  const charges = tracker.extenderCharges || 0;
+  if (!wrap) return;
+  // Show buttons only when there's an active unmodified task
+  const show = currentTask && !taskModified && charges > 0 && (currentTask.type === 'combat' || currentTask.type === 'skill');
+  wrap.style.display = show ? 'flex' : 'none';
+  wrap.style.flexDirection = 'row';
+  const extBtn = document.getElementById('extend-btn');
+  const redBtn = document.getElementById('reduce-btn');
+  if (extBtn) extBtn.disabled = charges < 1;
+  if (redBtn) redBtn.disabled = charges < 1;
+}
+
 function renderShop() {
   const pts      = tracker.points || 0;
   const unlocked = isShopUnlocked();
@@ -3946,6 +4037,11 @@ function renderShop() {
 
   // Task Picker
   const pickerCharges = tracker.pickerCharges || 0;
+  const extCharges   = tracker.extenderCharges || 0;
+  const extCountEl   = document.getElementById('shop-extender-count');
+  const extBuyBtn    = document.getElementById('shop-extender-buy-btn');
+  if (extCountEl) extCountEl.textContent = extCharges;
+  if (extBuyBtn)  extBuyBtn.disabled = pts < EXTENDER_COST;
   const pickerCount   = document.getElementById('shop-picker-count');
   if (pickerCount) pickerCount.textContent = pickerCharges;
   const pickerBuy = document.getElementById('shop-picker-buy-btn');
@@ -4253,7 +4349,7 @@ function generateTask(isReroll = false) {
       icon: t.icon,
       npcImage: combatChain ? null : t.npcImage,
       itemImage: combatChain ? (chainColour === 'Blue' ? 'Blue_dragonhide' : chainColour === 'Green' ? 'Green_dragonhide' : 'Cowhide') : null,
-      title: combatChain ? (chainColour === 'Cow' ? `Kill & Craft Cows` : `Kill & Craft ${chainColour} Dragons`) : `Kill ${count} ${t.name}`,
+      title: combatChain ? (chainColour === 'Cow' ? `Kill & Craft ${count} Cows` : `Kill & Craft ${count} ${chainColour} Dragons`) : `Kill ${count} ${t.name}`,
       desc: `Head to ${t.loc} and begin your hunt.`,
       note: combatChain ? null : (t.prayer ? (t.note || '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended for this task.') : (t.note || null)),
       chain: combatChain || null,
@@ -4389,7 +4485,9 @@ function generateTask(isReroll = false) {
   }
 
   currentTask = task;
+  taskModified = false;
   dbPut('settings', 'currentTask', task);
+  dbDelete('settings', 'taskModified');
   updateGenerateBtn();
   switchTab('tasks');
   renderTask(task);
@@ -4407,6 +4505,7 @@ function skillLabel(skill) {
 }
 
 let playerKillCount = 0;
+let taskModified = false; // tracks if extender/reducer has been used on current task
 let killTarget = 0;
 
 function adjustKills(delta) {
@@ -4438,6 +4537,7 @@ function renderTask(task) {
   const counterEl = document.getElementById('kill-counter');
   if (counterEl) counterEl.style.display = (task.type === 'combat' && killTarget > 1) ? 'block' : 'none';
   updateKillCounter();
+  updateExtenderButtons();
 
   const notesEl = document.getElementById('task-notes');
   if (task.note) {
@@ -4564,10 +4664,13 @@ function completeTask() {
   showToast(msg);
 
   playerKillCount = 0;
+  taskModified = false;
+  dbDelete('settings', 'taskModified');
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
   pushToOverlay(null);
   updateGenerateBtn();
+  updateExtenderButtons();
 }
 
 function extractKillCount(task) {
@@ -4870,6 +4973,7 @@ openDB().then(async () => {
   if (saved) {
     currentTask = saved;
     renderTask(currentTask);
+    updateExtenderButtons();
   }
 
   scaleSideTabs();
