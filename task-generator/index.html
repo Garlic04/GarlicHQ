@@ -2162,23 +2162,23 @@ const CLUE_TASKS = [
 
 const COMBAT_TASKS = [
   // Low tier
-  { name: 'Chickens',          icon: '🐔', min: 1,  max: 30,  loc: 'Lumbridge farm',                    countMin: 20, countMax: 60, prayer: false , npcImage: 'Chicken_(historical)' },
-  { name: 'Cows',              icon: '🐄', min: 1,  max: 40,  loc: 'Lumbridge fields',                  countMin: 20, countMax: 60, prayer: false , npcImage: 'Cow_(1)_(historical_v1)' },
+  { name: 'Chickens',          icon: '🐔', min: 1,  max: 30,  loc: 'Lumbridge farm',                    countMin: 20, countMax: 60, prayer: false , npcImage: 'Chicken_(historical)', note: 'You can cook the raw chicken on a fire or range for some early Cooking XP.' },
+  { name: 'Cows',              icon: '🐄', min: 1,  max: 40,  loc: 'Lumbridge fields',                  countMin: 20, countMax: 60, prayer: false , npcImage: 'Cow_(1)_(historical_v1)', note: 'You can cook the raw beef on a fire or range for some early Cooking XP.' },
   { name: 'Goblins',           icon: '👺', min: 1,  max: 40,  loc: 'Lumbridge or Goblin Village',       countMin: 20, countMax: 60, prayer: false , npcImage: 'Goblin' },
-  { name: 'Men & Women',       icon: '🧑', min: 1,  max: 35,  loc: 'Lumbridge or Varrock',              countMin: 20, countMax: 60, prayer: false , npcImage: 'Man' },
-  { name: 'Barbarians',        icon: '🪓', min: 1,  max: 40,  loc: 'Barbarian Village',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Barbarian_(Fafner)' },
-  { name: 'Al-Kharid Warriors',icon: '⚔️', min: 1,  max: 45,  loc: 'Al-Kharid palace',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Al_Kharid_warrior' },
-  { name: 'Bears',             icon: '🐻', min: 1,  max: 45,  loc: 'East of Ardougne',                  countMin: 20, countMax: 60,  prayer: false, npcImage: 'Grizzly_bear_(historical)' },
-  { name: 'Unicorns',          icon: '🦄', min: 1,  max: 50,  loc: 'White Wolf Mountain, north of Ardougne, or Wilderness (black unicorns)', countMin: 20, countMax: 60, prayer: false, npcImage: 'Unicorn_(historical_v1)', note: 'Unicorn horns are used in Herblore (anti-poison potions). Worth picking up! Black unicorns can also be found in the Wilderness.' },
+  { name: 'Men & Women',       icon: '🧑', min: 8,  max: 35,  loc: 'Lumbridge or Varrock',              countMin: 15, countMax: 40, prayer: false , npcImage: 'Man' },
+  { name: 'Barbarians',        icon: '🪓', min: 10, max: 40,  loc: 'Barbarian Village',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Barbarian_(Fafner)' },
+  { name: 'Al-Kharid Warriors',icon: '⚔️', min: 20, max: 45,  loc: 'Al-Kharid palace',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Al_Kharid_warrior' },
+  { name: 'Bears',             icon: '🐻', min: 25, max: 45,  loc: 'East of Ardougne',                  countMin: 20, countMax: 60,  prayer: false, npcImage: 'Grizzly_bear_(historical)' },
+  { name: 'Unicorns',          icon: '🦄', min: 20, max: 50,  loc: 'White Wolf Mountain, north of Ardougne, or Wilderness (black unicorns)', countMin: 20, countMax: 60, prayer: false, npcImage: 'Unicorn_(historical_v1)', note: 'Unicorn horns are used in Herblore (anti-poison potions). Worth picking up! Black unicorns can also be found in the Wilderness.' },
   { name: 'Guards',            icon: '💂', min: 15, max: 55,  loc: 'Varrock or Falador',               countMin: 20, countMax: 60, prayer: false , npcImage: 'Guard' },
   { name: 'Skeletons',         icon: '💀', min: 15, max: 55,  loc: 'Edgeville Dungeon or Karamja Volcano', countMin: 20, countMax: 60, prayer: false , npcImage: 'Skeleton' },
   { name: 'Black Knights',     icon: '🗡️', min: 25, max: 65,  loc: 'Ice Mountain dungeon',             countMin: 20, countMax: 60, prayer: false , npcImage: 'Black_Knight_(historical)' },
-  { name: 'Dark Wizards',      icon: '🧙', min: 1,  max: 40,  loc: 'South of Varrock',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Dark_wizard' },
-  { name: 'Zombies',            icon: '🧟', min: 1,  max: 40,  loc: 'Edgeville Dungeon',                 countMin: 20, countMax: 60,  prayer: false, npcImage: 'Zombie_(Level_13)_(historical)' },
-  { name: 'Ghosts',             icon: '👻', min: 1,  max: 40,  loc: 'Edgeville Dungeon or Melzar\'s Maze', countMin: 20, countMax: 60,  prayer: false, npcImage: 'Ghost_(historical)' },
-  { name: 'Scorpions',          icon: '🦂', min: 1,  max: 40,  loc: 'Al-Kharid or Dwarven Mine',          countMin: 20, countMax: 60,  prayer: false, npcImage: 'Scorpion_(historical)' },
+  { name: 'Dark Wizards',      icon: '🧙', min: 15, max: 40,  loc: 'South of Varrock',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Dark_wizard' },
+  { name: 'Zombies',            icon: '🧟', min: 15, max: 40,  loc: 'Edgeville Dungeon',                 countMin: 20, countMax: 60,  prayer: false, npcImage: 'Zombie_(Level_13)_(historical)' },
+  { name: 'Ghosts',             icon: '👻', min: 15, max: 40,  loc: 'Edgeville Dungeon or Melzar\'s Maze', countMin: 20, countMax: 60,  prayer: false, npcImage: 'Ghost_(historical)' },
+  { name: 'Scorpions',          icon: '🦂', min: 20, max: 40,  loc: 'Al-Kharid or Dwarven Mine',          countMin: 20, countMax: 60,  prayer: false, npcImage: 'Scorpion_(historical)' },
   { name: 'Wolves',             icon: '🐺', min: 20, max: 65,  loc: 'White Wolf Mountain',                countMin: 20, countMax: 60,  prayer: false, npcImage: 'Wolf_(historical)' },
-  { name: 'Chaos Druids',       icon: '🌿', min: 1,  max: 126, loc: 'Edgeville Dungeon or Taverley Dungeon', countMin: 20, countMax: 80, prayer: false, note: 'Great for herb drops. Beware of PKers in Edgeville Dungeon', npcImage: 'Chaos_druid' },
+  { name: 'Chaos Druids',       icon: '🌿', min: 25, max: 126, loc: 'Edgeville Dungeon or Taverley Dungeon', countMin: 20, countMax: 80, prayer: false, note: 'Great for herb drops. Beware of PKers in Edgeville Dungeon', npcImage: 'Chaos_druid' },
 
   // Mid tier
   { name: 'Hobgoblins',        icon: '👾', min: 30, max: 126,  loc: 'Edgeville Dungeon or Port Sarim Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Hobgoblin' },
@@ -2196,6 +2196,7 @@ const COMBAT_TASKS = [
   // High tier
   { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon — no quest required, but bring PK awareness' , npcImage: 'Fire_giant_(historical)' },
   { name: 'Lesser Demons',     icon: '😈', min: 65, max: 126,  loc: 'Karamja Volcano or Taverley Dungeon', countMin: 50, countMax: 150, prayer: false , npcImage: 'Lesser_demon_(historical)' },
+  { name: 'Salarin the Twisted', icon: '🧙', min: 60, max: 126, loc: 'Yanille Agility Dungeon', countMin: 5, countMax: 20, prayer: false, note: 'Requires navigating the Yanille Agility Dungeon (67 Agility)', agility: 67, npcImage: 'Salarin_the_twisted' },
   { name: 'Greater Demons',    icon: '👿', min: 75, max: 126,  loc: 'Brimhaven Dungeon',                countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Greater_demon_(historical)' },
   { name: 'Blue Dragons',      icon: '🐉', min: 85, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: 'Anti-dragon shield required; prayer recommended' , npcImage: 'Blue_dragon_(historical)' },
   { name: 'Baby Blue Dragons', icon: '🐉', min: 40, max: 100,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, npcImage: 'Baby_blue_dragon_(historical_v1)' },
@@ -2205,7 +2206,7 @@ const COMBAT_TASKS = [
   { name: 'Green Dragons',     icon: '🐲', min: 60, max: 126,  loc: 'Wilderness',                       countMin: 50, countMax: 150, prayer: false, note: '⚠️ Wilderness — bring only what you can afford to lose' , npcImage: 'Green_dragon_(historical)' },
 
   // Kalphite Hive
-  { name: 'Kalphite Workers',   icon: '🦂', min: 20,  max: 65,  loc: 'Kalphite Hive',  countMin: 20, countMax: 60, prayer: false, npcImage: 'Kalphite_Worker_(historical)' },
+  { name: 'Kalphite Workers',   icon: '🦂', min: 30,  max: 65,  loc: 'Kalphite Hive',  countMin: 20, countMax: 60, prayer: false, npcImage: 'Kalphite_Worker_(historical)' },
   { name: 'Kalphite Soldiers',  icon: '🦂', min: 65,  max: 126, loc: 'Kalphite Hive',  countMin: 50, countMax: 120, prayer: false, note: '⚠️ Poisonous — bring antipoison', npcImage: 'Kalphite_Soldier_(historical)' },
   { name: 'Kalphite Guardians', icon: '🦂', min: 100, max: 126, loc: 'Kalphite Hive',  countMin: 50, countMax: 150, prayer: false, note: '⚠️ Poisonous — bring antipoison', npcImage: 'Kalphite_Guardian_(historical)' },
   { name: 'Kalphite Queen',     icon: '🦂', npcImage: 'Kalphite_Queen_2nd_form_(historical)', min: 110, max: 126, loc: "Kalphite Hive - Queen's lair", countMin: 3, countMax: 15, prayer: true, note: 'Two-phase boss; requires Protect from Magic (37 Prayer) and Protect from Missiles (40 Prayer) for each phase. Bring antipoison and high food' },
@@ -2270,16 +2271,16 @@ const CHOICE_TASKS = [
 
 const SKILL_TASKS = [
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABJElEQVR4nN2VsQ3CQAxFfwLNIaZgBMpImYEShmACBmAChoCSGU6iZASmQKSCUDmYnO0zQTR8CRFyzn/nH6MD/kWFs679xscDaQEgrEs09SNdXea9Si9A1SHjkIEkgBBLhKg+0kKJVWsxATT1AyEqkZGU6KRtiQD+rXajRCdWm++AaqIZ41ts46wbjJ1Lawfw2ADkp0vU4jxJAIvzRN1MthMyPM5vb7/765ZEdLN7TRCZc/F7dN3dWybl9giTVtW0M+Kd0WZW1RT701X11d5JwT6dAY+GrmkDvedcnfTVCoaYje4AgG1sTC/vdCUGPYCpQSNMYgAzkUEQ6sIDGAy53Ecf1Xsh1smYOzVdEHGyAGBTBxfI1YkEoMgYSJX7jHfI+5/7jZ5cmV0xV2/8bgAAAABJRU5ErkJggg==" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Woodcutting — levelrequired from trees.dbrow
-  { skill: 'wc', name: 'Normal trees', icon: '🌲', req: 1,  unitMin: 100, unitMax: 300, unit: 'logs',        loc: 'Anywhere' , itemImage: 'Logs' , maxReq: 24 },
-  { skill: 'wc', name: 'Oak trees',    icon: '🌳', req: 15, unitMin: 80,  unitMax: 200, unit: 'oak logs',    loc: 'Draynor Village or Varrock' , itemImage: 'Oak_logs' , maxReq: 39 },
-  { skill: 'wc', name: 'Willow trees', icon: '🌿', req: 30, unitMin: 100, unitMax: 250, unit: 'willow logs', loc: 'Draynor Village' , itemImage: 'Willow_logs' , maxReq: 54 },
+  { skill: 'wc', name: 'Normal trees', icon: '🌲', req: 1,  unitMin: 60,  unitMax: 150, unit: 'logs',        loc: 'Anywhere' , itemImage: 'Logs' , maxReq: 24, maxReqOverrideIf: [{skill:'fm',below:15},{skill:'fletching',below:15}] },
+  { skill: 'wc', name: 'Oak trees',    icon: '🌳', req: 15, unitMin: 80,  unitMax: 200, unit: 'oak logs',    loc: 'Draynor Village or Varrock' , itemImage: 'Oak_logs' , maxReq: 39, maxReqOverrideIf: [{skill:'fm',below:30},{skill:'fletching',below:20}] },
+  { skill: 'wc', name: 'Willow trees', icon: '🌿', req: 30, unitMin: 100, unitMax: 250, unit: 'willow logs', loc: 'Draynor Village' , itemImage: 'Willow_logs' , maxReq: 54, maxReqOverrideIf: [{skill:'fm',below:45},{skill:'fletching',below:35}] },
   { skill: 'wc', name: 'Maple trees',  icon: '🍁', req: 45, unitMin: 150,  unitMax: 300, unit: 'maple logs',  loc: 'Seers\' Village' , itemImage: 'Maple_logs'  },
   { skill: 'wc', name: 'Yew trees',    icon: '🌲', req: 60, unitMin: 50,  unitMax: 150, unit: 'yew logs',    loc: 'Varrock or Falador' , itemImage: 'Yew_logs'  },
   { skill: 'wc', name: 'Magic trees',  itemImage: 'Magic_logs',  icon: '✨', req: 75, unitMin: 30,  unitMax: 80,  unit: 'magic logs',  loc: 'Sorcerer\'s Tower'  },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABCElEQVR4nL2VvRGDMAyFn3PZhwWo2YgKyqTKOOnocscCTKQ0NicJ+ReSV2GQ9FmykIE/yBXY0AnfqKEIOk6z6fh6PnQMvRl3eAiGsaAxMRiGvgMALOsm4nOIAHBnrlRmAcJAArIDjDJoUQzGQRxy00b+Q+pQHQBnZTpOM5Z14+U67JYywS2ZZ8g2C0BmUg0Y+g7b5501vGUtEoAgXTqf3d7SLRCyuijWjS0QE+CXAsSzqYGkAEk1nUkCYJbtXhiXhr47jItSlUA4oLbNAeTLdRqQDO4BhPh9EvUdp1n4WeUia8idkS6XaNMGmbOMQ5r/g5wC5AqAvpPMKfwTAF+Q8a5WIcblrV6kL2wugQEZUDPSAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Mining — rock_level from mine.dbrow
-  { skill: 'mining', name: 'Copper ore',     icon: '🟤', req: 1,  unitMin: 40, unitMax: 100, unit: 'copper ore',     loc: 'Lumbridge or Al-Kharid' , itemImage: 'Copper_ore' , maxReq: 24 },
-  { skill: 'mining', name: 'Tin ore',        icon: '⚪', req: 1,  unitMin: 40, unitMax: 100, unit: 'tin ore',        loc: 'Lumbridge or Al-Kharid' , itemImage: 'Tin_ore' , maxReq: 24 },
+  { skill: 'mining', name: 'Copper ore',     icon: '🟤', req: 1,  unitMin: 40, unitMax: 100, unit: 'copper ore',     loc: 'Lumbridge or Al-Kharid' , itemImage: 'Copper_ore' , maxReq: 24, maxReqOverrideIf: [{skill:'smithing',below:15}] },
+  { skill: 'mining', name: 'Tin ore',        icon: '⚪', req: 1,  unitMin: 40, unitMax: 100, unit: 'tin ore',        loc: 'Lumbridge or Al-Kharid' , itemImage: 'Tin_ore' , maxReq: 24, maxReqOverrideIf: [{skill:'smithing',below:15}] },
   { skill: 'mining', name: 'Iron ore',       icon: '🔵', req: 15, unitMin: 100, unitMax: 250, unit: 'iron ore',       loc: 'Al-Kharid or Rimmington' , itemImage: 'Iron_ore'  },
   { skill: 'mining', name: 'Silver ore',     icon: '⚪', req: 20, unitMin: 80,  unitMax: 200, unit: 'silver ore',     loc: 'Crafting Guild or Al-Kharid' , itemImage: 'Silver_ore' , maxReq: 39 },
   { skill: 'mining', name: 'Coal',           icon: '⚫', req: 30, unitMin: 80,  unitMax: 200, unit: 'coal',           loc: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABCElEQVR4nL2VvRGDMAyFn3PZhwWo2YgKyqTKOOnocscCTKQ0NicJ+ReSV2GQ9FmykIE/yBXY0AnfqKEIOk6z6fh6PnQMvRl3eAiGsaAxMRiGvgMALOsm4nOIAHBnrlRmAcJAArIDjDJoUQzGQRxy00b+Q+pQHQBnZTpOM5Z14+U67JYywS2ZZ8g2C0BmUg0Y+g7b5501vGUtEoAgXTqf3d7SLRCyuijWjS0QE+CXAsSzqYGkAEk1nUkCYJbtXhiXhr47jItSlUA4oLbNAeTLdRqQDO4BhPh9EvUdp1n4WeUia8idkS6XaNMGmbOMQ5r/g5wC5AqAvpPMKfwTAF+Q8a5WIcblrV6kL2wugQEZUDPSAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Mining Guild or Dwarven Mine' , itemImage: 'Coal'  },
@@ -2290,9 +2291,9 @@ const SKILL_TASKS = [
   { skill: 'mining', name: 'Rune essence',   icon: '🪨', req: 1,  unitMin: 200, unitMax: 500, unit: 'rune essence',   loc: 'Rune essence mine (via teleport)', itemImage: 'Rune_essence', questReq: 'Rune Mysteries', note: 'Requires completion of <strong>Rune Mysteries</strong> to access the essence mine.' },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABZ0lEQVR4nMVVsW3EMAykHxlE8AJZIHU2UCPN4coukypz/De/gWsv4AUMbaIUMfUkTcp6BEgOMGBT1B1JUxTAH6Br9Mu/2S+dLDJ4f3tl3/OyUo5qEChSnJBsXlaTmNrnZQUfw4H9fr0VIZrJQUhEfAANiAJFdyG1pFl5WvyY3cdQ7C/K5tZmMP1k+VoJnwXNrNMy0Rw1aAGqe1oyycM4McPX54fprPk+dRglAZJodrpeK5dKntJW3u/Xmxo57kHfM5Fu35gBeNdQgZQ2cK4vaz4GFsxZucqPFAcMfAyFGAmd6w+ZtoiYYlJAwrkeS1dtYQZaqpoAIQfYk0CR2hQta7TuUoAMRCZAX6pnweouKoD/CEukqWWtHBIpbVrEAPBTTjre6doFjeigCaS0SYGOPKzTpICGMrp9DHkYJzqyrbGfh3GqXguyu9hNKepvRii7SeKiGQEe3WL9HyFeSmc51MDuhTO1f8U38tm2Q55K5qUAAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Fishing — stat(fishing) checks from fishing_spots scripts
-  { skill: 'fishing', name: 'Shrimps',   icon: '🦐', req: 1,  unitMin: 40, unitMax: 100, unit: 'shrimps',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_shrimps' , maxReq: 14 },
-  { skill: 'fishing', name: 'Sardines',  icon: '🐟', req: 5,  unitMin: 40,  unitMax: 100, unit: 'sardines',  loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_sardine' , maxReq: 19 },
-  { skill: 'fishing', name: 'Herring',   icon: '🐟', req: 10, unitMin: 50,  unitMax: 120, unit: 'herring',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_herring' , maxReq: 29 },
+  { skill: 'fishing', name: 'Shrimps',   icon: '🦐', req: 1,  unitMin: 40, unitMax: 100, unit: 'shrimps',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_shrimps' , maxReq: 14, maxReqOverrideIf: [{skill:'cooking',below:15}] },
+  { skill: 'fishing', name: 'Sardines',  icon: '🐟', req: 5,  unitMin: 40,  unitMax: 100, unit: 'sardines',  loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_sardine' , maxReq: 19, maxReqOverrideIf: [{skill:'cooking',below:15}] },
+  { skill: 'fishing', name: 'Herring',   icon: '🐟', req: 10, unitMin: 50,  unitMax: 120, unit: 'herring',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_herring' , maxReq: 29, maxReqOverrideIf: [{skill:'cooking',below:25}] },
   { skill: 'fishing', name: 'Trout',     icon: '🐟', req: 20, unitMin: 50,  unitMax: 120, unit: 'trout',     loc: 'Barbarian Village' , itemImage: 'Raw_trout' , maxReq: 34 },
   { skill: 'fishing', name: 'Pike',      icon: '🐟', req: 25, unitMin: 40,  unitMax: 100, unit: 'pike',      loc: 'Barbarian Village' , itemImage: 'Raw_pike' , maxReq: 39 },
   { skill: 'fishing', name: 'Salmon',    icon: '🐠', req: 30, unitMin: 80,  unitMax: 200, unit: 'salmon',    loc: 'Barbarian Village' , itemImage: 'Raw_salmon' , maxReq: 44 },
@@ -2302,17 +2303,17 @@ const SKILL_TASKS = [
   { skill: 'fishing', name: 'Sharks',    icon: '🦈', req: 76, unitMin: 30,  unitMax: 80,  unit: 'sharks',    loc: 'Catherby' , itemImage: 'Raw_shark' , maxReq: 99 },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABH0lEQVR4nM2UPRKCMBCFE5SO2kPYUMslmLHCE0JF4x3sbei4ALWdjGuhxOyyuwnM6LhdXjbvext+jPnDgjWHkl+AJEjIiO6r/dokrFHbpItBoetCByeABwoFEyFq4rweF/VLEC4x0PTvNQj9YYiQ2GnaHldbspYSu+qGxOx3D3Zv0o7VHYwxdtLYSbTEa/p9CJqiGzA/r0endUMyM/T7/edFIaKZlDB20qjfyvVEH91HD01IC8zryqAvLZwPG+hLC5LeNqnbk3QR4htO66rIkKGkE4CDWAKZVVVkaN1cbqwmlKUQFkQNI4wRgELU3/VKGJoEJBPOSOtlztmoV7gqMmQccVWo+A9gnkbVQ5O566LNS9Mq5230g19Z9O39Xj0BgVTHt1saGE0AAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Firemaking — levelrequire from firemaking.obj
-  { skill: 'fm', name: 'Normal logs', icon: '🔥', req: 1,  unitMin: 100, unitMax: 250, unit: 'normal logs', loc: 'Anywhere' , itemImage: 'Logs' , maxReq: 24 },
-  { skill: 'fm', name: 'Oak logs',    icon: '🔥', req: 15, unitMin: 80,  unitMax: 200, unit: 'oak logs',    loc: 'Anywhere' , itemImage: 'Oak_logs' , maxReq: 39 },
+  { skill: 'fm', name: 'Normal logs', icon: '🔥', req: 1,  unitMin: 60,  unitMax: 150, unit: 'normal logs', loc: 'Anywhere' , itemImage: 'Logs' , maxReq: 24, maxReqOverrideIf: [{skill:'wc',below:15}] },
+  { skill: 'fm', name: 'Oak logs',    icon: '🔥', req: 15, unitMin: 80,  unitMax: 200, unit: 'oak logs',    loc: 'Anywhere' , itemImage: 'Oak_logs' , maxReq: 39, maxReqOverrideIf: [{skill:'wc',below:30}] },
   { skill: 'fm', name: 'Willow logs', icon: '🔥', req: 30, unitMin: 80,  unitMax: 200, unit: 'willow logs', loc: 'Anywhere' , itemImage: 'Willow_logs'  },
   { skill: 'fm', name: 'Maple logs',  icon: '🔥', req: 45, unitMin: 60,  unitMax: 150, unit: 'maple logs',  loc: 'Anywhere' , itemImage: 'Maple_logs'  },
   { skill: 'fm', name: 'Yew logs',    icon: '🔥', req: 60, unitMin: 50,  unitMax: 120, unit: 'yew logs',    loc: 'Anywhere' , itemImage: 'Yew_logs'  },
   { skill: 'fm', name: 'Magic logs',   itemImage: 'Magic_logs',  icon: '🔥', req: 75, unitMin: 30,  unitMax: 80,  unit: 'magic logs',  loc: 'Anywhere'  },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABDklEQVR4nN2Wyw3CMAyGHSiHSiyBGAFxgS04dSMGYIme2AIuqCNUXQIpSIDCgaZyHDtp017gPyWt48+vqAX4F6nIezPANglitK67TZ6vpfPRQGZDIrJQBDda13jPKgRRQvQeNGYXyyQKwrapkEnE0Q3zbJTfjLModkv25Grz6tbb/Zu1ORTPMLGVoSDsHIuCECCaiQIAU17vQGGSSPRe4Gy5kKEBAGiqr1mkXEnT5QyAVDLJvg/E6QsHuF3m3fpcLoIgtvG0D6EshOY7fmkmHmCo2qycjCa/8biMVtJ0OWqqTCwZ5zQJYkFWPSbNES2XspewL5DqeHoAkMZLFyhpANoAPZ/Bz+9gyoj/gN/QB5c+VUVJZXiqAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Cooking — levelrequired from cooking_generic.dbrow
-  { skill: 'cooking', name: 'Shrimps',   icon: '🍤', req: 1,  unitMin: 100, unitMax: 250, unit: 'shrimps',   loc: 'Any fire or range' , itemImage: 'Shrimps' , maxReq: 14 },
-  { skill: 'cooking', name: 'Sardines',  icon: '🍽️', req: 1,  unitMin: 100, unitMax: 250, unit: 'sardines',  loc: 'Any fire or range' , itemImage: 'Sardine' , maxReq: 14 },
-  { skill: 'cooking', name: 'Herring',   icon: '🍽️', req: 5,  unitMin: 80,  unitMax: 200, unit: 'herring',   loc: 'Any fire or range' , itemImage: 'Herring' , maxReq: 24 },
+  { skill: 'cooking', name: 'Shrimps',   icon: '🍤', req: 1,  unitMin: 100, unitMax: 250, unit: 'shrimps',   loc: 'Any fire or range' , itemImage: 'Shrimps' , maxReq: 14, maxReqOverrideIf: [{skill:'fishing',below:5}] },
+  { skill: 'cooking', name: 'Sardines',  icon: '🍽️', req: 1,  unitMin: 100, unitMax: 250, unit: 'sardines',  loc: 'Any fire or range' , itemImage: 'Sardine' , maxReq: 14, maxReqOverrideIf: [{skill:'fishing',below:10}] },
+  { skill: 'cooking', name: 'Herring',   icon: '🍽️', req: 5,  unitMin: 80,  unitMax: 200, unit: 'herring',   loc: 'Any fire or range' , itemImage: 'Herring' , maxReq: 24, maxReqOverrideIf: [{skill:'fishing',below:20}] },
   { skill: 'cooking', name: 'Trout',     icon: '🍽️', req: 15, unitMin: 80,  unitMax: 200, unit: 'trout',     loc: 'Any fire or range' , itemImage: 'Trout' , maxReq: 29 },
   { skill: 'cooking', name: 'Pike',      icon: '🍽️', req: 20, unitMin: 80,  unitMax: 200, unit: 'pike',      loc: 'Any fire or range' , itemImage: 'Pike' , maxReq: 34 },
   { skill: 'cooking', name: 'Salmon',    icon: '🍽️', req: 25, unitMin: 80,  unitMax: 200, unit: 'salmon',    loc: 'Any fire or range' , itemImage: 'Salmon' , maxReq: 39 },
@@ -2322,9 +2323,9 @@ const SKILL_TASKS = [
   { skill: 'cooking', name: 'Sharks',    icon: '🦈', req: 80, unitMin: 30,  unitMax: 80,  unit: 'sharks',    loc: 'Any fire or range' , itemImage: 'Shark'  },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAA+UlEQVR4nO2VMQ6CMBiFHwYHjkB6BRImxnoiN+Oizm5unkhGJxKuYDgCgwl1KG0oltL+MPKSDiV/+/WR/q/AMol+OLVbAkiOfsupkDHA6YYCMQBFzoYgKywmQLSyMkXNGyRcQttnZ60jQxRAqQdE/dRwFCFcosiZCwAA4sITAMC9bIOdiCJneFcfoDK+/x32ezhh/3oEbi8BPn0hztebqvPqo2CAZ90G2AArAvR9HtzvVQGAjAAXwGgsCkDHykQEGLGelamMlMDMiyyn0kk6BtS8sYXhrOKJBVYAVZMprB6gcaxTNGdbAIByRflVwPwbrzekAnxF6uqhfnmbma3Mx+/fAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Fletching — level data from cut_logs.dbrow (shortbow/longbow level fields)
-  { skill: 'fletching', name: 'Arrow shafts',    icon: '🏹', req: 1,  unitMin: 200, unitMax: 500, unit: 'arrow shafts',    loc: 'Anywhere' , itemImage: 'Arrow_shaft' , maxReq: 19 },
-  { skill: 'fletching', name: 'Shortbows (u)',    icon: '🏹', req: 5,  unitMin: 100, unitMax: 250, unit: 'shortbows (u)',   loc: 'Anywhere' , itemImage: 'Shortbow_(u)' , maxReq: 19 },
-  { skill: 'fletching', name: 'Longbows (u)',     icon: '🏹', req: 10, unitMin: 80,  unitMax: 200, unit: 'longbows (u)',    loc: 'Anywhere' , itemImage: 'Longbow_(u)' , maxReq: 29 },
+  { skill: 'fletching', name: 'Arrow shafts',    icon: '🏹', req: 1,  unitMin: 210, unitMax: 495, unit: 'arrow shafts',    loc: 'Anywhere' , itemImage: 'Arrow_shaft' , maxReq: 19, multipleOf: 15, maxReqOverrideIf: [{skill:'wc',below:15}] },
+  { skill: 'fletching', name: 'Shortbows (u)',    icon: '🏹', req: 5,  unitMin: 100, unitMax: 250, unit: 'shortbows (u)',   loc: 'Anywhere' , itemImage: 'Shortbow_(u)' , maxReq: 19, maxReqOverrideIf: [{skill:'wc',below:15}] },
+  { skill: 'fletching', name: 'Longbows (u)',     icon: '🏹', req: 10, unitMin: 80,  unitMax: 200, unit: 'longbows (u)',    loc: 'Anywhere' , itemImage: 'Longbow_(u)' , maxReq: 29, maxReqOverrideIf: [{skill:'wc',below:15}] },
   { skill: 'fletching', name: 'Oak shortbows',    icon: '🏹', req: 20, unitMin: 80,  unitMax: 200, unit: 'oak shortbows',   loc: 'Anywhere' , itemImage: 'Oak_shortbow_(u)' , maxReq: 34 },
   { skill: 'fletching', name: 'Oak longbows',     icon: '🏹', req: 25, unitMin: 60,  unitMax: 150, unit: 'oak longbows',    loc: 'Anywhere' , itemImage: 'Oak_longbow_(u)' , maxReq: 44 },
   { skill: 'fletching', name: 'Willow shortbows', icon: '🏹', req: 35, unitMin: 60,  unitMax: 150, unit: 'willow shortbows',loc: 'Anywhere' , itemImage: 'Willow_shortbow_(u)' , maxReq: 49 },
@@ -2359,7 +2360,7 @@ const SKILL_TASKS = [
   { skill: 'gathering', name: 'Snape grass',    icon: '🌿', req: 1,  unitMin: 50,  unitMax: 150, unit: 'snape grass',    loc: 'Hobgoblin Peninsula (south-west of Crafting Guild)', itemImage: 'Snape_grass',      note: 'Snape grass is a useful Herblore ingredient.' },
   { skill: 'gathering', name: 'Flax',           icon: '🌾', req: 1,  unitMin: 100, unitMax: 300, unit: 'flax',           loc: 'South of Seers\' Village',                          itemImage: 'Flax',             note: 'Can be spun into bow strings at the spinning wheel upstairs in Seers\' bank.' },
   { skill: 'gathering', name: 'Potato cactus',  icon: '🌵', req: 1,  unitMin: 30,  unitMax: 100, unit: 'potato cacti',   loc: 'Kalphite Lair',                                     itemImage: 'Potato_cactus',    note: 'Found growing in the Kalphite Lair. Watch out for Kalphites.' },
-  { skill: 'gathering', name: 'Jangerberries',  icon: '🫐', req: 1,  unitMin: 30,  unitMax: 100, unit: 'jangerberries',  loc: 'Small island west of Yanille',                      itemImage: 'Jangerberries',    note: 'Cross the stepping stones west of Yanille to reach the island. Bring antipoison — the area has Ogres.' },
+  { skill: 'gathering', name: 'Jangerberries',  icon: '🫐', req: 1,  unitMin: 30,  unitMax: 100, unit: 'jangerberries',  loc: 'Small island west of Yanille',                      itemImage: 'Jangerberries',    },
   { skill: 'gathering', name: 'White berries',  icon: '⚪', req: 1,  unitMin: 20,  unitMax: 60,  unit: 'white berries',  loc: 'Wilderness, level 4-5 (south of Black Knights\' Fortress)', itemImage: 'White_berries', note: '⚠️ Located in the Wilderness — bring only what you can afford to lose.' },
   { skill: 'gathering', name: 'Mort myre fungi',icon: '🍄', req: 1,  unitMin: 50,  unitMax: 150, unit: 'mort myre fungi', loc: 'Mort Myre Swamp',                                   itemImage: 'Mort_myre_fungus', questReq: 'Nature Spirit', note: 'Requires completion of <strong>Nature Spirit</strong>. Use a Silver sickle (b) on logs, roots or branches.' },
   { skill: 'gathering', name: 'Red spiders\' eggs', icon: '🕷️', req: 1, unitMin: 30, unitMax: 100, unit: 'red spiders\' eggs', loc: 'Edgeville Dungeon (level 4 Wilderness area) or Karamja Volcano', itemImage: 'Red_spiders\'_eggs', note: 'Found on the ground in spider-infested areas. Edgeville Dungeon access requires going through a low-level Wilderness area.' },
@@ -2807,13 +2808,13 @@ function generateDailyTask() {
     } else if (pickType === 'skill') {
       const allEl = SKILL_TASKS.filter(t => {
         if (!enabledSkills.has(t.skill)) return false;
-        if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq||99)) return false;
+        if (stats[t.skill] < t.req || !passesMaxReq(t, stats)) return false;
         if (t.questReq && !completedQuests.has(t.questReq)) return false;
         return true;
       });
       if (!allEl.length) continue;
       const t = allEl[randInt(0, allEl.length - 1)];
-      let count = randInt(t.unitMin, t.unitMax);
+      let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
       let title = `${skillLabel(t.skill)} ${count} ${t.unit}`;
       if (t.name === 'Gain Thieving levels') {
         const cur = stats['thieving'] || 1;
@@ -3533,14 +3534,14 @@ function buildOneTask() {
   } else if (pickType === 'skill') {
     const allEl = SKILL_TASKS.filter(t => {
       if (!enabledSkills.has(t.skill)) return false;
-      if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq||99)) return false;
+      if (stats[t.skill] < t.req || !passesMaxReq(t, stats)) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
       if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
       return true;
     });
     if (!allEl.length) return null;
     const t = allEl[randInt(0, allEl.length - 1)];
-    let count = randInt(t.unitMin, t.unitMax);
+    let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
     let skillTitle = `${skillLabel(t.skill)} ${count} ${t.unit}`;
     if (t.name === 'Gain Thieving levels') {
       const cur = stats['thieving'] || 1;
@@ -3669,7 +3670,7 @@ function buildChainTask(primaryTask, stats) {
     // Try fletching first (if enabled and levelled)
     const flTask = SKILL_TASKS.find(t => t.skill === 'fletching' && t.name.toLowerCase().startsWith(primaryTask.name.split(' ')[0].toLowerCase()) && stats['fletching'] >= t.req);
     if (flTask && enabledSkills.has('fletching') && stats['fletching'] >= flTask.req) {
-      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
       return {
         step1: { title: `Chop ${count} ${primaryTask.unit}`, loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'wc' },
         step2: { title: `Fletch them into ${flTask.unit}`,   loc: 'Anywhere',       itemImage: flTask.itemImage,      skill: 'fletching' },
@@ -3680,7 +3681,7 @@ function buildChainTask(primaryTask, stats) {
     if (logName && enabledSkills.has('fm') && stats['fm'] >= (primaryTask.req || 1)) {
       const fmTask = SKILL_TASKS.find(t => t.skill === 'fm' && t.name === logName);
       if (fmTask) {
-        const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+        const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
         return {
           step1: { title: `Chop ${count} ${primaryTask.unit}`, loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'wc' },
           step2: { title: `Burn them all`,                     loc: 'Anywhere',      itemImage: fmTask.itemImage,      skill: 'fm' },
@@ -3693,7 +3694,7 @@ function buildChainTask(primaryTask, stats) {
   if (primaryTask.skill === 'fishing') {
     const cookTask = SKILL_TASKS.find(t => t.skill === 'cooking' && t.name === primaryTask.name);
     if (cookTask && enabledSkills.has('cooking') && stats['cooking'] >= cookTask.req) {
-      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
       return {
         step1: { title: `Catch ${count} ${primaryTask.unit}`,  loc: primaryTask.loc, itemImage: primaryTask.itemImage, skill: 'fishing' },
         step2: { title: `Cook them all`,                        loc: 'Any fire or range', itemImage: cookTask.itemImage, skill: 'cooking' },
@@ -3730,7 +3731,7 @@ function buildChainTask(primaryTask, stats) {
     if (eligible.length === 0) return null;
 
     const chain = eligible[randInt(0, eligible.length - 1)];
-    const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+    const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
 
     // 3-step (mine → smelt → smith) ~33% of the time
     const doThreeStep = Math.random() < 0.33 && stats['smithing'] >= chain.smithReq2;
@@ -3773,7 +3774,7 @@ function buildChainTask(primaryTask, stats) {
 
     if (runeOptions.length > 0) {
       const rune = runeOptions[randInt(0, runeOptions.length - 1)];
-      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
       return {
         step1: { title: `Mine ${count} rune essence`, loc: primaryTask.loc, itemImage: 'Rune_essence', skill: 'mining', note: 'Requires Rune Mysteries quest' },
         step2: { title: `Craft them into ${rune.name}`, loc: rune.altar, itemImage: rune.itemImage, skill: 'rc', note: null },
@@ -3817,7 +3818,7 @@ function buildChainTask(primaryTask, stats) {
   // Gathering → Crafting: Flax → Bow strings
   if (primaryTask.skill === 'gathering' && primaryTask.name === 'Flax') {
     if (enabledSkills.has('gathering')) {
-      const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+      const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
       return {
         step1: { title: `Pick ${count} flax`, loc: primaryTask.loc, itemImage: 'Flax', skill: 'gathering', note: primaryTask.note },
         step2: { title: `Spin them into bow strings`, loc: 'Spinning wheel, upstairs in Seers\' bank', itemImage: 'Bow_string', skill: 'crafting', note: 'No Crafting level required to spin flax' },
@@ -3828,13 +3829,14 @@ function buildChainTask(primaryTask, stats) {
 
   // Gathering → Crafting: Wool → Spun wool
   if (primaryTask.skill === 'gathering' && primaryTask.name === 'Wool') {
-    const count = randInt(primaryTask.unitMin, primaryTask.unitMax);
+    const count = primaryTask.multipleOf ? randIntMultiple(primaryTask.unitMin, primaryTask.unitMax, primaryTask.multipleOf) : randInt(primaryTask.unitMin, primaryTask.unitMax);
     return {
       step1: { title: `Shear ${count} sheep`, loc: primaryTask.loc, itemImage: 'Wool', skill: 'gathering', note: 'Bring shears — buy from any general store' },
       step2: { title: `Spin the wool into balls of wool`, loc: 'Spinning wheel in Lumbridge Castle (2nd floor) or Seers\' bank', itemImage: 'Ball_of_wool', skill: 'crafting', note: 'Each wool spun gives 2.5 Crafting XP' },
       count,
     };
   }
+
 
   // Combat → Crafting: Cows → Tan cowhides → Craft leather
   if (primaryTask.skill === 'combat' && primaryTask.name === 'Cows') {
@@ -3852,7 +3854,7 @@ function buildChainTask(primaryTask, stats) {
       const picked = leatherOptions[randInt(0, leatherOptions.length - 1)];
       const count  = randInt(primaryTask.countMin, primaryTask.countMax);
       return {
-        step1: { title: `Kill ${count} Cows & collect their hides`, loc: primaryTask.loc, itemImage: 'Cowhide', skill: 'combat', note: 'Pick up all cowhides — they sell well and are used in the next step' },
+        step1: { title: `Kill ${count} Cows & collect their hides`, loc: primaryTask.loc, itemImage: 'Cowhide', skill: 'combat', note: 'Pick up all cowhides — used in the next step. You can also cook the raw beef on a fire or range for some Cooking XP.' },
         step2: { title: `Tan the hides, then craft ${picked.item}`, loc: 'Al-Kharid tannery, then anywhere', itemImage: picked.itemImage, skill: 'crafting', note: `Requires ${picked.req} Crafting. Soft leather tanning costs 1 coin per hide at Al-Kharid tannery` },
         count,
         threeStep: false,
@@ -4143,8 +4145,25 @@ function setMode(m) {
   updateSkillFilterVisibility();
 }
 
+function passesMaxReq(t, stats) {
+  const cap = t.maxReq || 99;
+  if (stats[t.skill] <= cap) return true;
+  // Over the cap — check if any override condition applies
+  if (t.maxReqOverrideIf) {
+    return t.maxReqOverrideIf.some(cond => (stats[cond.skill] || 1) < cond.below);
+  }
+  return false;
+}
+
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randIntMultiple(min, max, multiple) {
+  const minM = Math.ceil(min / multiple) * multiple;
+  const maxM = Math.floor(max / multiple) * multiple;
+  const steps = (maxM - minM) / multiple;
+  return minM + Math.floor(Math.random() * (steps + 1)) * multiple;
 }
 
 function getQuestStats() {
@@ -4205,7 +4224,7 @@ function generateTask(isReroll = false) {
   if (doMix) {
     const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility'), gathering: 1 };
     const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
-    const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && skillStats[t.skill] <= (t.maxReq || 99)).length > 0;
+    const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && passesMaxReq(t, skillStats)).length > 0;
     const hasQuest  = QUEST_TASKS.filter(isQuestEligible).length > 0;
     if (pickType === 'combat' && !hasCombat) pickType = hasSkill ? 'skill' : (hasQuest ? 'quest' : 'clue');
     if (pickType === 'skill'  && !hasSkill)  pickType = hasCombat ? 'combat' : (hasQuest ? 'quest' : 'clue');
@@ -4218,10 +4237,10 @@ function generateTask(isReroll = false) {
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
 
-    const combatStats = { crafting: getStat('stat-crafting') };
-    const combatChain = (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons'))
+    const combatStats = { crafting: getStat('stat-crafting'), cooking: getStat('stat-cooking') };
+    // Cook chains for early game — always available regardless of challenge mode unlock
+    const combatChain = (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons' || t.name === 'Cows'))
       ? buildChainTask({ ...t, skill: 'combat' }, combatStats)
-      : (t.name === 'Cows' && Math.random() < 0.5) ? buildChainTask({ ...t, skill: 'combat' }, combatStats)
       : null;
     const chainColour = combatChain?.colour || '';
 
@@ -4254,7 +4273,7 @@ function generateTask(isReroll = false) {
 
     const allEligible = SKILL_TASKS.filter(t => {
       if (!enabledSkills.has(t.skill)) return false;
-      if (stats[t.skill] < t.req || stats[t.skill] > (t.maxReq || 99)) return false;
+      if (stats[t.skill] < t.req || !passesMaxReq(t, stats)) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
       if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
       return true;
@@ -4268,7 +4287,7 @@ function generateTask(isReroll = false) {
     const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligible;
 
     const t = eligible[randInt(0, eligible.length - 1)];
-    let count = randInt(t.unitMin, t.unitMax);
+    let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
 
     // Thieving level task: scale levels required by current level
     let thiefLevelTarget = null;
