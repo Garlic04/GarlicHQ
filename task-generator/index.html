@@ -2627,18 +2627,18 @@ function taskPointValue(task) {
       base = skillMid.includes(task.name) ? BASE_POINTS.skill_mid : BASE_POINTS.skill_low;
     }
     if (task.chain) base = Math.round(base * (task.chain.threeStep ? CHALLENGE_MULTIPLIER * 1.5 : CHALLENGE_MULTIPLIER));
-    return base;
+    return Math.round(base * (task.extenderMultiplier || 1));
   }
   const name = task.name || '';
   // Boss tier
-  if (['King Black Dragon','Kalphite Queen'].includes(name)) return BASE_POINTS.combat_boss;
+  if (['King Black Dragon','Kalphite Queen'].includes(name)) return Math.round(BASE_POINTS.combat_boss * (task.extenderMultiplier || 1));
   // High tier
   const high = ['Fire Giants','Lesser Demons','Greater Demons','Blue Dragons','Black Dragons','Hellhounds','Black Demons','Green Dragons','Kalphite Guardians'];
-  if (high.includes(name)) return BASE_POINTS.combat_high;
+  if (high.includes(name)) return Math.round(BASE_POINTS.combat_high * (task.extenderMultiplier || 1));
   // Mid tier
   const mid = ['Hobgoblins','Giants','Moss Giants','Ice Giants','Ice Warriors','Earth Warriors','Jogres','Ogres','Kalphite Soldiers','Tribesmen','Wolves','Chaos Dwarves','Trolls'];
-  if (mid.includes(name)) return BASE_POINTS.combat_mid;
-  return BASE_POINTS.combat_low;
+  if (mid.includes(name)) return Math.round(BASE_POINTS.combat_mid * (task.extenderMultiplier || 1));
+  return Math.round(BASE_POINTS.combat_low * (task.extenderMultiplier || 1));
   // (combat_low covers: Chickens, Cows, Goblins, Men & Women, Barbarians, Al-Kharid Warriors, Bears, Guards, Skeletons, Black Knights, Dark Wizards, Zombies, Ghosts, Scorpions, Chaos Druids)
 }
 
@@ -3981,6 +3981,7 @@ function applyExtender(multiplier) {
   killTarget = newCount;
 
   tracker.extenderCharges = Math.max(0, charges - 1);
+  currentTask.extenderMultiplier = multiplier;
   taskModified = true;
   dbPut('settings', 'currentTask', currentTask);
   dbPut('settings', 'taskModified', true);
