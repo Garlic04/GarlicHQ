@@ -2493,6 +2493,7 @@ const STREAK_BONUS_AT  = 10;  // milestone interval
 
 let tracker = { total: 0, streak: 0, points: 0, bossKills: 0, safeRerolls: 0, prestige: 0, highWater: 0, extenderCharges: 0 };
 let currentTask = null;  // track whether a task is pending completion
+let lastTaskName = null; // track last task to prevent back-to-back duplicates
 let completedQuests = new Set(); // set of quest names the player has finished
 
 // ─── Save / Load ──────────────────────────────────────────────────────────────
@@ -2817,7 +2818,8 @@ function generateDailyTask() {
   for (let i = 0; i < maxAttempts && !task; i++) {
     pickType = types[randInt(0, 7)];
     if (pickType === 'combat') {
-      const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+      let eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
       if (!eligible.length) continue;
       const t = eligible[randInt(0, eligible.length - 1)];
       const count = randInt(t.countMin, t.countMax);
@@ -3548,7 +3550,8 @@ function buildOneTask() {
   let task = null;
 
   if (pickType === 'combat') {
-    const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    let eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (!eligible.length) return null;
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4332,7 +4335,8 @@ function generateTask(isReroll = false) {
   }
 
   if (pickType === 'combat') {
-    const eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    let eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4376,15 +4380,23 @@ function generateTask(isReroll = false) {
       if (stats[t.skill] < t.req || !passesMaxReq(t, stats)) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
       if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
+      if (t.name === lastTaskName) return false;
       return true;
     });
-    if (allEligible.length === 0) { showError(); return; }
+    const allEligibleFull = allEligible.length > 0 ? allEligible : SKILL_TASKS.filter(t => {
+      if (!enabledSkills.has(t.skill)) return false;
+      if (stats[t.skill] < t.req || !passesMaxReq(t, stats)) return false;
+      if (t.questReq && !completedQuests.has(t.questReq)) return false;
+      if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
+      return true;
+    });
+    if (allEligibleFull.length === 0) { showError(); return; }
 
     // Challenge Mode: if shouldChain, try to pick only from chainable skills first
     const wantChain = shouldChain();
     const chainableSkills = new Set(['wc','fishing','mining','essence','gathering']);
-    const chainableEligible = wantChain ? allEligible.filter(t => chainableSkills.has(t.skill)) : [];
-    const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligible;
+    const chainableEligible = wantChain ? allEligibleFull.filter(t => chainableSkills.has(t.skill)) : [];
+    const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligibleFull;
 
     const t = eligible[randInt(0, eligible.length - 1)];
     let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
@@ -4666,6 +4678,7 @@ function completeTask() {
 
   playerKillCount = 0;
   taskModified = false;
+  lastTaskName = taskToComplete.name;
   dbDelete('settings', 'taskModified');
   dbDelete('settings', 'currentTask');
   document.getElementById('task-display').style.display = 'none';
