@@ -1763,7 +1763,7 @@
 
   <div style="display:flex;gap:8px;align-items:stretch;">
     <button class="generate-btn" id="generate-btn" onclick="generateTask()" style="flex:1;">⚔ Generate Task</button>
-    <button id="picker-charge-btn" onclick="activateTaskPicker()" title="Use a Task Picker charge" style="display:none;padding:0 14px;background:rgba(74,122,204,0.15);border:1px solid #4a7acc;border-radius:8px;color:#7aaaee;font-size:18px;cursor:pointer;transition:background 0.2s;flex-shrink:0;" onmouseover="this.style.background='rgba(74,122,204,0.3)'" onmouseout="this.style.background='rgba(74,122,204,0.15)'">🎯<span id="picker-charge-count" style="font-size:11px;vertical-align:super;margin-left:2px;"></span></button>
+    <button id="picker-charge-btn" onclick="activateTaskPicker()" title="Use a Task Picker charge" style="display:none;background:rgba(74,122,204,0.15);border:1px solid rgba(74,122,204,0.4);border-radius:4px;color:#7aaaee;font-family:'Cinzel',serif;font-size:0.72rem;padding:0.35rem 0.8rem;cursor:pointer;transition:background 0.2s;margin-top:20px;flex-shrink:0;" onmouseover="this.style.background='rgba(74,122,204,0.3)'" onmouseout="this.style.background='rgba(74,122,204,0.15)'">🎯 Task Picker<span id="picker-charge-count" style="font-size:10px;margin-left:4px;opacity:0.7;"></span></button>
   </div>
 
   <!-- Task Picker Modal -->
@@ -2950,7 +2950,22 @@ function generateDailyTask() {
         title = t.name;
       }
       task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title, desc:`Location: ${t.loc}.`, note:t.note||null };
-    } else if (pickType === 'clue') {
+    } else if (pickType === 'choice') {
+    const choiceEligible = CHOICE_TASKS.filter(t => {
+      if (t.questReq && !completedQuests.has(t.questReq)) return false;
+      if (t.skill) {
+        if (doCombat) return false;
+        return enabledSkills.has(t.skill) && (getStat('stat-' + t.skill) || 1) >= t.req;
+      }
+      if (doSkill) return false;
+      return cb >= t.min && cb <= t.max;
+    });
+    if (!choiceEligible.length) { showError(); return; }
+    const t = choiceEligible[randInt(0, choiceEligible.length - 1)];
+    const count = randInt(t.countMin, t.countMax);
+    const title = t.title.replace('{count}', count);
+    task = { type: t.skill ? 'skill' : 'combat', skill: t.skill || null, name: t.name, icon: t.icon, npcImage: t.npcImage || null, itemImage: t.itemImage || null, multiImages: t.multiImages || null, title, desc: t.desc, note: t.note || null, freeChoice: true };
+  } else if (pickType === 'clue') {
       const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
       if (!eligibleClues.length) continue;
       const t = eligibleClues[randInt(0, eligibleClues.length - 1)];
@@ -3555,6 +3570,7 @@ function playCrackerAnimation(onDone) {
 
 const TASK_PICKER_COST = 50;
 let pickerActive = false;
+let pickerOptions = null; // stored so re-opening doesn't regenerate
 
 function buyTaskPicker() {
   if (tracker.points < TASK_PICKER_COST) return;
@@ -3571,28 +3587,32 @@ function renderPickerBtn() {
   const countEl  = document.getElementById('picker-charge-count');
   const charges  = tracker.pickerCharges || 0;
   if (!btn) return;
-  btn.style.display = (isShopUnlocked() && charges > 0) ? 'flex' : 'none';
-  if (countEl) countEl.textContent = charges > 1 ? charges : '';
+  btn.style.display = (isShopUnlocked() && charges > 0 && !currentTask) ? 'inline-block' : 'none';
+  if (countEl) countEl.textContent = charges > 1 ? `(${charges})` : '';
 }
 
 function activateTaskPicker() {
   const charges = tracker.pickerCharges || 0;
   if (charges <= 0) return;
+  if (currentTask) { showToast('Complete your current task before using the Task Picker.'); return; }
   pickerActive = true;
 
-  // Generate 3 distinct task options
-  const options = [];
-  const maxTries = 30;
-  let tries = 0;
-  while (options.length < 3 && tries < maxTries) {
-    tries++;
-    const task = buildOneTask();
-    if (!task) continue;
-    // Avoid duplicates by name
-    if (options.some(o => o.name === task.name)) continue;
-    options.push(task);
+  // Only generate new options if we don't already have a set
+  if (!pickerOptions) {
+    const options = [];
+    const maxTries = 30;
+    let tries = 0;
+    while (options.length < 3 && tries < maxTries) {
+      tries++;
+      const task = buildOneTask();
+      if (!task) continue;
+      if (options.some(o => o.name === task.name)) continue;
+      options.push(task);
+    }
+    if (!options.length) { showToast('Could not generate options — check your stats!'); pickerActive = false; return; }
+    pickerOptions = options;
   }
-  if (!options.length) { showToast('Could not generate options — check your stats!'); pickerActive = false; return; }
+  const options = pickerOptions;
 
   const modal   = document.getElementById('task-picker-modal');
   const listEl  = document.getElementById('task-picker-options');
@@ -3615,6 +3635,7 @@ function activateTaskPicker() {
 
 function selectPickerTask(task) {
   tracker.pickerCharges = Math.max(0, (tracker.pickerCharges || 0) - 1);
+  pickerOptions = null;
   saveTracker();
   pickerActive = false;
   document.getElementById('task-picker-modal').style.display = 'none';
@@ -3695,7 +3716,13 @@ function buildOneTask() {
     task = { type:'quest', name:t.name, icon:'📜', itemImage:'Quest_point_icon', title:`Complete: ${t.name}`, desc:`Start this quest in-game!`, note:null, questName:t.name };
   } else if (pickType === 'choice') {
     const eligible = CHOICE_TASKS.filter(t => {
-      if (t.skill) return enabledSkills.has(t.skill) && (stats[t.skill] || 1) >= t.req;
+      if (t.skill) {
+        // Skill choice task — only in skill or mix mode
+        if (mode === 'combat') return false;
+        return enabledSkills.has(t.skill) && (stats[t.skill] || 1) >= t.req;
+      }
+      // Combat choice task — only in combat or mix mode
+      if (mode === 'skill') return false;
       return cb >= t.min && cb <= t.max;
     });
     if (!eligible.length) return null;
@@ -4223,6 +4250,7 @@ function updateGenerateBtn() {
     btn.disabled = false;
     btn.title = '';
   }
+  renderPickerBtn();
 }
 
 function renderTracker() {
@@ -4508,10 +4536,16 @@ function generateTask(isReroll = false) {
 
   let task = null;
 
-  // In mix mode: combat 3/8, skill 3/8, clue 1/8, quest 1/8
-  let pickType = doMix
-    ? (['combat', 'combat', 'combat', 'skill', 'skill', 'skill', 'clue', 'quest'][randInt(0, 7)])
-    : (doCombat ? 'combat' : 'skill');
+  // In mix mode: combat 3/8, skill 3/8, clue 1/8, quest 1/8, choice 1/8
+  // In combat/skill mode: add choice tasks to the pool
+  let pickType;
+  if (doMix) {
+    pickType = ['combat','combat','combat','skill','skill','skill','clue','quest','choice'][randInt(0, 8)];
+  } else if (doCombat) {
+    pickType = ['combat','combat','combat','choice'][randInt(0, 3)];
+  } else {
+    pickType = ['skill','skill','skill','choice'][randInt(0, 3)];
+  }
 
   const agility = getStat('stat-agility');
 
@@ -4707,6 +4741,7 @@ function generateTask(isReroll = false) {
 
   currentTask = task;
   taskModified = false;
+  pickerOptions = null;
   dbPut('settings', 'currentTask', task);
   dbDelete('settings', 'taskModified');
   updateGenerateBtn();
