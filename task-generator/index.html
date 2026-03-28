@@ -2487,7 +2487,7 @@ const SKILL_TASKS = [
   { skill: 'crafting', name: 'Blue dragonhide',   icon: '🐉', req: 66, unitMin: 30, unitMax: 80,  unit: 'blue dragonhide items',  loc: 'Anywhere (tanned hides from Al-Kharid tannery)', itemImage: 'Blue_dhide_body', note: 'Tan blue dragonhides at Al-Kharid tannery first (20 coins each).' },
   { skill: 'crafting', name: 'Red dragonhide',    icon: '🐉', req: 73, unitMin: 20, unitMax: 60,  unit: 'red dragonhide items',   loc: 'Anywhere (tanned hides from Al-Kharid tannery)', itemImage: 'Red_dhide_body', note: 'Tan red dragonhides at Al-Kharid tannery first (30 coins each).' },
   { skill: 'crafting',  name: 'Cut all gems in bank',  icon: '💎', req: 20, unitMin: 1, unitMax: 1, unit: 'session', loc: 'Anywhere with a chisel', itemImage: 'Uncut_diamond', note: 'Cut every uncut gem you have in your bank. Sapphire req 20, Emerald req 27, Ruby req 34, Diamond req 43 Crafting.' },
-  { skill: 'crafting',  name: 'Craft jewellery',       icon: '💍', req: 6,  unitMin: 1, unitMax: 1, unit: 'session', loc: 'Any furnace (Edgeville or Al-Kharid)', itemImage: 'Gold_ring', note: 'Craft all the gems and gold bars you have into jewellery. Gold ring req 5, Sapphire ring req 20, Emerald ring req 27, Ruby ring req 34, Diamond ring req 43 Crafting.' },
+  { skill: 'crafting',  name: 'Craft jewellery',       icon: '💍', req: 5,  unitMin: 1, unitMax: 1, unit: 'session', loc: 'Any furnace (Al-Kharid or Falador)', itemImage: 'Gold_ring', note: 'Craft all the gems and gold bars you have into jewellery. Gold ring req 5, Sapphire ring req 20, Emerald ring req 27, Ruby ring req 34, Diamond ring req 43 Crafting.' },
 
   // New gathering tasks
   { skill: 'gathering', name: 'Chocolate',          icon: '🍫', req: 1, unitMin: 20, unitMax: 60,  unit: 'chocolate bars or dust', loc: 'Bought from Culinaromancer\'s Chest or general stores', itemImage: 'Chocolate_bar', note: 'Buy chocolate bars and optionally grind them into dust with a knife. Used in Herblore to make energy potions.' },
@@ -4517,7 +4517,7 @@ function generateTask(isReroll = false) {
   const agility = getStat('stat-agility');
 
   if (doMix) {
-    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility'), smithing: getStat('stat-smithing'), gathering: 1 };
+    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility'), smithing: getStat('stat-smithing'), crafting: getStat('stat-crafting'), thieving: getStat('stat-thieving'), herblore: getStat('stat-herblore'), gathering: 1 };
     const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
     const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && passesMaxReq(t, skillStats)).length > 0;
     const hasQuest  = QUEST_TASKS.filter(isQuestEligible).length > 0;
