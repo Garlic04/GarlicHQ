@@ -2444,7 +2444,7 @@ const SKILL_TASKS = [
   { skill: 'fletching', name: 'Oak shortbows',    icon: '🏹', req: 20, unitMin: 80,  unitMax: 200, unit: 'oak shortbows',   loc: 'Anywhere' , itemImage: 'Oak_shortbow_(u)' , maxReq: 34 },
   { skill: 'fletching', name: 'Oak longbows',     icon: '🏹', req: 25, unitMin: 60,  unitMax: 150, unit: 'oak longbows',    loc: 'Anywhere' , itemImage: 'Oak_longbow_(u)' , maxReq: 44 },
   { skill: 'fletching', name: 'Willow shortbows', icon: '🏹', req: 35, unitMin: 60,  unitMax: 150, unit: 'willow shortbows',loc: 'Anywhere' , itemImage: 'Willow_shortbow_(u)' , maxReq: 49 },
-  { skill: 'crafting',  name: 'Bow strings',      icon: '🏹', req: 1,  unitMin: 60,  unitMax: 180, unit: 'bow strings',     loc: 'Spinning wheel (Lumbridge, Seers Village)', itemImage: 'Bow_string', note: 'Spin flax into bow strings at any spinning wheel. You need flax in your bank first.' },
+  { skill: 'crafting',  name: 'Bow strings',      icon: '🏹', req: 10,  unitMin: 60,  unitMax: 180, unit: 'bow strings',     loc: 'Spinning wheel (Lumbridge, Seers Village)', itemImage: 'Bow_string', note: 'Spin flax into bow strings at any spinning wheel. You need flax in your bank first.' },
   { skill: 'fletching', name: 'Willow longbows',  icon: '🏹', req: 40, unitMin: 50,  unitMax: 120, unit: 'willow longbows', loc: 'Anywhere' , itemImage: 'Willow_longbow_(u)' , maxReq: 59 },
   { skill: 'fletching', name: 'Maple shortbows',  icon: '🏹', req: 50, unitMin: 50,  unitMax: 120, unit: 'maple shortbows', loc: 'Anywhere' , itemImage: 'Maple_shortbow_(u)'  },
   { skill: 'fletching', name: 'Maple longbows',   icon: '🏹', req: 55, unitMin: 40,  unitMax: 100, unit: 'maple longbows',  loc: 'Anywhere' , itemImage: 'Maple_longbow_(u)'  },
@@ -4538,7 +4538,7 @@ function generateTask(isReroll = false) {
 
     const combatStats = { crafting: getStat('stat-crafting'), cooking: getStat('stat-cooking') };
     // Cook chains for early game — always available regardless of challenge mode unlock
-    const combatChain = (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons' || t.name === 'Cows'))
+    const combatChain = (t.name === 'Cows' || (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons')))
       ? buildChainTask({ ...t, skill: 'combat' }, combatStats)
       : null;
     const chainColour = combatChain?.colour || '';
