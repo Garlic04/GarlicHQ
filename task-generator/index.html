@@ -1770,7 +1770,6 @@
   <div id="task-picker-modal" style="display:none;margin-top:12px;">
     <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">🎯 Choose your task:</div>
     <div id="task-picker-options" style="display:flex;flex-direction:column;gap:8px;"></div>
-    <button onclick="cancelTaskPicker()" style="margin-top:10px;width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:13px;cursor:pointer;font-family:inherit;">Cancel (keep charge)</button>
   </div>
 
   <!-- Task Display -->
@@ -3590,7 +3589,7 @@ function activateTaskPicker() {
     const task = buildOneTask();
     if (!task) continue;
     // Avoid duplicates by name
-    if (options.some(o => o.title === task.title)) continue;
+    if (options.some(o => o.name === task.name)) continue;
     options.push(task);
   }
   if (!options.length) { showToast('Could not generate options — check your stats!'); pickerActive = false; return; }
@@ -3631,10 +3630,7 @@ function selectPickerTask(task) {
   pushToOverlay(task);
 }
 
-function cancelTaskPicker() {
-  pickerActive = false;
-  document.getElementById('task-picker-modal').style.display = 'none';
-}
+
 
 // Builds a single task object using current mode/stats — shared between generateTask and picker
 function buildOneTask() {
