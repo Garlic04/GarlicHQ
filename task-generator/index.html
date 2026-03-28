@@ -1799,6 +1799,9 @@
       <button class="action-btn complete" onclick="completeTask()">✓ Mark Complete</button>
       <button class="action-btn reroll" onclick="rerollTask()">↺ Reroll</button><button class="safe-reroll-btn" id="safe-reroll-btn" onclick="safeRerollTask()">🛡 Safe Reroll (<span id="safe-reroll-count">0</span>)</button>
     </div>
+    <div id="no-materials-wrap" style="display:none;margin-top:8px;">
+      <button onclick="noMaterialsReroll()" style="width:100%;padding:6px 10px;background:rgba(100,100,100,0.1);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:12px;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold-dim)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">🎒 I don't have the materials — free reroll</button>
+    </div>
     <div id="extender-actions" style="display:none;margin-top:8px;gap:6px;justify-content:center;">
       <button id="extend-btn" onclick="applyExtender(1.5)" style="flex:1;padding:6px 10px;background:rgba(74,162,74,0.12);border:1px solid #4a8a4a;border-radius:6px;color:#6abf6a;font-size:12px;font-family:inherit;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(74,162,74,0.25)'" onmouseout="this.style.background='rgba(74,162,74,0.12)'">📏 +50% Extend</button>
       <button id="reduce-btn" onclick="applyExtender(0.5)" style="flex:1;padding:6px 10px;background:rgba(162,100,74,0.12);border:1px solid #8a5a4a;border-radius:6px;color:#bf8a6a;font-size:12px;font-family:inherit;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(162,100,74,0.25)'" onmouseout="this.style.background='rgba(162,100,74,0.12)'">📏 −50% Reduce</button>
@@ -2181,8 +2184,15 @@ const COMBAT_TASKS = [
   { name: 'Men & Women',       icon: '🧑', min: 8,  max: 35,  loc: 'Lumbridge or Varrock',              countMin: 15, countMax: 40, prayer: false , npcImage: 'Man' },
   { name: 'Giant Rats',        icon: '🐀', min: 8,  max: 35,  loc: '',countMin: 15, countMax: 40, prayer: false , npcImage: 'Giant_rat_(historical)' },
   { name: 'Giant Spiders',     icon: '🕷️', min: 8,  max: 35,  loc: '', countMin: 15, countMax: 40, prayer: false , npcImage: 'Giant_spider_(level_2)_(historical)' },
+  { name: 'Gnomes',            icon: '🧝', min: 5,  max: 30,  loc: 'Gnome Stronghold',                  countMin: 15, countMax: 40, prayer: false, npcImage: 'Gnome_(2)' },
+  { name: 'Imps',              icon: '😈', min: 5,  max: 30,  loc: '',                                      countMin: 15, countMax: 40, prayer: false, npcImage: 'Imp_(historical)' },
+  { name: 'Bats',              icon: '🦇', min: 10, max: 40,  loc: '',                                      countMin: 15, countMax: 40, prayer: false, npcImage: 'Giant_bat_(historical)' },
+  { name: 'Ducks',             icon: '🦆', min: 1,  max: 20,  loc: 'Lumbridge or Falador',                  countMin: 10, countMax: 30, prayer: false, npcImage: 'Duck_(historical)' },
+  { name: 'Terror Birds',      icon: '🐦', min: 20, max: 60,  loc: 'Tree Gnome Stronghold',                 countMin: 20, countMax: 60, prayer: false, npcImage: 'Terrorbird_(historical)' },
   { name: 'Barbarians',        icon: '🪓', min: 10, max: 40,  loc: 'Barbarian Village',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Barbarian_(Fafner)' },
   { name: 'Monks',              icon: '🧎', min: 15, max: 45,  loc: '',   countMin: 20, countMax: 50, prayer: false , npcImage: 'Monk_(historical)', note: 'Monks heal themselves periodically — bring enough food.' },
+  { name: 'Wizards',           icon: '🧙', min: 15, max: 45,  loc: 'Wizards Tower or Wizards Guild',     countMin: 20, countMax: 50, prayer: false, npcImage: 'Wizard_(historical_v1)' },
+  { name: 'Guard Dogs',        icon: '🐕', min: 25, max: 60,  loc: "Handelmort's Mansion or McGrubor's Wood", countMin: 20, countMax: 50, prayer: false, npcImage: 'Guard_dog_(historical)' },
   { name: 'Al-Kharid Warriors',icon: '⚔️', min: 20, max: 45,  loc: 'Al-Kharid palace',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Al_Kharid_warrior' },
   { name: 'Bears',             icon: '🐻', min: 25, max: 45,  loc: 'East of Ardougne',                  countMin: 20, countMax: 60,  prayer: false, npcImage: 'Grizzly_bear_(historical)' },
   { name: 'Unicorns',          icon: '🦄', min: 20, max: 50,  loc: 'White Wolf Mountain, north of Ardougne, or Wilderness (black unicorns)', countMin: 20, countMax: 60, prayer: false, npcImage: 'Unicorn_(historical_v1)', note: 'Unicorn horns are used in Herblore (anti-poison potions). Worth picking up! Black unicorns can also be found in the Wilderness.' },
@@ -2193,10 +2203,15 @@ const COMBAT_TASKS = [
   { name: 'Zombies',            icon: '🧟', min: 15, max: 40,  loc: 'Edgeville Dungeon',                 countMin: 20, countMax: 60,  prayer: false, npcImage: 'Zombie_(Level_13)_(historical)' },
   { name: 'Ghosts',             icon: '👻', min: 15, max: 40,  loc: 'Edgeville Dungeon or Melzar\'s Maze', countMin: 20, countMax: 60,  prayer: false, npcImage: 'Ghost_(historical)' },
   { name: 'Scorpions',          icon: '🦂', min: 20, max: 40,  loc: 'Al-Kharid or Dwarven Mine',          countMin: 20, countMax: 60,  prayer: false, npcImage: 'Scorpion_(historical)' },
+  { name: 'Pirates',           icon: '☠️', min: 25, max: 70,  loc: 'Karamja or Brimhaven',              countMin: 20, countMax: 60, prayer: false, npcImage: "Pirate_(Pirates'_Cove)_(historical)" },
+  { name: 'White Knights',     icon: '🛡️', min: 25, max: 70,  loc: 'Falador Castle',                     countMin: 20, countMax: 60, prayer: false, npcImage: 'White_Knight_(historical_v1)' },
+  { name: 'Ardougne Knights',  icon: '⚔️', min: 30, max: 80,  loc: 'Ardougne',                           countMin: 20, countMax: 60, prayer: false, npcImage: 'Knight_of_Ardougne' },
+  { name: 'Werewolves',        icon: '🐺', min: 30, max: 80,  loc: 'Canifis',                            countMin: 20, countMax: 60, prayer: false, npcImage: 'Werewolf_(Imre)', questReq: 'Priest in Peril', note: 'Requires <strong>Priest in Peril</strong> to access Morytania. Use a Wolfbane dagger to prevent them transforming back.' },
   { name: 'Wolves',             icon: '🐺', min: 20, max: 65,  loc: 'White Wolf Mountain',                countMin: 20, countMax: 60,  prayer: false, npcImage: 'Wolf_(historical)' },
   { name: 'Chaos Druids',       icon: '🌿', min: 25, max: 126, loc: 'Edgeville Dungeon or Taverley Dungeon', countMin: 20, countMax: 80, prayer: false, note: 'Great for herb drops. Beware of PKers in Edgeville Dungeon', npcImage: 'Chaos_druid' },
 
   // Mid tier
+  { name: 'Chaos Druid Warriors', icon: '🌿', min: 30, max: 126, loc: 'Yanille Agility Dungeon',         countMin: 20, countMax: 60, prayer: false, npcImage: 'Chaos_druid_warrior_(historical)', note: 'Found deep in the Yanille Agility Dungeon. Bring antipoison.' },
   { name: 'Hobgoblins',        icon: '👾', min: 30, max: 126,  loc: 'Edgeville Dungeon or Port Sarim Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Hobgoblin' },
   { name: 'Giants',            icon: '🗿', min: 20, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false, note: 'Bring a brass key' , npcImage: 'Hill_Giant_(historical_v1)' },
   { name: 'Moss Giants',       icon: '🧟', min: 35, max: 126,  loc: 'Varrock Sewers or Crandor',        countMin: 50, countMax: 120, prayer: false , npcImage: 'Moss_giant_(historical)' },
@@ -2204,7 +2219,10 @@ const COMBAT_TASKS = [
   { name: 'Ice Warriors',      icon: '❄️', min: 45, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_warrior' },
   { name: 'Earth Warriors',    icon: '🪨', min: 40, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false, note: '⚠️ Located in the Wilderness (level 5). Accessible via the monkey bars shortcut in Edgeville Dungeon (requires 15 Agility), or the long route through the dungeon', agility: 15 , npcImage: 'Earth_warrior' },
   { name: 'Jogres',            icon: '🦍', min: 45, max: 126,  loc: 'Karamja',                          countMin: 50, countMax: 120, prayer: false , npcImage: 'Jogre_(historical)' },
+  { name: 'Ice Spiders',       icon: '🕷️', min: 40, max: 126, loc: 'Asgarnian Ice Dungeon',              countMin: 30, countMax: 80, prayer: false, npcImage: 'Ice_spider_(historical)' },
+  { name: 'Deadly Red Spiders', icon: '🕷️', min: 40, max: 126, loc: 'Karamja Volcano or Edgeville Dungeon', countMin: 30, countMax: 80, prayer: false, npcImage: 'Deadly_red_spider_(historical)' },
   { name: 'Ogres',             icon: '👹', min: 40, max: 126,  loc: "Gu'Tanoth",                        countMin: 50, countMax: 120, prayer: false , npcImage: 'Ogre' },
+  { name: 'Dwarves',           icon: '⛏', min: 15, max: 60,  loc: 'Dwarven Mine',                       countMin: 20, countMax: 60,  prayer: false, npcImage: 'Dwarf' },
   { name: 'Chaos Dwarves',     icon: '⛏', min: 35, max: 90,  loc: 'Taverley Dungeon',                   countMin: 30, countMax: 80,  prayer: false, npcImage: 'Chaos_dwarf' },
   { name: 'Trolls',            icon: '🗿', min: 55, max: 100, loc: 'Death Plateau or Trollheim',          countMin: 30, countMax: 80,  prayer: false, note: 'Death Plateau quest recommended for easier access', npcImage: 'Mountain_troll' },
   { name: 'Tribesmen',         icon: '🏹', min: 30, max: 126,  loc: 'Karamja jungle',                   countMin: 50, countMax: 120, prayer: false, note: 'Found in the Karamja jungle south of the volcano. Poisonous — bring antipoison', npcImage: 'Tribesman' },
@@ -2213,6 +2231,14 @@ const COMBAT_TASKS = [
   { name: 'Fire Giants',       icon: '🔥', min: 65, max: 126,  loc: 'Waterfall Dungeon / Wilderness Dungeon',  countMin: 50, countMax: 150, prayer: false, note: 'Waterfall Dungeon requires Waterfall Quest. Alternatively found in the Wilderness Dungeon — no quest required, but bring PK awareness' , npcImage: 'Fire_giant_(historical)' },
   { name: 'Lesser Demons',     icon: '😈', min: 65, max: 126,  loc: 'Karamja Volcano or Taverley Dungeon', countMin: 50, countMax: 150, prayer: false , npcImage: 'Lesser_demon_(historical)' },
   { name: 'Salarin the Twisted', icon: '🧙', min: 60, max: 126, loc: 'Yanille Agility Dungeon', countMin: 5, countMax: 20, prayer: false, note: 'Requires navigating the Yanille Agility Dungeon (67 Agility)', agility: 67, npcImage: 'Salarin_the_twisted' },
+  { name: 'Ghasts',            icon: '👻', min: 25, max: 80,  loc: 'Mort Myre Swamp',                   countMin: 20, countMax: 60, prayer: false, npcImage: 'Ghast_(Level_30)', questReq: 'Nature Spirit', note: 'Requires <strong>Nature Spirit</strong> quest. Fill a druid pouch with bloom to make them attackable.' },
+  { name: 'Battle Mages',      icon: '🧙', min: 50, max: 126, loc: 'Mage Arena, deep Wilderness',          countMin: 20, countMax: 60, prayer: false, npcImage: 'Battle_mage_(Saradomin)_(historical_v1)', note: '⚠️ Deep Wilderness — bring only what you can afford to lose.' },
+  { name: 'Shadow Warriors',   icon: '🗡️', min: 60, max: 126, loc: "Legends' Guild basement",              countMin: 20, countMax: 60, prayer: false, npcImage: 'Shadow_warrior', questReq: 'Legends Quest' },
+  { name: 'Water Elementals',  icon: '💧', min: 20, max: 80,  loc: 'Elemental Workshop dungeon',           countMin: 20, countMax: 60, prayer: false, npcImage: 'Water_elemental', questReq: 'Elemental Workshop' },
+  { name: 'Earth Elementals',  icon: '🪨', min: 20, max: 80,  loc: 'Elemental Workshop dungeon',           countMin: 20, countMax: 60, prayer: false, npcImage: 'Earth_elemental_(historical)', questReq: 'Elemental Workshop' },
+  { name: 'Fire Elementals',   icon: '🔥', min: 30, max: 80,  loc: 'Elemental Workshop dungeon',           countMin: 20, countMax: 60, prayer: false, npcImage: 'Fire_elemental', questReq: 'Elemental Workshop' },
+  { name: 'Air Elementals',    icon: '🌀', min: 30, max: 80,  loc: 'Elemental Workshop dungeon',           countMin: 20, countMax: 60, prayer: false, npcImage: 'Air_elemental_(historical)', questReq: 'Elemental Workshop' },
+  { name: 'Red Dragons',       icon: '🐉', min: 68, max: 126, loc: 'Brimhaven Dungeon',                    countMin: 30, countMax: 80, prayer: true,  npcImage: 'Red_dragon_(historical)', note: 'Anti-dragon shield required; prayer recommended.' },
   { name: 'Greater Demons',    icon: '👿', min: 75, max: 126,  loc: 'Brimhaven Dungeon',                countMin: 50, countMax: 150, prayer: true,  note: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended' , npcImage: 'Greater_demon_(historical)' },
   { name: 'Blue Dragons',      icon: '🐉', min: 85, max: 126,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, prayer: true,  note: 'Anti-dragon shield required; prayer recommended' , npcImage: 'Blue_dragon_(historical)' },
   { name: 'Baby Blue Dragons', icon: '🐉', min: 40, max: 100,  loc: 'Taverley Dungeon',                 countMin: 50, countMax: 150, npcImage: 'Baby_blue_dragon_(historical_v1)' },
@@ -2222,6 +2248,7 @@ const COMBAT_TASKS = [
   { name: 'Green Dragons',     icon: '🐲', min: 60, max: 126,  loc: 'Wilderness',                       countMin: 50, countMax: 150, prayer: false, note: '⚠️ Wilderness — bring only what you can afford to lose' , npcImage: 'Green_dragon_(historical)' },
 
   // Kalphite Hive
+  { name: 'Chompy Birds',      icon: '🐦', min: 1,  max: 60,  loc: 'Feldip Hills',                       countMin: 10, countMax: 30, prayer: false, npcImage: 'Chompy_bird_(historical)', questReq: 'Big Chompy Bird Hunting', note: 'Requires <strong>Big Chompy Bird Hunting</strong> quest. Use an ogre bow and ogre/comp ogre arrows.' },
   { name: 'Kalphite Workers',   icon: '🦂', min: 30,  max: 65,  loc: 'Kalphite Hive',  countMin: 20, countMax: 60, prayer: false, npcImage: 'Kalphite_Worker_(historical)' },
   { name: 'Kalphite Soldiers',  icon: '🦂', min: 65,  max: 126, loc: 'Kalphite Hive',  countMin: 50, countMax: 120, prayer: false, note: '⚠️ Poisonous — bring antipoison', npcImage: 'Kalphite_Soldier_(historical)' },
   { name: 'Kalphite Guardians', icon: '🦂', min: 100, max: 126, loc: 'Kalphite Hive',  countMin: 50, countMax: 150, prayer: false, note: '⚠️ Poisonous — bring antipoison', npcImage: 'Kalphite_Guardian_(historical)' },
@@ -2283,6 +2310,68 @@ const CHOICE_TASKS = [
     title: 'Craft {count} runes',
     desc: 'Visit any altar and craft runes of your choice.',
     note: 'Use the appropriate talisman or tiara for your chosen altar.' },
+,
+  // ── Group tasks ──────────────────────────────────────────────────────────
+  { name: 'Any Bird',     icon: '🐦', min: 1,  max: 999, countMin: 15, countMax: 60,
+    multiImages: ['Chicken_(historical)','Duck_(historical)','Terrorbird_(historical)','Chompy_bird_(historical)'],
+    title: 'Kill {count} birds',
+    desc: 'Your choice — any bird will do. Chickens, ducks, terror birds, or chompies.',
+    note: 'Chompy birds require Big Chompy Bird Hunting quest and an ogre bow.' },
+  { name: 'Any Spider',   icon: '🕷️', min: 8,  max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Giant_spider_(level_2)_(historical)','Ice_spider_(historical)','Deadly_red_spider_(historical)'],
+    title: 'Kill {count} spiders',
+    desc: 'Giant, ice, or deadly red — your choice.' },
+  { name: 'Any Warrior',  icon: '⚔️', min: 20, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Al_Kharid_warrior','Ice_warrior','Earth_warrior','Shadow_warrior'],
+    title: 'Kill {count} warriors',
+    desc: 'Al-Kharid, ice, earth, or shadow warriors — your choice.',
+    note: 'Earth warriors are in the Wilderness (level 5) and require 15 Agility. Shadow warriors require Legends Quest.' },
+  { name: 'Any Knight',   icon: '🛡️', min: 25, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Black_Knight_(historical)','White_Knight_(historical_v1)','Knight_of_Ardougne'],
+    title: 'Kill {count} knights',
+    desc: 'Black, white, or Ardougne knights — your choice.' },
+  { name: 'Any Druid',    icon: '🌿', min: 25, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Chaos_druid','Chaos_druid_warrior_(historical)','Salarin_the_twisted'],
+    title: 'Kill {count} druids',
+    desc: 'Chaos druids, chaos druid warriors, or Salarin the Twisted — your choice.',
+    note: 'Salarin requires 67 Agility. Chaos druid warriors are in the Yanille Agility Dungeon.' },
+  { name: 'Any Dog',      icon: '🐕', min: 25, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Guard_dog_(historical)','Wolf_(historical)','Werewolf_(Imre)','Hellhound_(historical)'],
+    title: 'Kill {count} dogs or wolves',
+    desc: 'Guard dogs, wolves, werewolves, or hellhounds — your choice.',
+    note: 'Werewolves require Priest in Peril. Hellhounds are high level.' },
+  { name: 'Any Ghost',    icon: '👻', min: 15, max: 999, countMin: 20, countMax: 60,
+    multiImages: ['Ghost_(historical)','Ghast_(Level_30)'],
+    title: 'Kill {count} ghosts or ghasts',
+    desc: 'Regular ghosts or ghasts in Mort Myre — your choice.',
+    note: 'Ghasts require Nature Spirit quest and a filled druid pouch.' },
+  { name: 'Any Wizard',   icon: '🧙', min: 15, max: 999, countMin: 20, countMax: 60,
+    multiImages: ['Dark_wizard','Wizard_(historical_v1)','Battle_mage_(Saradomin)_(historical_v1)'],
+    title: 'Kill {count} wizards',
+    desc: 'Dark wizards, wizards, or battle mages — your choice.',
+    note: 'Battle mages are deep in the Wilderness at the Mage Arena.' },
+  { name: 'Any Goblin',   icon: '👺', min: 1,  max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Goblin','Hobgoblin'],
+    title: 'Kill {count} goblins',
+    desc: 'Regular goblins or hobgoblins — your choice.' },
+  { name: 'Any Ogre',     icon: '👹', min: 40, max: 999, countMin: 30, countMax: 100,
+    multiImages: ['Ogre','Jogre_(historical)'],
+    title: 'Kill {count} ogres',
+    desc: "Ogres in Gu'Tanoth or jogres on Karamja — your choice." },
+  { name: 'Any Dwarf',    icon: '⛏',  min: 15, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Dwarf','Chaos_dwarf'],
+    title: 'Kill {count} dwarves',
+    desc: 'Regular dwarves in the Dwarven Mine or chaos dwarves in Taverley Dungeon.' },
+  { name: 'Any Elemental', icon: '✨', min: 20, max: 999, countMin: 20, countMax: 60,
+    multiImages: ['Water_elemental','Earth_elemental_(historical)','Fire_elemental','Air_elemental_(historical)'],
+    title: 'Kill {count} elementals',
+    desc: 'Water, earth, fire, or air elementals in the Elemental Workshop dungeon.',
+    questReq: 'Elemental Workshop' },
+  { name: 'Any Kalphite', icon: '🦂', min: 30, max: 999, countMin: 20, countMax: 80,
+    multiImages: ['Kalphite_Worker_(historical)','Kalphite_Soldier_(historical)','Kalphite_Guardian_(historical)'],
+    title: 'Kill {count} kalphites',
+    desc: 'Workers, soldiers, or guardians in the Kalphite Hive — your choice.',
+    note: 'Soldiers and guardians are poisonous — bring antipoison.' },
 ];
 
 const SKILL_TASKS = [
@@ -2319,6 +2408,15 @@ const SKILL_TASKS = [
   { skill: 'fishing', name: 'Sharks',    icon: '🦈', req: 76, unitMin: 30,  unitMax: 80,  unit: 'sharks',    loc: 'Catherby' , itemImage: 'Raw_shark' , maxReq: 99 },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABH0lEQVR4nM2UPRKCMBCFE5SO2kPYUMslmLHCE0JF4x3sbei4ALWdjGuhxOyyuwnM6LhdXjbvext+jPnDgjWHkl+AJEjIiO6r/dokrFHbpItBoetCByeABwoFEyFq4rweF/VLEC4x0PTvNQj9YYiQ2GnaHldbspYSu+qGxOx3D3Zv0o7VHYwxdtLYSbTEa/p9CJqiGzA/r0endUMyM/T7/edFIaKZlDB20qjfyvVEH91HD01IC8zryqAvLZwPG+hLC5LeNqnbk3QR4htO66rIkKGkE4CDWAKZVVVkaN1cbqwmlKUQFkQNI4wRgELU3/VKGJoEJBPOSOtlztmoV7gqMmQccVWo+A9gnkbVQ5O566LNS9Mq5230g19Z9O39Xj0BgVTHt1saGE0AAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Firemaking — levelrequire from firemaking.obj
+  { skill: 'smithing', name: 'Holy symbols',    icon: '✝️', req: 16, unitMin: 20, unitMax: 60,  unit: 'holy symbols',    loc: 'Any anvil (silver bar + mould)', itemImage: 'Unstrung_symbol', note: 'Smith silver bars into unstrung symbols at an anvil. String them with a ball of wool for Crafting XP.' },
+  { skill: 'smithing', name: 'Unholy symbols',  icon: '☠️', req: 16, unitMin: 20, unitMax: 60,  unit: 'unholy symbols',  loc: 'Any anvil (silver bar + mould)', itemImage: 'Unstrung_emblem', note: 'Smith silver bars into unstrung emblems at an anvil.' },
+  { skill: 'smithing', name: 'Bronze bars',     icon: '🔨', req: 1,  unitMin: 40,  unitMax: 100, unit: 'bronze bars',     loc: 'Any furnace', itemImage: 'Bronze_bar',    maxReq: 14 },
+  { skill: 'smithing', name: 'Iron bars',       icon: '🔨', req: 15, unitMin: 40,  unitMax: 100, unit: 'iron bars',       loc: 'Any furnace', itemImage: 'Iron_bar',      maxReq: 29 },
+  { skill: 'smithing', name: 'Steel bars',      icon: '🔨', req: 30, unitMin: 30,  unitMax: 80,  unit: 'steel bars',      loc: 'Any furnace', itemImage: 'Steel_bar',     maxReq: 39 },
+  { skill: 'smithing', name: 'Gold bars',       icon: '🔨', req: 40, unitMin: 30,  unitMax: 80,  unit: 'gold bars',       loc: 'Any furnace', itemImage: 'Gold_bar',      maxReq: 49, note: 'Goldsmith gauntlets give 56.2 XP instead of 22.5 XP per bar' },
+  { skill: 'smithing', name: 'Mithril bars',    icon: '🔨', req: 50, unitMin: 20,  unitMax: 60,  unit: 'mithril bars',    loc: 'Any furnace', itemImage: 'Mithril_bar',   maxReq: 69 },
+  { skill: 'smithing', name: 'Adamantite bars', icon: '🔨', req: 70, unitMin: 15,  unitMax: 50,  unit: 'adamantite bars', loc: 'Any furnace', itemImage: 'Adamantite_bar' },
+  { skill: 'smithing', name: 'Runite bars',     icon: '🔨', req: 85, unitMin: 10,  unitMax: 30,  unit: 'runite bars',     loc: 'Any furnace', itemImage: 'Runite_bar' },
   { skill: 'fm', name: 'Normal logs', icon: '🔥', req: 1,  unitMin: 60,  unitMax: 150, unit: 'normal logs', loc: 'Anywhere' , itemImage: 'Logs' , maxReq: 24, maxReqOverrideIf: [{skill:'wc',below:15}] },
   { skill: 'fm', name: 'Oak logs',    icon: '🔥', req: 15, unitMin: 80,  unitMax: 200, unit: 'oak logs',    loc: 'Anywhere' , itemImage: 'Oak_logs' , maxReq: 39, maxReqOverrideIf: [{skill:'wc',below:30}] },
   { skill: 'fm', name: 'Willow logs', icon: '🔥', req: 30, unitMin: 80,  unitMax: 200, unit: 'willow logs', loc: 'Anywhere' , itemImage: 'Willow_logs'  },
@@ -2339,12 +2437,20 @@ const SKILL_TASKS = [
   { skill: 'cooking', name: 'Sharks',    icon: '🦈', req: 80, unitMin: 30,  unitMax: 80,  unit: 'sharks',    loc: 'Any fire or range' , itemImage: 'Shark'  },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAA+UlEQVR4nO2VMQ6CMBiFHwYHjkB6BRImxnoiN+Oizm5unkhGJxKuYDgCgwl1KG0oltL+MPKSDiV/+/WR/q/AMol+OLVbAkiOfsupkDHA6YYCMQBFzoYgKywmQLSyMkXNGyRcQttnZ60jQxRAqQdE/dRwFCFcosiZCwAA4sITAMC9bIOdiCJneFcfoDK+/x32ezhh/3oEbi8BPn0hztebqvPqo2CAZ90G2AArAvR9HtzvVQGAjAAXwGgsCkDHykQEGLGelamMlMDMiyyn0kk6BtS8sYXhrOKJBVYAVZMprB6gcaxTNGdbAIByRflVwPwbrzekAnxF6uqhfnmbma3Mx+/fAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Fletching — level data from cut_logs.dbrow (shortbow/longbow level fields)
+  { skill: 'fletching', name: 'Headless arrows',   icon: '🏹', req: 1,  unitMin: 150, unitMax: 400, unit: 'headless arrows',  loc: 'Anywhere', itemImage: 'Headless_arrow', maxReq: 19, multipleOf: 15, note: 'Attach feathers to arrow shafts to make headless arrows.' },
+  { skill: 'fletching', name: 'Bronze arrows',    icon: '🏹', req: 1,  unitMin: 100, unitMax: 300, unit: 'bronze arrows',   loc: 'Anywhere', itemImage: 'Bronze_arrow', maxReq: 19, multipleOf: 15, note: 'Attach bronze arrowheads to headless arrows.' },
+  { skill: 'fletching', name: 'Iron arrows',      icon: '🏹', req: 15, unitMin: 100, unitMax: 300, unit: 'iron arrows',     loc: 'Anywhere', itemImage: 'Iron_arrow',   maxReq: 29, multipleOf: 15, note: 'Attach iron arrowheads to headless arrows.' },
+  { skill: 'fletching', name: 'Steel arrows',     icon: '🏹', req: 30, unitMin: 80,  unitMax: 200, unit: 'steel arrows',    loc: 'Anywhere', itemImage: 'Steel_arrow',  maxReq: 44, multipleOf: 15, note: 'Attach steel arrowheads to headless arrows.' },
+  { skill: 'fletching', name: 'Mithril arrows',   icon: '🏹', req: 45, unitMin: 60,  unitMax: 150, unit: 'mithril arrows',  loc: 'Anywhere', itemImage: 'Mithril_arrow', maxReq: 59, multipleOf: 15, note: 'Attach mithril arrowheads to headless arrows.' },
+  { skill: 'fletching', name: 'Adamant arrows',   icon: '🏹', req: 60, unitMin: 50,  unitMax: 120, unit: 'adamant arrows',  loc: 'Anywhere', itemImage: 'Adamant_arrow', maxReq: 74, multipleOf: 15, note: 'Attach adamant arrowheads to headless arrows.' },
+  { skill: 'fletching', name: 'Rune arrows',      icon: '🏹', req: 75, unitMin: 30,  unitMax: 80,  unit: 'rune arrows',     loc: 'Anywhere', itemImage: 'Rune_arrow',    multipleOf: 15, note: 'Attach rune arrowheads to headless arrows.' },
   { skill: 'fletching', name: 'Arrow shafts',    icon: '🏹', req: 1,  unitMin: 210, unitMax: 495, unit: 'arrow shafts',    loc: 'Anywhere' , itemImage: 'Arrow_shaft' , maxReq: 19, multipleOf: 15, maxReqOverrideIf: [{skill:'wc',below:15}] },
   { skill: 'fletching', name: 'Shortbows (u)',    icon: '🏹', req: 5,  unitMin: 100, unitMax: 250, unit: 'shortbows (u)',   loc: 'Anywhere' , itemImage: 'Shortbow_(u)' , maxReq: 19, maxReqOverrideIf: [{skill:'wc',below:15}] },
   { skill: 'fletching', name: 'Longbows (u)',     icon: '🏹', req: 10, unitMin: 80,  unitMax: 200, unit: 'longbows (u)',    loc: 'Anywhere' , itemImage: 'Longbow_(u)' , maxReq: 29, maxReqOverrideIf: [{skill:'wc',below:15}] },
   { skill: 'fletching', name: 'Oak shortbows',    icon: '🏹', req: 20, unitMin: 80,  unitMax: 200, unit: 'oak shortbows',   loc: 'Anywhere' , itemImage: 'Oak_shortbow_(u)' , maxReq: 34 },
   { skill: 'fletching', name: 'Oak longbows',     icon: '🏹', req: 25, unitMin: 60,  unitMax: 150, unit: 'oak longbows',    loc: 'Anywhere' , itemImage: 'Oak_longbow_(u)' , maxReq: 44 },
   { skill: 'fletching', name: 'Willow shortbows', icon: '🏹', req: 35, unitMin: 60,  unitMax: 150, unit: 'willow shortbows',loc: 'Anywhere' , itemImage: 'Willow_shortbow_(u)' , maxReq: 49 },
+  { skill: 'crafting',  name: 'Bow strings',      icon: '🏹', req: 1,  unitMin: 60,  unitMax: 180, unit: 'bow strings',     loc: 'Spinning wheel (Lumbridge, Seers Village)', itemImage: 'Bow_string', note: 'Spin flax into bow strings at any spinning wheel. You need flax in your bank first.' },
   { skill: 'fletching', name: 'Willow longbows',  icon: '🏹', req: 40, unitMin: 50,  unitMax: 120, unit: 'willow longbows', loc: 'Anywhere' , itemImage: 'Willow_longbow_(u)' , maxReq: 59 },
   { skill: 'fletching', name: 'Maple shortbows',  icon: '🏹', req: 50, unitMin: 50,  unitMax: 120, unit: 'maple shortbows', loc: 'Anywhere' , itemImage: 'Maple_shortbow_(u)'  },
   { skill: 'fletching', name: 'Maple longbows',   icon: '🏹', req: 55, unitMin: 40,  unitMax: 100, unit: 'maple longbows',  loc: 'Anywhere' , itemImage: 'Maple_longbow_(u)'  },
@@ -2354,18 +2460,19 @@ const SKILL_TASKS = [
   { skill: 'fletching', name: 'Magic longbows',  itemImage: 'Magic_longbow',   icon: '🏹', req: 85, unitMin: 20,  unitMax: 60,  unit: 'magic longbows',  loc: 'Anywhere'  },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABeklEQVR4nJ2Wsa3CMBRFTxAUjMAAfwbEFjRUWSINygwWDUukomELxAxIVJEyAsVHmOpZ9ovj2Nwu2L7nXT8nBsplSxcsSgHX3bIYVAIRAKWgXIgDiEpAORALsL+9eXxW7sf97R2Mp7RMjFmA8/kMQNM0ownemICqXEhgrgGPz4rj/eWeh2GgbVsAjDFRmIZY31xMpqTHFMyB/J4EgGEYnIksFp2260mwN9/1SpKMACJjTGDgb1VKdX2g6y4WqEY9iW2Prlwnm9OCSB+0dPU63ZTq+gBgg/cklkKqPt5fHO8vl8oYMwnr+2fwHEA2m010Udu2Aey0XQewFEAgVdM0yaOao75/jgBddwGoZrdLJBVLAulTXR+i1fvy30wbOzV9/5SKooApSQoIe1IZY4LYfoX6GOcCdBKR1Sa5SWSe9o1+NWOwrrtw2q75W/y7j6Q/lvJLQQIY4CAQ3CezPjkQiNyMHmjWI/f6rVTl2YBfZK+7peWHv0XFoNIFXxdG0fzbO+GzAAAAAElFTkSuQmCC" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Runecrafting — level from runecraft.dbrow
-  { skill: 'rc', name: 'Air runes',    icon: '🌀', req: 1,  unitMin: 300, unitMax: 700, unit: 'air runes',    loc: 'Air Altar, south of Falador',    note: 'Air talisman: dropped by Goblins', itemImage: 'Air_rune'  },
-  { skill: 'rc', name: 'Mind runes',   icon: '🌀', req: 2,  unitMin: 300, unitMax: 700, unit: 'mind runes',   loc: 'Mind Altar',                      note: 'Mind talisman: dropped by Imps and Wizards', itemImage: 'Mind_rune'  },
-  { skill: 'rc', name: 'Water runes',  icon: '💧', req: 5,  unitMin: 250, unitMax: 600, unit: 'water runes',  loc: 'Water Altar, south of Lumbridge', note: 'Water talisman: dropped by Wizards and Dark Wizards', itemImage: 'Water_rune'  },
-  { skill: 'rc', name: 'Earth runes',  icon: '🌍', req: 9,  unitMin: 250, unitMax: 600, unit: 'earth runes',  loc: 'Earth Altar, east of Varrock',    note: 'Earth talisman: dropped by Men, Al-Kharid Warriors, Rogues, and Farmers', itemImage: 'Earth_rune'  },
-  { skill: 'rc', name: 'Fire runes',   icon: '🔥', req: 14, unitMin: 200, unitMax: 500, unit: 'fire runes',   loc: 'Fire Altar, north of Al-Kharid',  note: 'Fire talisman: dropped by Dark Wizards and Skeletons', itemImage: 'Fire_rune'  },
-  { skill: 'rc', name: 'Body runes',   icon: '🌀', req: 20, unitMin: 200, unitMax: 500, unit: 'body runes',   loc: 'Body Altar',                      note: 'Body talisman: dropped by Guards and Giants', itemImage: 'Body_rune'  },
+  { skill: 'rc', name: 'Air runes',    icon: '🌀', req: 1,  unitMin: 300, unitMax: 700, unit: 'air runes',    loc: 'Air Altar, south of Falador',    note: 'Air talisman: dropped by Goblins', itemImage: 'Air_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Mind runes',   icon: '🌀', req: 2,  unitMin: 300, unitMax: 700, unit: 'mind runes',   loc: 'Mind Altar',                      note: 'Mind talisman: dropped by Imps and Wizards', itemImage: 'Mind_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Water runes',  icon: '💧', req: 5,  unitMin: 250, unitMax: 600, unit: 'water runes',  loc: 'Water Altar, south of Lumbridge', note: 'Water talisman: dropped by Wizards and Dark Wizards', itemImage: 'Water_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Earth runes',  icon: '🌍', req: 9,  unitMin: 250, unitMax: 600, unit: 'earth runes',  loc: 'Earth Altar, east of Varrock',    note: 'Earth talisman: dropped by Men, Al-Kharid Warriors, Rogues, and Farmers', itemImage: 'Earth_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Fire runes',   icon: '🔥', req: 14, unitMin: 200, unitMax: 500, unit: 'fire runes',   loc: 'Fire Altar, north of Al-Kharid',  note: 'Fire talisman: dropped by Dark Wizards and Skeletons', itemImage: 'Fire_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Body runes',   icon: '🌀', req: 20, unitMin: 200, unitMax: 500, unit: 'body runes',   loc: 'Body Altar',                      note: 'Body talisman: dropped by Guards and Giants', itemImage: 'Body_rune'  , questReq: 'Rune Mysteries' },
   { skill: 'rc', name: 'Cosmic runes', icon: '⭐', req: 27, unitMin: 150, unitMax: 400, unit: 'cosmic runes', loc: 'Cosmic Altar, Zanaris',            note: 'Requires Lost City quest', itemImage: 'Cosmic_rune'  },
-  { skill: 'rc', name: 'Chaos runes',  icon: '💥', req: 35, unitMin: 150, unitMax: 400, unit: 'chaos runes',  loc: 'Chaos Altar',                     note: 'Chaos talisman: on the rare drop table (from monsters in underground areas)', itemImage: 'Chaos_rune'  },
-  { skill: 'rc', name: 'Nature runes', icon: '🍃', req: 44, unitMin: 100, unitMax: 250, unit: 'nature runes', loc: 'Nature Altar, Karamja',            note: 'Nature talisman: on the rare drop table (from monsters above ground)', itemImage: 'Nature_rune'  },
-  { skill: 'rc', name: 'Law runes',    icon: '⚖️', req: 54, unitMin: 100, unitMax: 250, unit: 'law runes',    loc: 'Law Altar, Entrana',               note: 'Requires Troll Stronghold quest. Law talisman: rewarded upon completing Troll Stronghold (given by Dunstan)', itemImage: 'Law_rune'  },
+  { skill: 'rc', name: 'Chaos runes',  icon: '💥', req: 35, unitMin: 150, unitMax: 400, unit: 'chaos runes',  loc: 'Chaos Altar',                     note: 'Chaos talisman: on the rare drop table (from monsters in underground areas)', itemImage: 'Chaos_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Nature runes', icon: '🍃', req: 44, unitMin: 100, unitMax: 250, unit: 'nature runes', loc: 'Nature Altar, Karamja',            note: 'Nature talisman: on the rare drop table (from monsters above ground)', itemImage: 'Nature_rune'  , questReq: 'Rune Mysteries' },
+  { skill: 'rc', name: 'Law runes',    icon: '⚖️', req: 54, unitMin: 100, unitMax: 250, unit: 'law runes',    loc: 'Law Altar, Entrana',               note: 'Requires Troll Stronghold quest. Law talisman: rewarded upon completing Troll Stronghold (given by Dunstan)', itemImage: 'Law_rune'  , questReq: 'Rune Mysteries' },
 
   // Agility — Brimhaven Agility Arena tickets
+  { skill: 'agility', name: 'Gnome Stronghold laps', icon: '🏃', req: 1,  unitMin: 10, unitMax: 40, unit: 'laps', loc: 'Gnome Stronghold Agility Course', itemImage: 'Agility_icon_(detail)', maxReq: 34 },
   { skill: 'agility', name: 'Brimhaven tickets (low)',  icon: '🎟️', req: 35, unitMin: 20,  unitMax: 60,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 59 },
   { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 60, unitMin: 60,  unitMax: 150, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 79 },
   { skill: 'agility', name: 'Brimhaven tickets (high)', icon: '🎟️', req: 80, unitMin: 150, unitMax: 350, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket' },
@@ -2384,7 +2491,10 @@ const SKILL_TASKS = [
 
   // Open-ended tasks (bank supplies / level-based)
   { skill: 'thieving',  name: 'Gain Thieving levels', icon: '🎯', req: 1,  unitMin: 1, unitMax: 1, unit: 'level', loc: 'Any thieving location', itemImage: 'Thieving_icon_(detail)', note: 'Pickpocket Men (req 1) in Lumbridge or Varrock, or steal from market stalls in Ardougne. Mark complete when you reach the target level!' },
-  { skill: 'herblore',  name: 'Use up herb supplies',  icon: '🌿', req: 1,  unitMin: 1, unitMax: 1, unit: 'batch of potions', loc: 'Anywhere', itemImage: 'Herblore_icon_(detail)', note: 'Use all your current grimy herbs and secondaries to brew potions. Mark complete when your supplies are exhausted!' },
+  { skill: 'herblore',  name: 'Use up herb supplies',  icon: '🌿', req: 1,  unitMin: 1, unitMax: 1, unit: 'batch of potions', loc: 'Anywhere', itemImage: 'Herblore_icon_(detail)', questReq: 'Druidic Ritual', note: 'Use all your current grimy herbs and secondaries to brew potions. Mark complete when your supplies are exhausted!' },
+  { skill: 'crafting', name: 'Green dragonhide',  icon: '🐲', req: 57, unitMin: 30, unitMax: 80,  unit: 'green dragonhide items', loc: 'Anywhere (tanned hides from Al-Kharid tannery)', itemImage: 'Green_dhide_body', note: 'Tan green dragonhides at Al-Kharid tannery first (1 coin each).' },
+  { skill: 'crafting', name: 'Blue dragonhide',   icon: '🐉', req: 66, unitMin: 30, unitMax: 80,  unit: 'blue dragonhide items',  loc: 'Anywhere (tanned hides from Al-Kharid tannery)', itemImage: 'Blue_dhide_body', note: 'Tan blue dragonhides at Al-Kharid tannery first (20 coins each).' },
+  { skill: 'crafting', name: 'Red dragonhide',    icon: '🐉', req: 73, unitMin: 20, unitMax: 60,  unit: 'red dragonhide items',   loc: 'Anywhere (tanned hides from Al-Kharid tannery)', itemImage: 'Red_dhide_body', note: 'Tan red dragonhides at Al-Kharid tannery first (30 coins each).' },
   { skill: 'crafting',  name: 'Cut all gems in bank',  icon: '💎', req: 20, unitMin: 1, unitMax: 1, unit: 'session', loc: 'Anywhere with a chisel', itemImage: 'Uncut_diamond', note: 'Cut every uncut gem you have in your bank. Sapphire req 20, Emerald req 27, Ruby req 34, Diamond req 43 Crafting.' },
   { skill: 'crafting',  name: 'Craft jewellery',       icon: '💍', req: 6,  unitMin: 1, unitMax: 1, unit: 'session', loc: 'Any furnace (Edgeville or Al-Kharid)', itemImage: 'Gold_ring', note: 'Craft all the gems and gold bars you have into jewellery. Gold ring req 5, Sapphire ring req 20, Emerald ring req 27, Ruby ring req 34, Diamond ring req 43 Crafting.' },
 
@@ -2833,7 +2943,9 @@ function generateDailyTask() {
       });
       if (!allEl.length) continue;
       const t = allEl[randInt(0, allEl.length - 1)];
-      let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
+      let count = t.skill === 'rc' ? rcTaskCount(t.name, stats['rc'] || 1)
+        : (t.skill === 'wc' || t.skill === 'mining') ? scaledTaskCount(t.name, stats[t.skill] || 1, t.unitMin, t.unitMax)
+        : t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
       let title = `${skillLabel(t.skill)} ${count} ${t.unit}`;
       if (t.name === 'Gain Thieving levels') {
         const cur = stats['thieving'] || 1;
@@ -3521,6 +3633,7 @@ function selectPickerTask(task) {
   renderPickerBtn();
   renderShop();
   updateExtenderButtons();
+  updateNoMaterialsBtn();
   pushToOverlay(task);
 }
 
@@ -3566,7 +3679,9 @@ function buildOneTask() {
     });
     if (!allEl.length) return null;
     const t = allEl[randInt(0, allEl.length - 1)];
-    let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
+    let count = t.skill === 'rc' ? rcTaskCount(t.name, stats['rc'] || 1)
+      : (t.skill === 'wc' || t.skill === 'mining') ? scaledTaskCount(t.name, stats[t.skill] || 1, t.unitMin, t.unitMax)
+        : t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
     let skillTitle = `${skillLabel(t.skill)} ${count} ${t.unit}`;
     if (t.name === 'Gain Thieving levels') {
       const cur = stats['thieving'] || 1;
@@ -3817,11 +3932,11 @@ function buildChainTask(primaryTask, stats) {
     const dhideOptions = isBlue ? [
       { item: 'blue d\'hide vambraces', req: 66, itemImage: 'Blue_d\'hide_vambraces' },
       { item: 'blue d\'hide chaps',     req: 68, itemImage: 'Blue_d\'hide_chaps'     },
-      { item: 'blue d\'hide body',      req: 71, itemImage: 'Blue_d\'hide_body'      },
+      { item: 'blue d\'hide body',      req: 71, itemImage: 'Blue_dhide_body'      },
     ].filter(o => craftingLevel >= o.req) : [
       { item: 'green d\'hide vambraces', req: 57, itemImage: 'Green_d\'hide_vambraces' },
       { item: 'green d\'hide chaps',     req: 60, itemImage: 'Green_d\'hide_chaps'     },
-      { item: 'green d\'hide body',      req: 63, itemImage: 'Green_d\'hide_body'      },
+      { item: 'green d\'hide body',      req: 63, itemImage: 'Green_dhide_body'      },
     ].filter(o => craftingLevel >= o.req);
 
     if (dhideOptions.length > 0) {
@@ -3935,6 +4050,25 @@ function scaleSideTabs() {
 }
 
 window.addEventListener('resize', scaleSideTabs);
+
+const PROCESSING_SKILLS = new Set(['smithing', 'cooking', 'herblore', 'fletching', 'rc', 'crafting']);
+
+function noMaterialsReroll() {
+  if (!currentTask) return;
+  lastTaskName = currentTask.name;
+  generateTask(true); // isReroll=true preserves streak
+  showToast('Free reroll — streak preserved!');
+}
+
+function updateNoMaterialsBtn() {
+  const wrap = document.getElementById('no-materials-wrap');
+  if (!wrap) return;
+  const isProcessing = currentTask && PROCESSING_SKILLS.has(currentTask.skill || '') ||
+    (currentTask && currentTask.type === 'skill' && currentTask.name &&
+      ['Bronze bars','Iron bars','Steel bars','Gold bars','Mithril bars','Adamantite bars','Runite bars',
+       'Smelt Bars','Cook Fish','Use up herb supplies'].includes(currentTask.name));
+  wrap.style.display = isProcessing ? 'block' : 'none';
+}
 
 function buyExtender() {
   if (tracker.points < EXTENDER_COST) return;
@@ -4192,6 +4326,7 @@ const SKILL_DEFS = [
   { key: 'thieving',  label: 'Thieving',    icon: 'stat-thieving' },
   { key: 'herblore',  label: 'Herblore',    icon: 'stat-herblore' },
   { key: 'crafting',  label: 'Crafting',    icon: 'stat-crafting' },
+  { key: 'smithing',  label: 'Smithing',    icon: 'stat-smithing' },
   { key: 'gathering', label: 'Gathering',   icon: null },
 ];
 
@@ -4246,6 +4381,72 @@ function setMode(m) {
   });
   document.getElementById('btn-' + m).className = 'toggle-btn active-' + m;
   updateSkillFilterVisibility();
+}
+
+// Runes per essence thresholds (2004-era RS2)
+const RC_MULTIPLES = {
+  air:    [1, 11, 22, 33, 44, 55, 66, 77, 88, 99],
+  mind:   [2, 14, 28, 42, 56, 70, 84, 98],
+  water:  [5, 19, 38, 57, 76, 95],
+  earth:  [9, 26, 52, 78],
+  fire:   [14, 35, 70],
+  body:   [20, 46, 92],
+  cosmic: [27, 59],
+  chaos:  [35, 74],
+  nature: [44, 91],
+  law:    [54],
+  death:  [65],
+};
+
+function rcRunesPerEss(runeName, rcLevel) {
+  const key = runeName.toLowerCase().replace(' runes', '').replace(' rune', '').trim();
+  const thresholds = RC_MULTIPLES[key] || [1];
+  let mult = 1;
+  for (const t of thresholds) {
+    if (rcLevel >= t) mult++;
+    else break;
+  }
+  return mult;
+}
+
+function rcTaskCount(runeName, rcLevel) {
+  const mult = rcRunesPerEss(runeName, rcLevel);
+  // Base: 3-7 trips of 28 essence
+  const essMin = 84;
+  const essMax = 196;
+  const count = randInt(essMin, essMax) * mult;
+  // Round to nearest 10 for cleanliness
+  return Math.round(count / 10) * 10;
+}
+
+function scaledTaskCount(taskName, skillLevel, unitMin, unitMax) {
+  // Scale min/max based on level bands — higher level = faster gathering = more per task
+  const bands = {
+    // WC trees: slower early, faster later
+    'Normal trees':   [[1,15,0.5],[15,30,0.75],[30,99,1.0]],
+    'Oak trees':      [[15,30,0.6],[30,45,0.8],[45,99,1.0]],
+    'Willow trees':   [[30,45,0.6],[45,60,0.8],[60,99,1.0]],
+    'Maple trees':    [[45,60,0.65],[60,75,0.85],[75,99,1.0]],
+    'Yew trees':      [[60,75,0.65],[75,99,1.0]],
+    // Mining ores: iron is the notable one, others scale too
+    'Iron ore':       [[15,30,0.5],[30,50,0.7],[50,70,0.85],[70,99,1.0]],
+    'Coal':           [[30,45,0.6],[45,65,0.8],[65,99,1.0]],
+    'Silver ore':     [[20,40,0.6],[40,99,1.0]],
+    'Gold ore':       [[40,55,0.65],[55,99,1.0]],
+    'Mithril ore':    [[55,70,0.65],[70,99,1.0]],
+    'Copper ore':     [[1,20,0.6],[20,40,0.8],[40,99,1.0]],
+    'Tin ore':        [[1,20,0.6],[20,40,0.8],[40,99,1.0]],
+  };
+  const taskBands = bands[taskName];
+  if (!taskBands) return randInt(unitMin, unitMax);
+  let scale = 1.0;
+  for (const [min, max, s] of taskBands) {
+    if (skillLevel >= min && skillLevel < max) { scale = s; break; }
+    if (skillLevel >= max) scale = taskBands[taskBands.length - 1][2];
+  }
+  const scaledMin = Math.round(unitMin * scale);
+  const scaledMax = Math.round(unitMax * scale);
+  return randInt(Math.max(10, scaledMin), Math.max(20, scaledMax));
 }
 
 function passesMaxReq(t, stats) {
@@ -4325,7 +4526,7 @@ function generateTask(isReroll = false) {
   const agility = getStat('stat-agility');
 
   if (doMix) {
-    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility'), gathering: 1 };
+    const skillStats = { wc: getStat('stat-wc'), mining: getStat('stat-mining'), fishing: getStat('stat-fishing'), fm: getStat('stat-fm'), cooking: getStat('stat-cooking'), fletching: getStat('stat-fletching'), rc: getStat('stat-rc'), agility: getStat('stat-agility'), smithing: getStat('stat-smithing'), gathering: 1 };
     const hasCombat = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility)).length > 0;
     const hasSkill  = SKILL_TASKS.filter(t => enabledSkills.has(t.skill) && skillStats[t.skill] >= t.req && passesMaxReq(t, skillStats)).length > 0;
     const hasQuest  = QUEST_TASKS.filter(isQuestEligible).length > 0;
@@ -4398,8 +4599,20 @@ function generateTask(isReroll = false) {
     const chainableEligible = wantChain ? allEligibleFull.filter(t => chainableSkills.has(t.skill)) : [];
     const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligibleFull;
 
-    const t = eligible[randInt(0, eligible.length - 1)];
-    let count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
+    // Weight gathering skills 3x over processing skills
+    const GATHERING_SKILLS = new Set(['wc','mining','fishing','rc','agility','thieving','gathering']);
+    const weightedEligible = eligible.flatMap(t => 
+      GATHERING_SKILLS.has(t.skill) ? [t, t, t] : [t]
+    );
+    const t = weightedEligible[randInt(0, weightedEligible.length - 1)];
+    let count;
+    if (t.skill === 'rc') {
+      count = rcTaskCount(t.name, stats['rc'] || 1);
+    } else if (t.skill === 'wc' || t.skill === 'mining') {
+      count = scaledTaskCount(t.name, stats[t.skill] || 1, t.unitMin, t.unitMax);
+    } else {
+      count = t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
+    }
 
     // Thieving level task: scale levels required by current level
     let thiefLevelTarget = null;
@@ -4455,6 +4668,7 @@ function generateTask(isReroll = false) {
 
     task = {
       type: 'skill',
+      skill: t.skill,
       name: t.name,
       icon: t.icon,
       itemImage: t.itemImage,
@@ -4551,6 +4765,7 @@ function renderTask(task) {
   if (counterEl) counterEl.style.display = (task.type === 'combat' && killTarget > 1) ? 'block' : 'none';
   updateKillCounter();
   updateExtenderButtons();
+  updateNoMaterialsBtn();
 
   const notesEl = document.getElementById('task-notes');
   if (task.note) {
@@ -4685,6 +4900,7 @@ function completeTask() {
   pushToOverlay(null);
   updateGenerateBtn();
   updateExtenderButtons();
+  updateNoMaterialsBtn();
 }
 
 function extractKillCount(task) {
@@ -4988,6 +5204,7 @@ openDB().then(async () => {
     currentTask = saved;
     renderTask(currentTask);
     updateExtenderButtons();
+    updateNoMaterialsBtn();
   }
 
   scaleSideTabs();
