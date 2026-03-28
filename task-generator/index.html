@@ -3935,7 +3935,7 @@ function buildChainTask(primaryTask, stats) {
 
     if (dhideOptions.length > 0) {
       const picked = dhideOptions[randInt(0, dhideOptions.length - 1)];
-      const count = randInt(primaryTask.countMin, primaryTask.countMax);
+      const count = primaryTask.fixedCount || randInt(primaryTask.countMin, primaryTask.countMax);
       const colour = isBlue ? 'Blue' : 'Green';
       const hideImage = isBlue ? 'Blue_dragonhide' : 'Green_dragonhide';
       return {
@@ -3986,7 +3986,7 @@ function buildChainTask(primaryTask, stats) {
     ].filter(o => craftingLevel >= o.req);
     if (leatherOptions.length > 0) {
       const picked = leatherOptions[randInt(0, leatherOptions.length - 1)];
-      const count  = randInt(primaryTask.countMin, primaryTask.countMax);
+      const count  = primaryTask.fixedCount || randInt(primaryTask.countMin, primaryTask.countMax);
       return {
         step1: { title: `Kill ${count} Cows & collect their hides`, loc: primaryTask.loc, itemImage: 'Cowhide', skill: 'combat', note: 'Pick up all cowhides — used in the next step. You can also cook the raw beef on a fire or range for some Cooking XP.' },
         step2: { title: `Tan the hides, then craft ${picked.item}`, loc: 'Al-Kharid tannery, then anywhere', itemImage: picked.itemImage, skill: 'crafting', note: `Requires ${picked.req} Crafting. Soft leather tanning costs 1 coin per hide at Al-Kharid tannery` },
@@ -4539,7 +4539,7 @@ function generateTask(isReroll = false) {
     const combatStats = { crafting: getStat('stat-crafting'), cooking: getStat('stat-cooking') };
     // Cook chains for early game — always available regardless of challenge mode unlock
     const combatChain = (t.name === 'Cows' || (shouldChain() && (t.name === 'Green Dragons' || t.name === 'Blue Dragons')))
-      ? buildChainTask({ ...t, skill: 'combat' }, combatStats)
+      ? buildChainTask({ ...t, skill: 'combat', fixedCount: count }, combatStats)
       : null;
     const chainColour = combatChain?.colour || '';
 
@@ -4548,7 +4548,7 @@ function generateTask(isReroll = false) {
       name: t.name,
       icon: t.icon,
       npcImage: combatChain ? null : t.npcImage,
-      itemImage: combatChain ? (chainColour === 'Blue' ? 'Blue_dragonhide' : chainColour === 'Green' ? 'Green_dragonhide' : 'Cowhide') : null,
+      itemImage: combatChain ? (chainColour === 'Blue' ? 'Blue_dragonhide' : chainColour === 'Green' ? 'Green_dragonhide' : chainColour === 'Cow' ? 'Cowhide' : null) : null,
       title: combatChain ? (chainColour === 'Cow' ? `Kill & Craft ${count} Cows` : `Kill & Craft ${count} ${chainColour} Dragons`) : `Kill ${count} ${t.name}`,
       desc: `Head to ${t.loc} and begin your hunt.`,
       note: combatChain ? null : (t.prayer ? (t.note || '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAsUlEQVR4nM2WQQqEMAxFfwcELzSruYWrucQcwBu58oKDxI0pUtKar1DylkLy+pMqAkERtuDFCtZloEWs5BbhJOWI3COjksy/EQBw7MWNVyIqUJgLEGInAiOFckrTTJQazWE1f382s2D6/qs9zw/yaWonrwkqstxfJcLeGA+HMJlJnghbSUqElXl3ckvWau6VZJkl0plfFYd4GZVULNSdgpF0RdZluPyMlITaSXfov5Uu7MnFOfBFt3vYAAAAAElFTkSuQmCC" width="22" height="22" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Prayer recommended for this task.') : (t.note || null)),
@@ -4660,6 +4660,10 @@ function generateTask(isReroll = false) {
       chainedDesc = `Location: ${t.loc}.`;
     }
 
+    const ARROW_TASKS = new Set(['Bronze arrows','Iron arrows','Steel arrows','Mithril arrows','Adamant arrows','Rune arrows']);
+    const ogreNote = ARROW_TASKS.has(t.name) && completedQuests.has('Big Chompy Bird Hunting')
+      ? ' You can also make ogre arrows as an alternative.'
+      : '';
     task = {
       type: 'skill',
       skill: t.skill,
@@ -4668,7 +4672,7 @@ function generateTask(isReroll = false) {
       itemImage: t.itemImage,
       title: chainedTitle,
       desc: chainedDesc,
-      note: t.note || null,
+      note: (t.note || '') + ogreNote || null,
       chain: chain || null,
     };
   } else if (pickType === 'clue') {
