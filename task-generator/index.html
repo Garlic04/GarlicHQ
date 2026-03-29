@@ -2401,8 +2401,8 @@ const SKILL_TASKS = [
   { skill: 'fishing', name: 'Sharks',    icon: '🦈', req: 76, unitMin: 30,  unitMax: 80,  unit: 'sharks',    loc: 'Catherby' , itemImage: 'Raw_shark' , maxReq: 99 },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABH0lEQVR4nM2UPRKCMBCFE5SO2kPYUMslmLHCE0JF4x3sbei4ALWdjGuhxOyyuwnM6LhdXjbvext+jPnDgjWHkl+AJEjIiO6r/dokrFHbpItBoetCByeABwoFEyFq4rweF/VLEC4x0PTvNQj9YYiQ2GnaHldbspYSu+qGxOx3D3Zv0o7VHYwxdtLYSbTEa/p9CJqiGzA/r0endUMyM/T7/edFIaKZlDB20qjfyvVEH91HD01IC8zryqAvLZwPG+hLC5LeNqnbk3QR4htO66rIkKGkE4CDWAKZVVVkaN1cbqwmlKUQFkQNI4wRgELU3/VKGJoEJBPOSOtlztmoV7gqMmQccVWo+A9gnkbVQ5O566LNS9Mq5230g19Z9O39Xj0BgVTHt1saGE0AAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Firemaking — levelrequire from firemaking.obj
-  { skill: 'smithing', name: 'Holy symbols',    icon: '✝️', req: 16, unitMin: 20, unitMax: 60,  unit: 'holy symbols',    loc: 'Any anvil (silver bar + mould)', itemImage: 'Unstrung_symbol', note: 'Smith silver bars into unstrung symbols at an anvil. String them with a ball of wool for Crafting XP.' },
-  { skill: 'smithing', name: 'Unholy symbols',  icon: '☠️', req: 16, unitMin: 20, unitMax: 60,  unit: 'unholy symbols',  loc: 'Any anvil (silver bar + mould)', itemImage: 'Unstrung_emblem', note: 'Smith silver bars into unstrung emblems at an anvil.' },
+  { skill: 'crafting', name: 'Holy symbols',    icon: '✝️', req: 16, unitMin: 20, unitMax: 60,  unit: 'holy symbols',    loc: 'Any furnace (silver bar + holy mould)', itemImage: 'Unstrung_symbol', note: 'Use a silver bar and holy mould at a furnace to craft unstrung symbols. String them with a ball of wool for bonus Crafting XP.' },
+  { skill: 'crafting', name: 'Unholy symbols',  icon: '☠️', req: 16, unitMin: 20, unitMax: 60,  unit: 'unholy symbols',  loc: 'Any furnace (silver bar + unholy mould)', itemImage: 'Unstrung_emblem', note: 'Use a silver bar and unholy mould at a furnace to craft unstrung emblems.' },
   { skill: 'smithing', name: 'Bronze bars',     icon: '🔨', req: 1,  unitMin: 40,  unitMax: 100, unit: 'bronze bars',     loc: 'Any furnace', itemImage: 'Bronze_bar',    maxReq: 14 },
   { skill: 'smithing', name: 'Iron bars',       icon: '🔨', req: 15, unitMin: 40,  unitMax: 100, unit: 'iron bars',       loc: 'Any furnace', itemImage: 'Iron_bar',      maxReq: 29 },
   { skill: 'smithing', name: 'Steel bars',      icon: '🔨', req: 30, unitMin: 30,  unitMax: 80,  unit: 'steel bars',      loc: 'Any furnace', itemImage: 'Steel_bar',     maxReq: 39 },
@@ -2722,6 +2722,13 @@ function confirmReset() {
 function taskPointValue(task) {
   let base;
   if (task.type === 'skill') {
+    // Thieving level tasks scale by target level
+    if (task.name === 'Gain Thieving levels' && task.thiefLevelTarget) {
+      base = task.thiefLevelTarget >= 70 ? BASE_POINTS.skill_high
+           : task.thiefLevelTarget >= 40 ? BASE_POINTS.skill_mid
+           : BASE_POINTS.skill_low;
+      return Math.round(base * (task.extenderMultiplier || 1));
+    }
     // High tier skilling
     const skillHigh = ['Sharks','Runite ore','Magic trees','Magic logs','Law runes','Yew trees','Yew logs','Adamantite ore','Magic shortbows','Magic longbows','Yew shortbows','Yew longbows'];
     if (skillHigh.includes(task.name)) base = BASE_POINTS.skill_high;
@@ -4704,6 +4711,7 @@ function generateTask(isReroll = false) {
       desc: chainedDesc,
       note: (t.note || '') + ogreNote || null,
       chain: chain || null,
+      thiefLevelTarget: thiefLevelTarget || null,
     };
   } else if (pickType === 'clue') {
     const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
@@ -4756,8 +4764,9 @@ function skillLabel(skill) {
     fm: 'Burn', cooking: 'Cook', fletching: 'Fletch', rc: 'Craft',
     agility: 'Complete', gathering: 'Gather',
     thieving: 'Train', herblore: 'Train', crafting: 'Train',
+    smithing: 'Smith',
   };
-  return map[skill] || 'Gather';
+  return map[skill] || 'Train';
 }
 
 let playerKillCount = 0;
@@ -4775,7 +4784,9 @@ function updateKillCounter() {
   if (!display) return;
   display.textContent = playerKillCount;
   display.style.color = killTarget > 0 && playerKillCount >= killTarget ? '#4caf6e' : 'var(--gold)';
-  target.textContent = killTarget > 0 ? `/ ${killTarget} kills` : 'kills';
+  const isAgilityTask = currentTask && currentTask.skill === 'agility';
+  const unitWord = isAgilityTask ? 'laps' : 'kills';
+  target.textContent = killTarget > 0 ? `/ ${killTarget} ${unitWord}` : unitWord;
 }
 
 function renderTask(task) {
@@ -4789,9 +4800,10 @@ function renderTask(task) {
 
   // Kill counter — show for combat tasks with a numeric target
   playerKillCount = 0;
-  killTarget = task.type === 'combat' ? extractKillCount(task) : 0;
+  killTarget = (task.type === 'combat' || (task.type === 'skill' && task.skill === 'agility')) ? extractKillCount(task) : 0;
   const counterEl = document.getElementById('kill-counter');
-  if (counterEl) counterEl.style.display = (task.type === 'combat' && killTarget > 1) ? 'block' : 'none';
+  const isAgility = task.type === 'skill' && task.skill === 'agility';
+  if (counterEl) counterEl.style.display = ((task.type === 'combat' || isAgility) && killTarget > 1) ? 'block' : 'none';
   updateKillCounter();
   updateExtenderButtons();
   updateNoMaterialsBtn();
@@ -4898,6 +4910,15 @@ function completeTask() {
     completedQuests.add(taskToComplete.questName);
     saveCompletedQuests();
     updateQuestChecklist();
+  }
+
+  // Update thieving level on stat page when gaining a thieving level task is completed
+  if (taskToComplete.name === 'Gain Thieving levels' && taskToComplete.thiefLevelTarget) {
+    const el = document.getElementById('stat-thieving');
+    if (el) {
+      el.value = taskToComplete.thiefLevelTarget;
+      el.dispatchEvent(new Event('input'));
+    }
   }
 
   const base    = taskPointValue(taskToComplete);
