@@ -5096,12 +5096,18 @@ function saveTracker() {
 async function loadTracker() {
   try {
     const d = await dbGet('settings', 'tracker') || {};
-    tracker.total     = d.total     || 0;
-    tracker.streak    = d.streak    || 0;
-    tracker.points    = d.points    || 0;
-    tracker.bossKills   = d.bossKills   || 0;
-    tracker.safeRerolls = d.safeRerolls || 0;
-  } catch(e) {}
+    // Merge saved data with defaults — new fields get default values, old fields are preserved
+    tracker.total          = d.total          || 0;
+    tracker.streak         = d.streak         || 0;
+    tracker.points         = d.points         || 0;
+    tracker.bossKills      = d.bossKills      || 0;
+    tracker.safeRerolls    = d.safeRerolls    || 0;
+    tracker.prestige       = d.prestige       || 0;
+    tracker.highWater      = d.highWater      || 0;
+    tracker.pickerCharges  = d.pickerCharges  || 0;
+    tracker.extenderCharges = d.extenderCharges || 0;
+    tracker.contractRerolls = d.contractRerolls || 0;
+  } catch(e) { console.warn('loadTracker failed:', e); }
   renderTracker();
 }
 
