@@ -350,9 +350,9 @@ function fuseBlocks(){
   if(newGroups>0)return true;
   return false;
 }
-const THUD_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Equip_sword_wav.mp3';
-const FUSE_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Low_Level_Alchemy_ogg.mp3';
-const BREAK_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Chivalry_ogg.mp3';
+const THUD_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Equip_sword.wav.mp3';
+const FUSE_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Low_Level_Alchemy.ogg.mp3';
+const BREAK_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Chivalry.ogg.mp3';
 const CHAIN_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/herblorelevel.wav';
 // Preload all sounds so there's no delay on first play
 [THUD_SRC,FUSE_SRC,BREAK_SRC,CHAIN_SRC].forEach(src=>{const a=new Audio();a.preload='auto';a.src=src;});
