@@ -3,21 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RuneScape Sword Puzzle</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Garlic04/GarlicHQ/main/garlicman.png">
+<title>Duel Arena | GarlicHQ</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#1a1410;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;font-family:'IM Fell English',serif}
-#scale-wrap{transform-origin:top center;display:inline-block;}
-#app{display:flex;flex-direction:column;align-items:center;padding:10px}
-h1{font-family:'Cinzel',serif;color:#c8a84b;font-size:17px;letter-spacing:2px;text-align:center;margin-bottom:8px}
-#ui{display:flex;gap:12px;align-items:flex-start}
-#panel-left,#panel-right{display:flex;flex-direction:column;gap:8px;width:105px}
-.rs-box{background:#1e1609;border:2px solid #5a3d00;border-radius:2px;padding:7px;color:#c8a84b;font-size:11px}
+body{
+  background-color:#1a1410;
+  background-image:
+    radial-gradient(ellipse at center, rgba(26,20,16,0.15) 20%, rgba(26,20,16,0.92) 100%),
+    url('https://oldschool.runescape.wiki/images/Duel_Arena.png');
+  background-size:cover;
+  background-position:center top;
+  background-attachment:fixed;
+  display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:100vh;font-family:'IM Fell English',serif
+}
+#scale-wrap{transform-origin:top center;display:block;width:100%;text-align:center;}
+#app{display:flex;flex-direction:column;align-items:center;padding:10px;background:transparent}
+h1{font-family:'Cinzel',serif;color:#c8a84b;font-size:17px;letter-spacing:2px;text-align:center;margin-bottom:8px;width:100%;display:block;}
+#ui{display:flex;gap:12px;align-items:flex-start;position:relative;}
+#app{display:inline-flex;flex-direction:column;align-items:center;padding:10px;background:transparent;text-align:left;}
+#panel-left,#panel-right{display:flex;flex-direction:column;gap:8px;width:105px;margin-top:34px;}
+#ai-panel{margin-top:34px;}
+.rs-box{background:rgba(20,13,5,0.75);border:2px solid #5a3d00;border-radius:2px;padding:7px;color:#c8a84b;font-size:11px}
 .rs-box h3{font-family:'Cinzel',serif;font-size:10px;color:#e8c86c;margin-bottom:4px;letter-spacing:1px}
 .stat-val{font-size:19px;font-weight:700;color:#e8c86c;line-height:1}
-#board-wrap{position:relative;display:inline-block;overflow:hidden}
-#board{border:3px solid #5a3d00;background:#1a1410;display:grid;grid-template-columns:repeat(6,34px);grid-template-rows:repeat(13,44px);gap:1px;padding:2px}
+#board-wrap{position:relative;display:inline-block;overflow:visible;margin-top:34px;}
+#board{border:3px solid #5a3d00;background:rgba(13,11,8,0.45);display:grid;grid-template-columns:repeat(6,34px);grid-template-rows:repeat(13,44px);gap:1px;padding:2px}
 #falling-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;clip-path:inset(5px 0 0 0);}
 #group-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;}
 .cell{width:34px;height:44px;position:relative;overflow:hidden}
@@ -39,9 +51,35 @@ button:hover{background:#2e2010;border-color:#c8a84b}
   60%{transform:scale(1.0);opacity:1;}
   100%{transform:scale(1.05);opacity:0;}
 }
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid rgba(90,61,0,0.4);
+  background: rgba(13,11,8,0.8);
+  backdrop-filter: blur(4px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-sizing: border-box;
+}
+.nav-brand {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: #c8a84b;
+  text-decoration: none;
+}
+.nav-brand span { color: #8a7030; font-weight: 400; }
 </style>
 </head>
 <body>
+<nav>
+  <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Duel Arena</a>
+</nav>
 <div id="opponent-select" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;">
   <div style="background:#1a1209;border:2px solid #c8a84b;border-radius:6px;padding:32px 40px;text-align:center;min-width:480px;">
     <h2 style="font-family:Cinzel,serif;color:#e8c86c;font-size:22px;letter-spacing:2px;margin-bottom:6px;">⚔ Choose Your Opponent ⚔</h2>
@@ -71,7 +109,6 @@ button:hover{background:#2e2010;border-color:#c8a84b}
 </div>
 <div id="scale-wrap">
 <div id="app">
-<h1>&#9876; RuneScape Sword Puzzle &#9876;</h1>
 <div id="ui">
   <div id="panel-left">
     <div class="rs-box" style="text-align:center">
@@ -80,7 +117,7 @@ button:hover{background:#2e2010;border-color:#c8a84b}
         <img id="player-head-img" src="https://oldschool.runescape.wiki/images/Bronze_med_helm_detail.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
       </div>
       <div id="player-rank-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;margin-top:3px;">Bronze</div>
-      <div id="player-wins-label" style="font-size:7px;color:#5a3d00;font-family:Cinzel,serif;margin-top:1px;">0 wins</div>
+      <div id="player-wins-label" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;margin-top:2px;letter-spacing:0.5px;">0 wins</div>
     </div>
     <div class="rs-box"><h3>Next</h3><div id="next-inner"></div></div>
     <div class="rs-box" style="display:none"><h3>Chain</h3><div class="stat-val" id="chain-val" style="font-size:15px">-</div><div id="chain-text" style="font-size:10px;color:#e87040;font-family:Cinzel,serif;min-height:12px"></div></div>
@@ -88,6 +125,8 @@ button:hover{background:#2e2010;border-color:#c8a84b}
   </div>
   <div>
     <div id="board-wrap">
+      <h1 style="position:absolute;top:-30px;left:0;right:0;text-align:center;margin:0;white-space:nowrap;">&#9876; Duel Arena &#9876;</h1>
+      <div style="position:relative;overflow:hidden;display:inline-block;">
       <div id="board"></div>
       <svg id="group-overlay" xmlns="http://www.w3.org/2000/svg"></svg>
       <div id="falling-overlay"></div>
@@ -98,8 +137,9 @@ button:hover{background:#2e2010;border-color:#c8a84b}
           <button onclick="document.getElementById('win-overlay').classList.remove('show');showOpponentSelect(false)">Play Again</button>
         </div>
       </div>
+      <div id="msg" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:18px;color:#e8c86c;letter-spacing:2px;pointer-events:none;z-index:15;text-shadow:1px 1px 0 #000,-1px -1px 0 #000;">Press Start</div>
+      </div>
     </div>
-    <div id="msg">Press Start</div>
   </div>
   <div id="ai-panel" style="display:flex;flex-direction:column;gap:6px;align-items:center;">
     <div class="rs-box" style="width:80px;text-align:center">
@@ -1459,7 +1499,7 @@ function landHorizontalSword(h,w,wid,side){
 
 function findBreaks(){const toBreak=new Set();for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const b=board[r][c];if(!b||!b.isBreaker||b.grey)continue;const conn=getConnected(r,c,b.w);if(conn.length>1)conn.forEach(k=>toBreak.add(k));}return[...toBreak].map(k=>{const[r,c]=k.split(',').map(Number);return{r,c};});}
 function getConnected(sr,sc,wid){const vis=new Set(),q=[[sr,sc]];while(q.length){const[r,c]=q.pop(),k=r+','+c;if(vis.has(k))continue;vis.add(k);for(const[dr,dc] of[[-1,0],[1,0],[0,-1],[0,1]]){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc]&&board[nr][nc].w===wid&&!board[nr][nc].grey&&!vis.has(nr+','+nc))q.push([nr,nc]);}}return[...vis];}
-function endGame(){waitingForChain=false;gameOver=true;started=false;clearInterval(mainTimer);clearTimeout(floatTimer);stopAi();document.getElementById('msg').textContent='GAME OVER';document.getElementById('btn-start').textContent='Restart';document.getElementById('btn-pause').disabled=true;document.getElementById('btn-pause').textContent='Pause';setTimeout(()=>showOpponentSelect(false),800);}
+function endGame(){waitingForChain=false;gameOver=true;started=false;clearInterval(mainTimer);clearTimeout(floatTimer);stopAi();document.getElementById('msg').textContent='GAME OVER';document.getElementById('btn-start').textContent='Restart';document.getElementById('btn-pause').disabled=true;document.getElementById('btn-pause').textContent='Pause';}
 function startGame(){
   board=makeBoard();score=0;cleared=0;level=1;gameOver=false;paused=false;started=true;waitingForChain=false;softDrop=false;
   attackQueue.forEach(a=>stopPreview(a.preview));
@@ -2151,7 +2191,7 @@ function confirmOpponent(){
   startGame();
 }
 function showOpponentSelect(canResume=false){
-  // pause the game if it's running
+  // pause the game if it's running and not already paused
   if(started&&!gameOver&&!paused){
     paused=true;
     clearInterval(mainTimer);clearTimeout(floatTimer);
@@ -2176,8 +2216,6 @@ document.getElementById('btn-pause').addEventListener('click',()=>{
   document.getElementById('msg').textContent=paused?'PAUSED':'';
   if(paused){
     clearInterval(mainTimer);clearTimeout(floatTimer);
-    // show change opponent option while paused
-    showOpponentSelect(true);
   } else {
     mainTimer=setInterval(tick,softDrop?FAST_MS:BASE_MS);
     if(floaterGroups.length>0)scheduleFloatStep();
