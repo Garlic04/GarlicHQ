@@ -2952,6 +2952,7 @@ function generateDailyTask() {
       task = { type:'skill', name:t.name, icon:t.icon, itemImage:t.itemImage, title, desc:`Location: ${t.loc}.`, note:t.note||null };
     } else if (pickType === 'choice') {
     const choiceEligible = CHOICE_TASKS.filter(t => {
+      if (t.name === lastTaskName) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
       if (t.skill) {
         if (doCombat) return false;
@@ -3716,12 +3717,11 @@ function buildOneTask() {
     task = { type:'quest', name:t.name, icon:'📜', itemImage:'Quest_point_icon', title:`Complete: ${t.name}`, desc:`Start this quest in-game!`, note:null, questName:t.name };
   } else if (pickType === 'choice') {
     const eligible = CHOICE_TASKS.filter(t => {
+      if (t.name === lastTaskName) return false;
       if (t.skill) {
-        // Skill choice task — only in skill or mix mode
         if (mode === 'combat') return false;
         return enabledSkills.has(t.skill) && (stats[t.skill] || 1) >= t.req;
       }
-      // Combat choice task — only in combat or mix mode
       if (mode === 'skill') return false;
       return cb >= t.min && cb <= t.max;
     });
@@ -4719,7 +4719,7 @@ function generateTask(isReroll = false) {
       note: t.note || null,
     };
   } else if (pickType === 'quest') {
-    const eligible = QUEST_TASKS.filter(isQuestEligible);
+    const eligible = QUEST_TASKS.filter(t => isQuestEligible(t) && t.name !== lastTaskName);
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const reqParts = [];
