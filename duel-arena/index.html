@@ -161,7 +161,14 @@ nav {
         <div id="win-box">
           <h2>⚔ VICTORY ⚔</h2>
           <p>The opponent has been defeated!</p>
-          <button onclick="document.getElementById('win-overlay').classList.remove('show');showOpponentSelect(false)">Play Again</button>
+          <div id="win-sp-btns">
+            <button onclick="document.getElementById('win-overlay').classList.remove('show');showOpponentSelect(false)">Play Again</button>
+          </div>
+          <div id="win-mp-btns" style="display:none;flex-direction:column;gap:6px;align-items:center;">
+            <button onclick="startRematch()" style="font-size:12px;padding:6px 20px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Rematch</button>
+            <button onclick="declineRematch()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>
+            <div id="win-rematch-status" style="font-family:'IM Fell English',serif;font-size:11px;color:#a08040;margin-top:4px;"></div>
+          </div>
         </div>
       </div>
       <div id="msg" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:18px;color:#e8c86c;letter-spacing:2px;pointer-events:none;z-index:15;text-shadow:1px 1px 0 #000,-1px -1px 0 #000;">Press Start</div>
@@ -576,17 +583,24 @@ function mpSendGameOver(){
 }
 
 function mpWin(){
-  // we won — opponent sent gameOver
   paused=true;clearInterval(mainTimer);
   recordWin();
+  // show win overlay with MP rematch buttons
+  document.getElementById('win-sp-btns').style.display='none';
+  document.getElementById('win-mp-btns').style.display='flex';
+  document.getElementById('win-rematch-status').textContent='';
   document.getElementById('win-overlay').classList.add('show');
   mpMode=false;
   if(mpSocket){mpSocket.close();mpSocket=null;}
   document.getElementById('btn-pause').disabled=false;
-  setTimeout(()=>offerRematch(),800);
 }
 
-let mpRematchRoom=''; // room both players can rejoin for rematch
+function setRematchStatus(txt){
+  const s1=document.getElementById('rematch-status');
+  const s2=document.getElementById('win-rematch-status');
+  if(s1)s1.textContent=txt;
+  if(s2)s2.textContent=txt;
+}
 
 function offerRematch(){
   // show rematch UI over the board
@@ -605,9 +619,8 @@ function offerRematch(){
 }
 
 function startRematch(){
-  document.getElementById('rematch-status').textContent='Waiting for opponent...';
-  // reconnect to the same game room with a rematch flag
-  mpRematchRoom=mpRoomId+'-rematch';
+  setRematchStatus('Waiting for opponent...');
+  mpRematchRoom=mpRoomId+'-rematch-'+Date.now();
   const url=`${PARTYKIT_URL}/parties/main/${mpRematchRoom}`;
   mpSocket=new WebSocket(url);
   mpSocket.onopen=()=>{
@@ -619,11 +632,10 @@ function startRematch(){
   mpSocket.onmessage=(e)=>{
     const msg=JSON.parse(e.data);
     if(msg.type==='matched'){
-      const el=document.getElementById('rematch-overlay');
-      if(el)el.remove();
+      const el=document.getElementById('rematch-overlay');if(el)el.remove();
+      document.getElementById('win-overlay').classList.remove('show');
       mpMode=true;
       mpRoomId=msg.roomId;
-      // reconnect to new private room
       mpSocket.close();
       const url2=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
       mpSocket=new WebSocket(url2);
@@ -640,20 +652,20 @@ function startRematch(){
       document.getElementById('npc-head-img').src=oppRank.img;
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
-      document.getElementById('win-overlay').classList.remove('show');
       startGame();
     }
-    if(msg.type==='waiting'){
-      document.getElementById('rematch-status').textContent='Waiting for opponent...';
-    }
+    if(msg.type==='waiting'){setRematchStatus('Waiting for opponent...');}
   };
-  mpSocket.onerror=()=>{document.getElementById('rematch-status').textContent='Connection error';};
+  mpSocket.onerror=()=>{setRematchStatus('Connection error');};
 }
 
 function declineRematch(){
-  const el=document.getElementById('rematch-overlay');
-  if(el)el.remove();
-  endMpGame();
+  const el=document.getElementById('rematch-overlay');if(el)el.remove();
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('win-sp-btns').style.display='block';
+  document.getElementById('win-mp-btns').style.display='none';
+  if(mpSocket){mpSocket.close();mpSocket=null;}
+  document.getElementById('btn-pause').disabled=false;
   showOpponentSelect(false);
 }
 
