@@ -373,7 +373,33 @@ async function loadChainBuffer(){
 document.addEventListener('click',()=>loadChainBuffer(),{once:true});
 
 function playSword(volume=0.4){if(muted)return;try{const a=new Audio(SWORD_SRC);a.volume=volume;a.play();}catch(e){}}
-function playDeath(volume=0.7){if(muted)return;try{const a=new Audio(DEATH_SRC);a.volume=volume;a.play();}catch(e){}}
+let deathAudioCtx=null;
+let deathAudioBuffer=null;
+async function loadDeathBuffer(){
+  if(deathAudioBuffer)return;
+  try{
+    deathAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const res=await fetch(DEATH_SRC,{mode:'cors'});
+    const arr=await res.arrayBuffer();
+    deathAudioBuffer=await deathAudioCtx.decodeAudioData(arr);
+  }catch(e){console.warn('Death buffer load failed:',e);}
+}
+document.addEventListener('click',()=>loadDeathBuffer(),{once:true});
+function playDeath(volume=0.7){
+  if(muted)return;
+  if(deathAudioBuffer&&deathAudioCtx){
+    try{
+      const src=deathAudioCtx.createBufferSource();
+      src.buffer=deathAudioBuffer;
+      const gain=deathAudioCtx.createGain();
+      gain.gain.value=volume;
+      src.connect(gain);gain.connect(deathAudioCtx.destination);
+      src.start();
+    }catch(e){}
+  } else {
+    try{const a=new Audio(DEATH_SRC);a.volume=volume;a.play();}catch(e){}
+  }
+}
 
 function playChain(mult,volume=0.5){
   if(muted)return;
@@ -667,8 +693,9 @@ function gravityThenSpawn(){
 function spawnNext(){
   flushAttackQueue();
   waitingForChain=false;
-  falling=makeFalling();
-  if(!canPlace({...falling,anchorRow:0},0)){endGame();return;}
+  const testPiece=makeFalling();
+  if(!canPlace({...testPiece,anchorRow:0},0)){endGame();return;}
+  falling=testPiece;
   snapFallingSprites();render();
 }
 
