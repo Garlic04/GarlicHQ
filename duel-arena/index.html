@@ -464,7 +464,8 @@ let mpMode=false;
 let mpSocket=null;
 let mpUsername='';
 let mpRoomId='';
-let mpPlayerData=null; // full player data from Worker including colour/label
+let mpPlayerData=null;
+let mpMinimapFresh=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 function showMpScreen(){
   document.getElementById('osel-sp').style.display='none';
@@ -618,6 +619,12 @@ function handleGameMessage(e){
   }
   if(msg.type==='board'){
     console.log('Rendering board, cells filled:', msg.cells.filter(v=>v>0).length);
+    if(!msg.reveal&&mpMinimapFresh){
+      // first live board update — clear any previous reveal
+      const canvas=document.getElementById('ai-minimap');
+      if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+      mpMinimapFresh=false;
+    }
     renderMpMinimap(msg.cells, msg.reveal||false);
   }
   if(msg.type==='gameOver'){
@@ -2013,11 +2020,8 @@ function startGame(){
   document.getElementById('chain-text').textContent='';document.getElementById('msg').textContent='';
   document.getElementById('win-overlay').classList.remove('show');
   document.getElementById('btn-start').textContent='Restart';document.getElementById('btn-pause').disabled=false;document.getElementById('btn-pause').textContent='Pause';
-  // clear minimap for fresh game
-  if(mpMode){
-    const canvas=document.getElementById('ai-minimap');
-    if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
-  }
+  // minimap cleared when first board update of new game arrives
+  if(mpMode){mpMinimapFresh=true;mpSendBoard();} // send empty board to reset opponent's minimap
   falling=makeFalling();mainTimer=setInterval(tick,BASE_MS);snapFallingSprites();render();
   startAi();
 }
