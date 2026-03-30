@@ -530,7 +530,8 @@ let mpRoomId='';
 let mpPlayerData=null;
 let mpOpponentUsername='';
 let mpMinimapFresh=false;
-let mpRematchRequested=false; // cleared on first board update of new game // full player data from Worker including colour/label
+let mpRematchRequested=false;
+let mpInRematchWait=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 // ── Lobby system ─────────────────────────────────────────────────────────────
 let lobbySocket=null;
@@ -725,7 +726,7 @@ function startMpGame(msg){
   };
   mpSocket.onmessage=handleGameMessage;
   mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(gameOver){handleOpponentDisconnect();}};
+  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(mpInRematchWait){handleOpponentDisconnect();}};
 }
 
 function startLobbyGame(){
@@ -926,7 +927,7 @@ function connectToMatchmaking(){
       };
       mpSocket.onmessage=handleGameMessage;
       mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(gameOver){handleOpponentDisconnect();}};
+      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(mpInRematchWait){handleOpponentDisconnect();}};
     }
   };
 
@@ -1064,6 +1065,7 @@ function mpSendGameOver(){
 }
 
 function mpWin(){
+  mpInRematchWait=true;
   paused=true;clearInterval(mainTimer);
   recordWin();
   mpSendBoard(true); // send our final board as reveal to opponent
@@ -1167,6 +1169,7 @@ function startRematch(){
 
 function doRematch(){
   mpRematchRequested=false;
+  mpInRematchWait=false;
   // Both players agreed — restart game on the same socket
   const el=document.getElementById('rematch-overlay');if(el)el.remove();
   document.getElementById('win-overlay').classList.remove('show');
@@ -1180,12 +1183,13 @@ function doRematch(){
   // re-attach game handlers in case they were cleared
   mpSocket.onmessage=handleGameMessage;
   mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(gameOver){handleOpponentDisconnect();}};
+  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(mpInRematchWait){handleOpponentDisconnect();}};
   startGame();
 }
 
 function declineRematch(){
   mpRematchRequested=false;
+  mpInRematchWait=false;
   const el=document.getElementById('rematch-overlay');if(el)el.remove();
   document.getElementById('win-overlay').classList.remove('show');
   document.getElementById('win-sp-btns').style.display='block';
@@ -2420,6 +2424,7 @@ function endGame(){
     mpSendBoard(true);
     mpSendGameOver();
     mpMode=false;
+    mpInRematchWait=true;
     document.getElementById('btn-pause').disabled=false;
     // record loss to D1
     if(mpUsername&&mpOpponentUsername){
@@ -2432,6 +2437,7 @@ function endGame(){
 }
 function startGame(){
   mpRematchRequested=false;
+  mpInRematchWait=false;
   board=makeBoard();score=0;cleared=0;level=1;gameOver=false;paused=false;started=true;waitingForChain=false;softDrop=false;
   attackQueue.forEach(a=>stopPreview(a.preview));
   nextSwordId=0;
