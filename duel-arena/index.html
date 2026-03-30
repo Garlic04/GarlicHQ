@@ -707,8 +707,7 @@ function mpWin(){
   document.getElementById('win-overlay').classList.add('show');
   mpMode=false;
   document.getElementById('btn-pause').disabled=false;
-  setMpButtons(false);
-  // delay socket close to ensure reveal board is sent first
+  // don't reset buttons yet — wait to see if they rematch
   setTimeout(()=>{if(mpSocket){mpSocket.close();mpSocket=null;}},300);
 }
 
@@ -1992,7 +1991,7 @@ function endGame(){
   playDeath(0.7);
   renderAiMinimap(true);
   const fo=document.getElementById('forfeit-overlay');if(fo)fo.remove();
-  if(mpMode){mpSendBoard(true);mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
+  if(mpMode){mpSendBoard(true);mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setTimeout(()=>offerRematch(),800);}
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
