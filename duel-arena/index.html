@@ -145,7 +145,7 @@ nav {
       </div>
       <div style="border-top:1px solid #2a1a00;padding-top:12px;">
         <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:8px;">Or join a friend's room</p>
-        <input id="mp-room-code" type="text" maxlength="8" placeholder="GHQ-XXXX" style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:140px;text-align:center;letter-spacing:2px;text-transform:uppercase;">
+        <input id="mp-room-code" type="text" maxlength="4" placeholder="XXXX" style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:100px;text-align:center;letter-spacing:4px;text-transform:uppercase;">
         <div style="margin-top:8px;">
           <button onclick="joinPrivateRoom()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Join Room</button>
         </div>
@@ -505,8 +505,8 @@ function showMpEntryScreen(){
 }
 
 function generateRoomCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars
-  let code='GHQ-';
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';
   for(let i=0;i<4;i++)code+=chars[Math.floor(Math.random()*chars.length)];
   return code;
 }
@@ -522,8 +522,8 @@ async function createPrivateRoom(){
 
 async function joinPrivateRoom(){
   const code=document.getElementById('mp-room-code').value.trim().toUpperCase();
-  if(!code.match(/^GHQ-[A-Z0-9]{4}$/)){
-    document.getElementById('mp-private-status').textContent='Invalid code format';
+  if(!code.match(/^[A-Z0-9]{4}$/)){
+    document.getElementById('mp-private-status').textContent='Enter a 4-character room code';
     return;
   }
   if(!await authenticateForMp())return;
@@ -532,10 +532,16 @@ async function joinPrivateRoom(){
 }
 
 async function authenticateForMp(){
-  // check credentials are already set, if not validate them
   if(mpPlayerData)return true;
-  const nameInput=document.getElementById('mp-username').value.trim();
-  const pinInput=document.getElementById('mp-pin').value.trim();
+  // try inputs first, fall back to localStorage
+  let nameInput=document.getElementById('mp-username').value.trim();
+  let pinInput=document.getElementById('mp-pin').value.trim();
+  if(!nameInput||!pinInput){
+    try{
+      nameInput=localStorage.getItem('duel_arena_username')||'';
+      pinInput=localStorage.getItem('duel_arena_pin')||'';
+    }catch(e){}
+  }
   if(!nameInput||!pinInput){
     document.getElementById('mp-private-status').textContent='Enter username and PIN first';
     showMpEntryScreen();
