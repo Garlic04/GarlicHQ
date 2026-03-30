@@ -116,11 +116,14 @@ nav {
   <!-- Multiplayer screen -->
   <div id="osel-mp" style="display:none;background:#1a1209;border:2px solid #2277dd;border-radius:6px;padding:32px 40px;text-align:center;min-width:360px;">
     <h2 style="font-family:Cinzel,serif;color:#5ac8f5;font-size:20px;letter-spacing:2px;margin-bottom:6px;">⚔ Multiplayer ⚔</h2>
-    <!-- Entry: username input -->
+    <!-- Entry: username + PIN input -->
     <div id="mp-entry">
-      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:20px;">Enter your name to find an opponent</p>
-      <input id="mp-username" type="text" maxlength="16" placeholder="Your name..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;">
-      <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:16px;">Enter your name and PIN to play</p>
+      <input id="mp-username" type="text" maxlength="16" placeholder="Username..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;display:block;margin:0 auto 8px;">
+      <input id="mp-pin" type="password" maxlength="4" placeholder="4-digit PIN..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;display:block;margin:0 auto;">
+      <div id="mp-entry-error" style="color:#ff6666;font-size:11px;font-family:'IM Fell English',serif;margin-top:8px;min-height:16px;"></div>
+      <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:11px;margin:6px 0 16px;">New name? It will be registered with your PIN.<br>Returning? Enter same name + PIN to reclaim it.</p>
+      <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="startMatchmaking()" style="font-size:12px;padding:7px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Find Match</button>
         <button onclick="showSpScreen()" style="font-size:12px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
       </div>
@@ -456,20 +459,24 @@ function playChain(mult,volume=0.5){
 }
 // ── Multiplayer ───────────────────────────────────────────────────────────────
 const PARTYKIT_URL='https://duel-arena-server.garlic04.partykit.dev';
-let mpMode=false;        // true when in a multiplayer game
-let mpSocket=null;       // active WebSocket
-let mpUsername='';       // local player's chosen name
-let mpRoomId='';         // current room ID
+const WORKER_URL='https://duel-arena-worker.nehughes97.workers.dev';
+let mpMode=false;
+let mpSocket=null;
+let mpUsername='';
+let mpRoomId='';
+let mpPlayerData=null; // full player data from Worker including colour/label
 
 function showMpScreen(){
   document.getElementById('osel-sp').style.display='none';
   document.getElementById('osel-mp').style.display='block';
   document.getElementById('mp-entry').style.display='block';
   document.getElementById('mp-waiting').style.display='none';
-  // restore saved username
+  document.getElementById('mp-entry-error').textContent='';
   try{
     const saved=localStorage.getItem('duel_arena_username');
     if(saved)document.getElementById('mp-username').value=saved;
+    const savedPin=localStorage.getItem('duel_arena_pin');
+    if(savedPin)document.getElementById('mp-pin').value=savedPin;
   }catch(e){}
 }
 function showSpScreen(){
@@ -477,18 +484,57 @@ function showSpScreen(){
   document.getElementById('osel-mp').style.display='none';
 }
 
-function startMatchmaking(){
+async function startMatchmaking(){
   const nameInput=document.getElementById('mp-username').value.trim();
+  const pinInput=document.getElementById('mp-pin').value.trim();
+  const errorEl=document.getElementById('mp-entry-error');
+  errorEl.textContent='';
+
   if(!nameInput){document.getElementById('mp-username').focus();return;}
-  mpUsername=nameInput;
-  // save name for next time
-  try{localStorage.setItem('duel_arena_username',mpUsername);}catch(e){}
-  const nameLabel=document.getElementById('player-name-label');
-  if(nameLabel)nameLabel.textContent=mpUsername;
-  document.getElementById('mp-entry').style.display='none';
-  document.getElementById('mp-waiting').style.display='block';
-  document.getElementById('mp-status').textContent='Connecting...';
-  connectToMatchmaking();
+  if(!/^\d{4}$/.test(pinInput)){errorEl.textContent='PIN must be 4 digits';document.getElementById('mp-pin').focus();return;}
+
+  errorEl.textContent='Checking name...';
+
+  try{
+    // Try login first
+    let res=await fetch(WORKER_URL+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:nameInput,pin:pinInput})});
+    let data=await res.json();
+
+    if(!res.ok){
+      if(res.status===404){
+        // Username not found — try to register
+        res=await fetch(WORKER_URL+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:nameInput,pin:pinInput})});
+        data=await res.json();
+        if(!res.ok){errorEl.textContent=data.error||'Registration failed';return;}
+        // Registered — now login
+        res=await fetch(WORKER_URL+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:nameInput,pin:pinInput})});
+        data=await res.json();
+        if(!res.ok){errorEl.textContent=data.error||'Login failed';return;}
+      } else {
+        errorEl.textContent=data.error||'Error';return;
+      }
+    }
+
+    // Success — save credentials and proceed
+    mpPlayerData=data;
+    mpUsername=data.username;
+    try{localStorage.setItem('duel_arena_username',mpUsername);localStorage.setItem('duel_arena_pin',pinInput);}catch(e){}
+
+    const nameLabel=document.getElementById('player-name-label');
+    if(nameLabel){
+      nameLabel.textContent=mpUsername;
+      nameLabel.style.color=mpPlayerData?.colour||'';
+    }
+
+    errorEl.textContent='';
+    document.getElementById('mp-entry').style.display='none';
+    document.getElementById('mp-waiting').style.display='block';
+    document.getElementById('mp-status').textContent='Connecting...';
+    connectToMatchmaking();
+
+  }catch(e){
+    errorEl.textContent='Connection error — try again';
+  }
 }
 
 function cancelMatchmaking(){
@@ -507,7 +553,7 @@ function connectToMatchmaking(){
     document.getElementById('mp-status').textContent='Waiting for opponent...';
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
-      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
     });
   };
 
@@ -527,7 +573,7 @@ function connectToMatchmaking(){
       mpSocket.onopen=()=>{
         getRankData().then(data=>{
           const rank=getCurrentRank(data.wins);
-          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
         });
       };
       mpSocket.onmessage=handleGameMessage;
@@ -537,10 +583,23 @@ function connectToMatchmaking(){
       document.getElementById('opponent-select').style.display='none';
       mpMode=true;
       document.getElementById('npc-name').textContent=msg.opponentName;
-      document.getElementById('opponent-label').textContent=msg.opponentName;
+      // show opponent name with special colour/label if they have one
+      const oppLabelEl=document.getElementById('opponent-label');
+      if(msg.opponentColour){
+        oppLabelEl.style.color=msg.opponentColour;
+        document.getElementById('npc-name').style.color=msg.opponentColour;
+      } else {
+        oppLabelEl.style.color='';
+        document.getElementById('npc-name').style.color='';
+      }
+      oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
       // show opponent's rank helmet
       const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
       document.getElementById('npc-head-img').src=oppRank.img;
+      const rOppLabel=document.getElementById('opponent-label');
+      if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;document.getElementById('npc-name').style.color=msg.opponentColour;}
+      else{rOppLabel.style.color='';document.getElementById('npc-name').style.color='';}
+      rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
       setMpButtons(true);
@@ -623,11 +682,15 @@ function setMpButtons(inMp){
   document.getElementById('btn-forfeit').style.display=inMp?'block':'none';
   document.getElementById('btn-start').style.display=inMp?'none':'block';
   const nameLabel=document.getElementById('player-name-label');
-  if(nameLabel)nameLabel.textContent=inMp?mpUsername:'You';
+  if(nameLabel){
+    nameLabel.textContent=inMp?mpUsername:'You';
+    if(!inMp)nameLabel.style.color='';
+  }
   if(!inMp){
     const oppLabel=document.getElementById('opponent-label');
-    if(oppLabel)oppLabel.textContent='Opponent';
-    document.getElementById('npc-name').textContent='';
+    if(oppLabel){oppLabel.textContent='Opponent';oppLabel.style.color='';}
+    const npcName=document.getElementById('npc-name');
+    if(npcName){npcName.textContent='';npcName.style.color='';}
   }
 }
 function setRematchStatus(txt){
@@ -661,7 +724,7 @@ function startRematch(){
   mpSocket.onopen=()=>{
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
-      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
     });
   };
   mpSocket.onmessage=(e)=>{
@@ -677,7 +740,7 @@ function startRematch(){
       mpSocket.onopen=()=>{
         getRankData().then(data=>{
           const rank=getCurrentRank(data.wins);
-          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
         });
       };
       mpSocket.onmessage=handleGameMessage;
@@ -685,6 +748,10 @@ function startRematch(){
       mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
       const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
       document.getElementById('npc-head-img').src=oppRank.img;
+      const rOppLabel=document.getElementById('opponent-label');
+      if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;document.getElementById('npc-name').style.color=msg.opponentColour;}
+      else{rOppLabel.style.color='';document.getElementById('npc-name').style.color='';}
+      rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
       setMpButtons(true);
