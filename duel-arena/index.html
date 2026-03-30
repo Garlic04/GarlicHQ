@@ -114,50 +114,74 @@ nav {
   </div>
 
   <!-- Multiplayer screen -->
-  <div id="osel-mp" style="display:none;background:#1a1209;border:2px solid #2277dd;border-radius:6px;padding:32px 40px;text-align:center;min-width:360px;">
+  <div id="osel-mp" style="display:none;background:#1a1209;border:2px solid #2277dd;border-radius:6px;padding:32px 40px;text-align:center;min-width:400px;">
     <h2 style="font-family:Cinzel,serif;color:#5ac8f5;font-size:20px;letter-spacing:2px;margin-bottom:6px;">⚔ Multiplayer ⚔</h2>
-    <!-- Entry: username + PIN input -->
+
+    <!-- Entry: username + PIN -->
     <div id="mp-entry">
       <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:16px;">Enter your name and PIN to play</p>
       <input id="mp-username" type="text" maxlength="16" placeholder="Username..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;display:block;margin:0 auto 8px;">
       <input id="mp-pin" type="password" maxlength="4" placeholder="4-digit PIN..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;display:block;margin:0 auto;">
       <div id="mp-entry-error" style="color:#ff6666;font-size:11px;font-family:'IM Fell English',serif;margin-top:8px;min-height:16px;"></div>
       <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:11px;margin:6px 0 16px;">New name? It will be registered with your PIN.<br>Returning? Enter same name + PIN to reclaim it.</p>
-      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px;">
-        <button onclick="startMatchmaking()" style="font-size:12px;padding:7px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Find Match</button>
-        <button onclick="showSpScreen()" style="font-size:12px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
-      </div>
-      <div style="border-top:1px solid #2a1a00;padding-top:12px;display:flex;gap:8px;justify-content:center;">
-        <button onclick="showPrivateRoomScreen()" style="font-size:11px;padding:5px 16px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Private Room</button>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="startMatchmaking()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Quick Match</button>
+        <button onclick="goToLobbyList()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Lobbies</button>
+        <button onclick="showSpScreen()" style="font-size:12px;padding:7px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
       </div>
     </div>
-    <!-- Waiting for opponent -->
+
+    <!-- Waiting for quick match -->
     <div id="mp-waiting" style="display:none;">
       <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin:0 0 8px;">Searching for opponent...</p>
       <div id="mp-status" style="color:#a08040;font-size:11px;font-family:'IM Fell English',serif;margin-bottom:16px;">Connecting...</div>
       <button onclick="cancelMatchmaking()" style="font-size:11px;padding:5px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Cancel</button>
     </div>
-    <!-- Private room screen -->
-    <div id="mp-private" style="display:none;">
-      <div id="mp-private-create" style="margin-bottom:16px;">
-        <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:12px;">Create a room and share the code with a friend</p>
-        <button onclick="createPrivateRoom()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Create Room</button>
+
+    <!-- Lobby list -->
+    <div id="mp-lobby-list" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-family:Cinzel,serif;color:#e8c86c;font-size:13px;">Open Lobbies</span>
+        <button onclick="showCreateLobby()" style="font-size:11px;padding:4px 14px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">+ Create</button>
       </div>
-      <div style="border-top:1px solid #2a1a00;padding-top:12px;">
-        <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:8px;">Or join a friend's room</p>
-        <input id="mp-room-code" type="text" maxlength="4" placeholder="XXXX" style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:100px;text-align:center;letter-spacing:4px;text-transform:uppercase;">
-        <div style="margin-top:8px;">
-          <button onclick="joinPrivateRoom()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Join Room</button>
+      <div id="lobby-list-items" style="min-height:80px;max-height:200px;overflow-y:auto;border:1px solid #2a1a00;border-radius:3px;padding:4px;">
+        <div id="lobby-list-empty" style="font-family:'IM Fell English',serif;color:#5a3d00;font-size:12px;padding:20px;">No open lobbies — create one!</div>
+      </div>
+      <button onclick="showMpEntryScreen()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;margin-top:10px;">Back</button>
+    </div>
+
+    <!-- Create lobby -->
+    <div id="mp-create-lobby" style="display:none;">
+      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:12px;">Name your lobby</p>
+      <input id="mp-lobby-name" type="text" maxlength="24" placeholder="e.g. Garlic's game" style="font-family:Cinzel,serif;font-size:12px;padding:7px 10px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:220px;text-align:center;display:block;margin:0 auto 8px;">
+      <div id="mp-lobby-error" style="color:#ff6666;font-size:11px;font-family:'IM Fell English',serif;min-height:16px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button onclick="createLobby()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Create Lobby</button>
+        <button onclick="showLobbyList()" style="font-size:11px;padding:7px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
+      </div>
+    </div>
+
+    <!-- Lobby waiting room (host view) -->
+    <div id="mp-lobby-host" style="display:none;">
+      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin-bottom:4px;" id="mp-lobby-host-name"></p>
+      <div id="mp-lobby-host-status" style="font-family:'IM Fell English',serif;color:#a08040;font-size:11px;margin-bottom:16px;">Waiting for opponent...</div>
+      <div id="mp-lobby-guest-info" style="display:none;margin-bottom:12px;padding:8px;border:1px solid #2277dd;border-radius:3px;background:#0a1220;">
+        <div id="mp-lobby-guest-name" style="font-family:Cinzel,serif;color:#e8c86c;font-size:12px;"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
+          <button onclick="startLobbyGame()" style="font-size:12px;padding:6px 20px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Start!</button>
+          <button onclick="kickGuest()" style="font-size:11px;padding:6px 14px;background:#2a0a0a;border-color:#aa2222;color:#ff6666;">Kick</button>
         </div>
       </div>
-      <div id="mp-private-status" style="color:#a08040;font-size:11px;font-family:'IM Fell English',serif;margin-top:10px;min-height:16px;"></div>
-      <div id="mp-private-code-display" style="display:none;margin-top:12px;">
-        <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:11px;margin-bottom:4px;">Your room code:</p>
-        <div id="mp-private-code" style="font-family:Cinzel,serif;font-size:22px;color:#5ac8f5;letter-spacing:4px;"></div>
-        <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:10px;margin-top:4px;">Waiting for opponent to join...</p>
-      </div>
-      <button onclick="showMpEntryScreen()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;margin-top:12px;">Back</button>
+      <button onclick="closeLobby()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Close Lobby</button>
     </div>
+
+    <!-- Lobby waiting room (guest view) -->
+    <div id="mp-lobby-guest" style="display:none;">
+      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin-bottom:4px;">Waiting for host to start...</p>
+      <div id="mp-lobby-guest-host-name" style="font-family:'IM Fell English',serif;color:#a08040;font-size:11px;margin-bottom:16px;"></div>
+      <button onclick="leaveLobby()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>
+    </div>
+
   </div>
 
 </div>
@@ -491,49 +515,226 @@ let mpRoomId='';
 let mpPlayerData=null;
 let mpMinimapFresh=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
-function showPrivateRoomScreen(){
-  document.getElementById('mp-entry').style.display='none';
-  document.getElementById('mp-private').style.display='block';
-  document.getElementById('mp-private-status').textContent='';
-  document.getElementById('mp-private-code-display').style.display='none';
-  document.getElementById('mp-room-code').value='';
-}
+// ── Lobby system ─────────────────────────────────────────────────────────────
+let lobbySocket=null;
+let lobbyRoomId='';
+let isLobbyHost=false;
+
 function showMpEntryScreen(){
-  document.getElementById('mp-private').style.display='none';
+  ['mp-waiting','mp-lobby-list','mp-create-lobby','mp-lobby-host','mp-lobby-guest'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
   document.getElementById('mp-entry').style.display='block';
-  if(mpSocket){mpSocket.close();mpSocket=null;}
+  if(lobbySocket){lobbySocket.close();lobbySocket=null;}
 }
 
-function generateRoomCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code='';
-  for(let i=0;i<4;i++)code+=chars[Math.floor(Math.random()*chars.length)];
-  return code;
-}
-
-async function createPrivateRoom(){
+async function goToLobbyList(){
   if(!await authenticateForMp())return;
-  const code=generateRoomCode();
-  document.getElementById('mp-private-code').textContent=code;
-  document.getElementById('mp-private-code-display').style.display='block';
-  document.getElementById('mp-private-status').textContent='';
-  connectToPrivateRoom(code, true);
+  showLobbyList();
+  connectToLobbyList();
 }
 
-async function joinPrivateRoom(){
-  const code=document.getElementById('mp-room-code').value.trim().toUpperCase();
-  if(!code.match(/^[A-Z0-9]{4}$/)){
-    document.getElementById('mp-private-status').textContent='Enter a 4-character room code';
+function showLobbyList(){
+  document.getElementById('mp-entry').style.display='none';
+  document.getElementById('mp-create-lobby').style.display='none';
+  document.getElementById('mp-lobby-list').style.display='block';
+}
+
+function showCreateLobby(){
+  document.getElementById('mp-lobby-list').style.display='none';
+  document.getElementById('mp-create-lobby').style.display='block';
+  document.getElementById('mp-lobby-name').value=mpUsername+"'s game";
+  document.getElementById('mp-lobby-error').textContent='';
+}
+
+function connectToLobbyList(){
+  if(lobbySocket){lobbySocket.close();}
+  const url=`${PARTYKIT_URL}/parties/main/lobby-list`;
+  lobbySocket=new WebSocket(url);
+  lobbySocket.onopen=()=>{
+    lobbySocket.send(JSON.stringify({type:'get-lobbies'}));
+  };
+  lobbySocket.onmessage=(e)=>{
+    const msg=JSON.parse(e.data);
+    if(msg.type==='lobby-list')renderLobbyList(msg.lobbies);
+  };
+}
+
+function renderLobbyList(lobbies){
+  const container=document.getElementById('lobby-list-items');
+  const empty=document.getElementById('lobby-list-empty');
+  if(!lobbies||lobbies.length===0){
+    empty.style.display='block';
+    // remove any old rows
+    [...container.querySelectorAll('.lobby-row')].forEach(el=>el.remove());
     return;
   }
-  if(!await authenticateForMp())return;
-  document.getElementById('mp-private-status').textContent='Joining room...';
-  connectToPrivateRoom(code, false);
+  empty.style.display='none';
+  // rebuild list
+  [...container.querySelectorAll('.lobby-row')].forEach(el=>el.remove());
+  lobbies.forEach(lobby=>{
+    const row=document.createElement('div');
+    row.className='lobby-row';
+    row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-bottom:1px solid #1a1000;';
+    const nameColour=lobby.hostColour||'#e8c86c';
+    const label=lobby.hostLabel?` <span style="color:#888;font-size:9px;">[${lobby.hostLabel}]</span>`:'';
+    row.innerHTML=`
+      <div style="text-align:left;">
+        <div style="font-family:Cinzel,serif;font-size:11px;color:#a08040;">${lobby.lobbyName}</div>
+        <div style="font-family:'IM Fell English',serif;font-size:10px;color:${nameColour};">${lobby.hostName}${label}</div>
+      </div>
+      <button onclick="joinLobby('${lobby.id}')" style="font-size:10px;padding:4px 12px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Join</button>`;
+    container.appendChild(row);
+  });
+}
+
+async function createLobby(){
+  const nameInput=document.getElementById('mp-lobby-name').value.trim();
+  const errEl=document.getElementById('mp-lobby-error');
+  if(!nameInput){errEl.textContent='Enter a lobby name';return;}
+  // validate lobby name via Worker
+  try{
+    const res=await fetch(WORKER_URL+'/validate-lobby-name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nameInput})});
+    const data=await res.json();
+    if(!res.ok){errEl.textContent=data.error||'Invalid name';return;}
+  }catch(e){errEl.textContent='Connection error';return;}
+
+  isLobbyHost=true;
+  lobbyRoomId='lobby-'+Math.random().toString(36).slice(2,9);
+  // show host waiting screen
+  document.getElementById('mp-create-lobby').style.display='none';
+  document.getElementById('mp-lobby-host').style.display='block';
+  document.getElementById('mp-lobby-host-name').textContent=nameInput;
+  document.getElementById('mp-lobby-host-status').textContent='Waiting for opponent...';
+  document.getElementById('mp-lobby-guest-info').style.display='none';
+
+  // announce to lobby list
+  if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+    getRankData().then(data=>{
+      const rank=getCurrentRank(data.wins);
+      lobbySocket.send(JSON.stringify({type:'open-lobby',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,lobbyName:nameInput,lobbyRoomId:lobbyRoomId}));
+    });
+  }
+  // connect to own lobby room
+  connectToLobbyRoom(lobbyRoomId, true);
+}
+
+function joinLobby(roomId){
+  isLobbyHost=false;
+  lobbyRoomId=roomId;
+  document.getElementById('mp-lobby-list').style.display='none';
+  document.getElementById('mp-lobby-guest').style.display='block';
+  document.getElementById('mp-lobby-guest-host-name').textContent='Connecting...';
+  connectToLobbyRoom(roomId, false);
+}
+
+let lobbyGameSocket=null;
+
+function connectToLobbyRoom(roomId, asHost){
+  lobbyGameSocket=new WebSocket(`${PARTYKIT_URL}/parties/main/${roomId}`);
+  lobbyGameSocket.onopen=()=>{
+    getRankData().then(data=>{
+      const rank=getCurrentRank(data.wins);
+      lobbyGameSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
+    });
+  };
+  lobbyGameSocket.onmessage=(e)=>{
+    const msg=JSON.parse(e.data);
+    if(msg.type==='guest-joined'&&asHost){
+      document.getElementById('mp-lobby-host-status').textContent='';
+      document.getElementById('mp-lobby-guest-info').style.display='block';
+      const guestColour=msg.guestColour||'#e8c86c';
+      const guestLabel=msg.guestLabel?` [${msg.guestLabel}]`:'';
+      document.getElementById('mp-lobby-guest-name').innerHTML=`<span style="color:${guestColour}">${msg.guestName}${guestLabel}</span> wants to duel!`;
+    }
+    if(msg.type==='lobby-joined'&&!asHost){
+      const hostColour=msg.hostColour||'#e8c86c';
+      document.getElementById('mp-lobby-guest-host-name').innerHTML=`Joined <span style="color:${hostColour}">${msg.hostName}</span>'s lobby`;
+    }
+    if(msg.type==='kicked'){
+      document.getElementById('mp-lobby-guest').style.display='none';
+      showLobbyList();
+      connectToLobbyList();
+      lobbyGameSocket.close();
+    }
+    if(msg.type==='matched'){
+      // transition to game
+      document.getElementById('mp-lobby-host').style.display='none';
+      document.getElementById('mp-lobby-guest').style.display='none';
+      // close lobby list socket
+      if(lobbySocket){lobbySocket.close();lobbySocket=null;}
+      startMpGame(msg);
+    }
+  };
+  lobbyGameSocket.onerror=()=>{
+    if(asHost){document.getElementById('mp-lobby-host-status').textContent='Connection error';}
+    else{document.getElementById('mp-lobby-guest-host-name').textContent='Connection error';}
+  };
+}
+
+function startMpGame(msg){
+  document.getElementById('opponent-select').style.display='none';
+  mpMode=true;
+  document.getElementById('npc-name').style.display='none';
+  const oppLabelEl=document.getElementById('opponent-label');
+  if(msg.opponentColour){oppLabelEl.style.color=msg.opponentColour;}
+  else{oppLabelEl.style.color='';}
+  oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
+  const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
+  document.getElementById('npc-head-img').src=oppRank.img;
+  document.getElementById('ai-status').textContent='Fighting! ⚔';
+  document.getElementById('btn-pause').disabled=true;
+  setMpButtons(true);
+  // connect to game room
+  const url=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
+  mpSocket=new WebSocket(url);
+  mpSocket.onopen=()=>{
+    getRankData().then(data=>{
+      const rank=getCurrentRank(data.wins);
+      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
+      startGame();
+    });
+  };
+  mpSocket.onmessage=handleGameMessage;
+  mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
+  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+}
+
+function startLobbyGame(){
+  if(lobbyGameSocket&&lobbyGameSocket.readyState===WebSocket.OPEN){
+    lobbyGameSocket.send(JSON.stringify({type:'start-game'}));
+    // announce lobby closed
+    if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+      lobbySocket.send(JSON.stringify({type:'close-lobby'}));
+    }
+  }
+}
+
+function kickGuest(){
+  if(lobbyGameSocket&&lobbyGameSocket.readyState===WebSocket.OPEN){
+    lobbyGameSocket.send(JSON.stringify({type:'kick-guest'}));
+    document.getElementById('mp-lobby-guest-info').style.display='none';
+    document.getElementById('mp-lobby-host-status').textContent='Waiting for opponent...';
+  }
+}
+
+function closeLobby(){
+  if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+    lobbySocket.send(JSON.stringify({type:'close-lobby'}));
+  }
+  if(lobbyGameSocket){lobbyGameSocket.close();lobbyGameSocket=null;}
+  showLobbyList();
+  connectToLobbyList();
+}
+
+function leaveLobby(){
+  if(lobbyGameSocket){lobbyGameSocket.close();lobbyGameSocket=null;}
+  showLobbyList();
+  connectToLobbyList();
 }
 
 async function authenticateForMp(){
   if(mpPlayerData)return true;
-  // try inputs first, fall back to localStorage
   let nameInput=document.getElementById('mp-username').value.trim();
   let pinInput=document.getElementById('mp-pin').value.trim();
   if(!nameInput||!pinInput){
@@ -543,79 +744,27 @@ async function authenticateForMp(){
     }catch(e){}
   }
   if(!nameInput||!pinInput){
-    document.getElementById('mp-private-status').textContent='Enter username and PIN first';
-    showMpEntryScreen();
+    document.getElementById('mp-entry-error').textContent='Enter username and PIN first';
     return false;
   }
-  // run auth
   try{
     let res=await fetch(WORKER_URL+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:nameInput,pin:pinInput})});
     let data=await res.json();
     if(!res.ok&&res.status===404){
       res=await fetch(WORKER_URL+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:nameInput,pin:pinInput})});
       data=await res.json();
-      if(!res.ok){document.getElementById('mp-private-status').textContent=data.error||'Registration failed';return false;}
+      if(!res.ok){document.getElementById('mp-entry-error').textContent=data.error||'Registration failed';return false;}
       res=await fetch(WORKER_URL+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:nameInput,pin:pinInput})});
       data=await res.json();
     }
-    if(!res.ok){document.getElementById('mp-private-status').textContent=data.error||'Auth failed';return false;}
+    if(!res.ok){document.getElementById('mp-entry-error').textContent=data.error||'Auth failed';return false;}
     mpPlayerData=data;
     mpUsername=data.username;
     try{localStorage.setItem('duel_arena_username',mpUsername);localStorage.setItem('duel_arena_pin',pinInput);}catch(e){}
     const nameLabel=document.getElementById('player-name-label');
     if(nameLabel){nameLabel.textContent=mpUsername;nameLabel.style.color=mpPlayerData?.colour||'';}
     return true;
-  }catch(e){document.getElementById('mp-private-status').textContent='Connection error';return false;}
-}
-
-function connectToPrivateRoom(code, isHost){
-  const roomId='private-'+code.toLowerCase();
-  mpRoomId=roomId;
-  const url=`${PARTYKIT_URL}/parties/main/${roomId}`;
-  mpSocket=new WebSocket(url);
-  mpSocket.onopen=()=>{
-    getRankData().then(data=>{
-      const rank=getCurrentRank(data.wins);
-      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
-    });
-  };
-  mpSocket.onmessage=(e)=>{
-    const msg=JSON.parse(e.data);
-    if(msg.type==='matched'){
-      document.getElementById('mp-private-code-display').style.display='none';
-      document.getElementById('opponent-select').style.display='none';
-      mpMode=true;
-      document.getElementById('npc-name').style.display='none';
-      const oppLabelEl=document.getElementById('opponent-label');
-      if(msg.opponentColour){oppLabelEl.style.color=msg.opponentColour;}
-      else{oppLabelEl.style.color='';}
-      oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
-      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
-      document.getElementById('npc-head-img').src=oppRank.img;
-      document.getElementById('ai-status').textContent='Fighting! ⚔';
-      document.getElementById('btn-pause').disabled=true;
-      setMpButtons(true);
-      // connect to game room
-      mpSocket.close();
-      const url2=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
-      mpSocket=new WebSocket(url2);
-      mpSocket.onopen=()=>{
-        getRankData().then(data=>{
-          const rank=getCurrentRank(data.wins);
-          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
-          startGame();
-        });
-      };
-      mpSocket.onmessage=handleGameMessage;
-      mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
-    }
-    if(msg.type==='waiting'){
-      document.getElementById('mp-private-status').textContent=isHost?'Waiting for opponent to join...':'Waiting for host...';
-    }
-  };
-  mpSocket.onerror=()=>{document.getElementById('mp-private-status').textContent='Connection error';};
-  mpSocket.onclose=()=>{};
+  }catch(e){document.getElementById('mp-entry-error').textContent='Connection error';return false;}
 }
 
 function showMpScreen(){
