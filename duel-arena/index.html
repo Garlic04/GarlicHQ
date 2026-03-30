@@ -188,6 +188,7 @@ nav {
     <div id="btn-row" style="display:flex;flex-direction:column;gap:4px;width:80px;">
       <button id="btn-start" style="width:100%">Start</button>
       <button id="btn-pause" disabled style="width:100%">Pause</button>
+      <button id="btn-forfeit" style="width:100%;display:none;background:#2a0a0a;border-color:#aa2222;color:#ff6666;" onclick="confirmForfeit()">Forfeit</button>
       <button id="btn-mute" onclick="muted=!muted;this.textContent=muted?'🔇':'🔊'" style="width:100%">🔊</button>
     </div>
   </div>
@@ -539,6 +540,7 @@ function connectToMatchmaking(){
       document.getElementById('npc-head-img').src=oppRank.img;
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
+      setMpButtons(true);
       startGame();
     }
   };
@@ -593,9 +595,19 @@ function mpWin(){
   mpMode=false;
   if(mpSocket){mpSocket.close();mpSocket=null;}
   document.getElementById('btn-pause').disabled=false;
+  setMpButtons(false);
 }
 
-function setRematchStatus(txt){
+function confirmForfeit(){
+  if(!mpMode||!started||gameOver)return;
+  if(confirm('Forfeit this match?')){
+    endGame();
+  }
+}
+function setMpButtons(inMp){
+  document.getElementById('btn-pause').style.display=inMp?'none':'block';
+  document.getElementById('btn-forfeit').style.display=inMp?'block':'none';
+}
   const s1=document.getElementById('rematch-status');
   const s2=document.getElementById('win-rematch-status');
   if(s1)s1.textContent=txt;
@@ -652,6 +664,7 @@ function startRematch(){
       document.getElementById('npc-head-img').src=oppRank.img;
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
+      setMpButtons(true);
       startGame();
     }
     if(msg.type==='waiting'){setRematchStatus('Waiting for opponent...');}
@@ -666,6 +679,7 @@ function declineRematch(){
   document.getElementById('win-mp-btns').style.display='none';
   if(mpSocket){mpSocket.close();mpSocket=null;}
   document.getElementById('btn-pause').disabled=false;
+  setMpButtons(false);
   showOpponentSelect(false);
 }
 
@@ -1826,7 +1840,7 @@ function endGame(){
   document.getElementById('btn-pause').textContent='Pause';
   playDeath(0.7);
   renderAiMinimap(true);
-  if(mpMode){mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setTimeout(()=>offerRematch(),800);}
+  if(mpMode){mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
@@ -2539,7 +2553,7 @@ function showOpponentSelect(canResume=false){
 
 document.getElementById('btn-start').addEventListener('click',()=>showOpponentSelect(started&&!gameOver));
 document.getElementById('btn-pause').addEventListener('click',()=>{
-  if(!started||gameOver)return;
+  if(!started||gameOver||mpMode)return;
   paused=!paused;
   document.getElementById('btn-pause').textContent=paused?'Resume':'Pause';
   document.getElementById('msg').textContent=paused?'PAUSED':'';
