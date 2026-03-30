@@ -1055,6 +1055,9 @@ function mpWin(){
   paused=true;clearInterval(mainTimer);
   recordWin();
   mpSendBoard(true); // send our final board as reveal to opponent
+  // reset rematch button to default state
+  const winRematchBtn=document.querySelector('#win-mp-btns button');
+  if(winRematchBtn){winRematchBtn.textContent='Rematch';winRematchBtn.style.borderColor='#2277dd';winRematchBtn.style.color='#5ac8f5';}
   // show win overlay with MP rematch buttons
   document.getElementById('win-sp-btns').style.display='none';
   document.getElementById('win-mp-btns').style.display='flex';
@@ -1112,6 +1115,8 @@ function setRematchStatus(txt){
 }
 
 function offerRematch(){
+  // remove any stale overlay from previous game
+  const stale=document.getElementById('rematch-overlay');if(stale)stale.remove();
   // show rematch UI over the board
   const boardWrap=document.getElementById('board-wrap');if(!boardWrap)return;
   const el=document.createElement('div');
@@ -1140,6 +1145,7 @@ function startRematch(){
 }
 
 function doRematch(){
+  mpRematchRequested=false;
   // Both players agreed — restart game on the same socket
   const el=document.getElementById('rematch-overlay');if(el)el.remove();
   document.getElementById('win-overlay').classList.remove('show');
