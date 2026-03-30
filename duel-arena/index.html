@@ -139,7 +139,7 @@ nav {
 <div id="ui">
   <div id="panel-left">
     <div class="rs-box" style="text-align:center">
-      <h3>You</h3>
+      <h3 id="player-name-label">You</h3>
       <div id="player-head" style="width:48px;height:48px;margin:4px auto 0;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
         <img id="player-head-img" src="https://oldschool.runescape.wiki/images/Bronze_med_helm_detail.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
       </div>
@@ -177,7 +177,7 @@ nav {
   </div>
   <div id="ai-panel" style="display:flex;flex-direction:column;gap:6px;align-items:center;">
     <div class="rs-box" style="width:80px;text-align:center">
-      <h3>Opponent</h3>
+      <h3 id="opponent-label">Opponent</h3>
       <div id="npc-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;text-align:center;margin-top:3px;">Highwayman</div>
       <div id="npc-head" style="width:48px;height:48px;margin:4px auto 0;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
         <img id="npc-head-img" src="https://oldschool.runescape.wiki/images/Highwayman_chathead.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
@@ -483,6 +483,8 @@ function startMatchmaking(){
   mpUsername=nameInput;
   // save name for next time
   try{localStorage.setItem('duel_arena_username',mpUsername);}catch(e){}
+  const nameLabel=document.getElementById('player-name-label');
+  if(nameLabel)nameLabel.textContent=mpUsername;
   document.getElementById('mp-entry').style.display='none';
   document.getElementById('mp-waiting').style.display='block';
   document.getElementById('mp-status').textContent='Connecting...';
@@ -535,6 +537,7 @@ function connectToMatchmaking(){
       document.getElementById('opponent-select').style.display='none';
       mpMode=true;
       document.getElementById('npc-name').textContent=msg.opponentName;
+      document.getElementById('opponent-label').textContent=msg.opponentName;
       // show opponent's rank helmet
       const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
       document.getElementById('npc-head-img').src=oppRank.img;
@@ -567,10 +570,7 @@ function handleGameMessage(e){
     if(!gameOver)mpWin();
   }
   if(msg.type==='opponentLeft'){
-    if(!gameOver){
-      document.getElementById('msg').textContent='Opponent left';
-      endMpGame();
-    }
+    if(!gameOver)mpWin();
   }
 }
 
@@ -621,6 +621,14 @@ function doForfeit(){
 function setMpButtons(inMp){
   document.getElementById('btn-pause').style.display=inMp?'none':'block';
   document.getElementById('btn-forfeit').style.display=inMp?'block':'none';
+  document.getElementById('btn-start').style.display=inMp?'none':'block';
+  const nameLabel=document.getElementById('player-name-label');
+  if(nameLabel)nameLabel.textContent=inMp?mpUsername:'You';
+  if(!inMp){
+    const oppLabel=document.getElementById('opponent-label');
+    if(oppLabel)oppLabel.textContent='Opponent';
+    document.getElementById('npc-name').textContent='';
+  }
 }
 function setRematchStatus(txt){
   const s1=document.getElementById('rematch-status');
@@ -2550,7 +2558,8 @@ function confirmOpponent(){
   startGame();
 }
 function showOpponentSelect(canResume=false){
-  if(started&&!gameOver&&!paused){
+  // don't pause in MP — game keeps running behind the menu
+  if(!mpMode&&started&&!gameOver&&!paused){
     paused=true;
     clearInterval(mainTimer);clearTimeout(floatTimer);
     document.getElementById('btn-pause').textContent='Resume';
@@ -2567,7 +2576,10 @@ function showOpponentSelect(canResume=false){
   if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';}
 }
 
-document.getElementById('btn-start').addEventListener('click',()=>showOpponentSelect(started&&!gameOver));
+document.getElementById('btn-start').addEventListener('click',()=>{
+  if(mpMode)return; // no restart in MP
+  showOpponentSelect(started&&!gameOver);
+});
 document.getElementById('btn-pause').addEventListener('click',()=>{
   if(!started||gameOver||mpMode)return;
   paused=!paused;
