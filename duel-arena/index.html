@@ -963,7 +963,19 @@ function handleGameMessage(e){
     if(!gameOver)mpWin();
   }
   if(msg.type==='opponentLeft'){
-    if(!gameOver)mpWin();
+    if(!gameOver){
+      mpWin();
+    } else {
+      // game already over — we're in rematch/leave screen
+      setRematchStatus('Opponent has left.');
+      // grey out rematch button so it's clear they're gone
+      const btns=[document.getElementById('rematch-overlay'),document.getElementById('win-mp-btns')];
+      btns.forEach(el=>{
+        if(!el)return;
+        const btn=el.querySelector('button');
+        if(btn){btn.style.opacity='0.35';btn.style.pointerEvents='none';}
+      });
+    }
   }
   if(msg.type==='rematch-request'){
     // Opponent wants a rematch — update their button to show it
