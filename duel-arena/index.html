@@ -2369,10 +2369,10 @@ function aiFindBreaks(){
 
 function renderAiMinimap(reveal=false){
   const canvas=document.getElementById('ai-minimap');if(!canvas)return;
-  // in MP we don't have the opponent's board — hide minimap
-  if(mpMode||(!aiBoard&&!reveal)){canvas.style.display='none';return;}
+  // in MP mode, minimap is managed by renderMpMinimap — don't touch it
+  if(mpMode)return;
+  if(!aiBoard){canvas.style.display='none';return;}
   canvas.style.display='block';
-  if(!aiBoard)return;
   const ctx=canvas.getContext('2d');
   const cw=canvas.width/COLS,ch=canvas.height/ROWS;
   ctx.clearRect(0,0,canvas.width,canvas.height);
