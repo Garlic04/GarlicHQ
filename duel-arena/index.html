@@ -520,7 +520,9 @@ function connectToMatchmaking(){
       document.getElementById('opponent-select').style.display='none';
       mpMode=true;
       document.getElementById('npc-name').textContent=msg.opponentName;
-      document.getElementById('npc-head-img').src='https://oldschool.runescape.wiki/images/Player_head_icon.png';
+      // show opponent's rank helmet
+      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
+      document.getElementById('npc-head-img').src=oppRank.img;
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
       startGame();
