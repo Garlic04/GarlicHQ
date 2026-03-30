@@ -529,7 +529,8 @@ let mpUsername='';
 let mpRoomId='';
 let mpPlayerData=null;
 let mpOpponentUsername='';
-let mpMinimapFresh=false; // cleared on first board update of new game // full player data from Worker including colour/label
+let mpMinimapFresh=false;
+let mpRematchRequested=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 // ── Lobby system ─────────────────────────────────────────────────────────────
 let lobbySocket=null;
@@ -964,6 +965,22 @@ function handleGameMessage(e){
   if(msg.type==='opponentLeft'){
     if(!gameOver)mpWin();
   }
+  if(msg.type==='rematch-request'){
+    // Opponent wants a rematch — update their button to show it
+    setRematchStatus('Opponent wants a rematch!');
+    // highlight rematch button
+    const btns=[document.getElementById('rematch-overlay'),document.getElementById('win-mp-btns')];
+    btns.forEach(el=>{
+      if(!el)return;
+      const btn=el.querySelector('button');
+      if(btn){btn.style.borderColor='#5ac8f5';btn.style.color='#5ac8f5';btn.textContent='Accept!';}
+    });
+    // store that opponent already requested so when we click it sends accept immediately
+    mpRematchRequested=true;
+  }
+  if(msg.type==='rematch-accept'){
+    doRematch();
+  }
 }
 
 function mpSendAttack(attackType,data){
@@ -1111,59 +1128,37 @@ function offerRematch(){
 }
 
 function startRematch(){
-  setRematchStatus('Waiting for opponent...');
-  // Derive a stable rematch room from both players' names (sorted so both get same room)
-  const names=[mpUsername,mpOpponentUsername].map(n=>n.toLowerCase()).sort();
-  const rematchRoomId='rematch-'+names[0]+'-'+names[1];
-  const url=`${PARTYKIT_URL}/parties/main/${rematchRoomId}`;
-  if(mpSocket&&mpSocket.readyState===WebSocket.OPEN){mpSocket.close();}
-  mpSocket=new WebSocket(url);
-  mpSocket.onopen=()=>{
-    getRankData().then(data=>{
-      const rank=getCurrentRank(data.wins);
-      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
-    });
-  };
-  mpSocket.onmessage=(e)=>{
-    const msg=JSON.parse(e.data);
-    if(msg.type==='matched'){
-      const el=document.getElementById('rematch-overlay');if(el)el.remove();
-      document.getElementById('win-overlay').classList.remove('show');
-      mpOpponentUsername=msg.opponentName||mpOpponentUsername;
-      mpMode=true;
-      mpRoomId=msg.roomId;
-      // restore opponent UI (name/rank persists from previous game)
-      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
-      document.getElementById('npc-head-img').src=oppRank.img;
-      const rOppLabel=document.getElementById('opponent-label');
-      document.getElementById('npc-name').style.display='none';
-      if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;}
-      else{rOppLabel.style.color='';}
-      rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
-      document.getElementById('ai-status').textContent='Fighting! ⚔';
-      document.getElementById('btn-pause').disabled=true;
-      setMpButtons(true);
-      // connect to game room
-      mpSocket.close();
-      const url2=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
-      mpSocket=new WebSocket(url2);
-      mpSocket.onopen=()=>{
-        getRankData().then(data=>{
-          const rank=getCurrentRank(data.wins);
-          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
-          startGame();
-        });
-      };
-      mpSocket.onmessage=handleGameMessage;
-      mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
-    }
-    if(msg.type==='waiting'){setRematchStatus('Waiting for opponent...');}
-  };
-  mpSocket.onerror=()=>{setRematchStatus('Connection error');};
+  if(!mpSocket||mpSocket.readyState!==WebSocket.OPEN){setRematchStatus('Connection lost');return;}
+  if(mpRematchRequested){
+    // opponent already clicked rematch — send accept and start
+    mpSocket.send(JSON.stringify({type:'rematch-accept'}));
+    doRematch();
+  } else {
+    setRematchStatus('Waiting for opponent...');
+    mpSocket.send(JSON.stringify({type:'rematch-request'}));
+  }
+}
+
+function doRematch(){
+  // Both players agreed — restart game on the same socket
+  const el=document.getElementById('rematch-overlay');if(el)el.remove();
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('win-mp-btns').style.display='none';
+  document.getElementById('win-sp-btns').style.display='block';
+  mpMode=true;
+  mpMinimapFresh=true;
+  document.getElementById('ai-status').textContent='Fighting! ⚔';
+  document.getElementById('btn-pause').disabled=true;
+  setMpButtons(true);
+  // re-attach game handlers in case they were cleared
+  mpSocket.onmessage=handleGameMessage;
+  mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
+  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+  startGame();
 }
 
 function declineRematch(){
+  mpRematchRequested=false;
   const el=document.getElementById('rematch-overlay');if(el)el.remove();
   document.getElementById('win-overlay').classList.remove('show');
   document.getElementById('win-sp-btns').style.display='block';
@@ -2409,6 +2404,7 @@ function endGame(){
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
+  mpRematchRequested=false;
   board=makeBoard();score=0;cleared=0;level=1;gameOver=false;paused=false;started=true;waitingForChain=false;softDrop=false;
   attackQueue.forEach(a=>stopPreview(a.preview));
   nextSwordId=0;
