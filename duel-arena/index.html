@@ -727,7 +727,10 @@ function closeLobby(){
   }
   if(lobbyGameSocket){lobbyGameSocket.close();lobbyGameSocket=null;}
   showLobbyList();
-  connectToLobbyList();
+  // don't reconnect — existing lobbySocket will receive broadcast update
+  if(!lobbySocket||lobbySocket.readyState!==WebSocket.OPEN){
+    connectToLobbyList();
+  }
 }
 
 function leaveLobby(){
