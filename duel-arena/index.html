@@ -620,8 +620,8 @@ function offerRematch(){
 
 function startRematch(){
   setRematchStatus('Waiting for opponent...');
-  mpRematchRoom=mpRoomId+'-rematch-'+Date.now();
-  const url=`${PARTYKIT_URL}/parties/main/${mpRematchRoom}`;
+  // both players derive same rematch lobby from original room — use lobby approach
+  const url=`${PARTYKIT_URL}/parties/main/duel-arena-lobby`;
   mpSocket=new WebSocket(url);
   mpSocket.onopen=()=>{
     getRankData().then(data=>{
@@ -948,14 +948,24 @@ function spawnNext(){
   flushAttackQueue();
   waitingForChain=false;
   const testPiece=makeFalling();
-  // check if at least the bottom cell (row 0) is free — top cell above board is ok
   const bottomCells=fallingCells({...testPiece,anchorRow:0}).filter(({r})=>r>=0);
   const anyBlocked=bottomCells.some(({r,c})=>board[r][c]);
   if(anyBlocked){
-    // fill top cells into row 0 cosmetically before game over
+    // commit the piece into the board first
     fallingCells({...testPiece,anchorRow:0}).forEach(({r,c,p})=>{
-      if(r===0&&!board[r][c])board[r][c]={w:p.w,isBreaker:p.isBreaker,fused:false,fusedGroup:null};
+      const tr=r<0?0:r;
+      if(tr<ROWS&&c>=0&&c<COLS&&!board[tr][c])
+        board[tr][c]={w:p.w,isBreaker:p.isBreaker,fused:false,fusedGroup:null};
     });
+    fuseBlocks();
+    // check if any breakers would fire — if so let the chain run first
+    const breaks=findBreaks();
+    if(breaks.length>0){
+      render();
+      waitingForChain=true;
+      setTimeout(()=>gravityThenChain(0),FUSE_FLASH_MS);
+      return;
+    }
     render();
     endGame();
     return;
