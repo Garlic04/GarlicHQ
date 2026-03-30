@@ -458,6 +458,11 @@ function showMpScreen(){
   document.getElementById('osel-mp').style.display='block';
   document.getElementById('mp-entry').style.display='block';
   document.getElementById('mp-waiting').style.display='none';
+  // restore saved username
+  try{
+    const saved=localStorage.getItem('duel_arena_username');
+    if(saved)document.getElementById('mp-username').value=saved;
+  }catch(e){}
 }
 function showSpScreen(){
   document.getElementById('osel-sp').style.display='block';
@@ -468,6 +473,8 @@ function startMatchmaking(){
   const nameInput=document.getElementById('mp-username').value.trim();
   if(!nameInput){document.getElementById('mp-username').focus();return;}
   mpUsername=nameInput;
+  // save name for next time
+  try{localStorage.setItem('duel_arena_username',mpUsername);}catch(e){}
   document.getElementById('mp-entry').style.display='none';
   document.getElementById('mp-waiting').style.display='block';
   document.getElementById('mp-status').textContent='Connecting...';
@@ -573,13 +580,81 @@ function mpWin(){
   paused=true;clearInterval(mainTimer);
   recordWin();
   document.getElementById('win-overlay').classList.add('show');
-  endMpGame();
-}
-
-function endMpGame(){
   mpMode=false;
   if(mpSocket){mpSocket.close();mpSocket=null;}
   document.getElementById('btn-pause').disabled=false;
+  setTimeout(()=>offerRematch(),800);
+}
+
+let mpRematchRoom=''; // room both players can rejoin for rematch
+
+function offerRematch(){
+  // show rematch UI over the board
+  const boardWrap=document.getElementById('board-wrap');if(!boardWrap)return;
+  const el=document.createElement('div');
+  el.id='rematch-overlay';
+  el.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;background:rgba(0,0,0,0.5);';
+  el.innerHTML=`
+    <div style="font-family:Cinzel,serif;font-size:13px;color:#e8c86c;margin-bottom:12px;text-shadow:1px 1px 0 #000;">Rematch?</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="startRematch()" style="font-size:12px;padding:6px 20px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Rematch</button>
+      <button onclick="declineRematch()" style="font-size:12px;padding:6px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>
+    </div>
+    <div id="rematch-status" style="font-family:'IM Fell English',serif;font-size:11px;color:#a08040;margin-top:10px;"></div>`;
+  boardWrap.appendChild(el);
+}
+
+function startRematch(){
+  document.getElementById('rematch-status').textContent='Waiting for opponent...';
+  // reconnect to the same game room with a rematch flag
+  mpRematchRoom=mpRoomId+'-rematch';
+  const url=`${PARTYKIT_URL}/parties/main/${mpRematchRoom}`;
+  mpSocket=new WebSocket(url);
+  mpSocket.onopen=()=>{
+    getRankData().then(data=>{
+      const rank=getCurrentRank(data.wins);
+      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+    });
+  };
+  mpSocket.onmessage=(e)=>{
+    const msg=JSON.parse(e.data);
+    if(msg.type==='matched'){
+      const el=document.getElementById('rematch-overlay');
+      if(el)el.remove();
+      mpMode=true;
+      mpRoomId=msg.roomId;
+      // reconnect to new private room
+      mpSocket.close();
+      const url2=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
+      mpSocket=new WebSocket(url2);
+      mpSocket.onopen=()=>{
+        getRankData().then(data=>{
+          const rank=getCurrentRank(data.wins);
+          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+        });
+      };
+      mpSocket.onmessage=handleGameMessage;
+      mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
+      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
+      document.getElementById('npc-head-img').src=oppRank.img;
+      document.getElementById('ai-status').textContent='Fighting! ⚔';
+      document.getElementById('btn-pause').disabled=true;
+      document.getElementById('win-overlay').classList.remove('show');
+      startGame();
+    }
+    if(msg.type==='waiting'){
+      document.getElementById('rematch-status').textContent='Waiting for opponent...';
+    }
+  };
+  mpSocket.onerror=()=>{document.getElementById('rematch-status').textContent='Connection error';};
+}
+
+function declineRematch(){
+  const el=document.getElementById('rematch-overlay');
+  if(el)el.remove();
+  endMpGame();
+  showOpponentSelect(false);
 }
 
 
@@ -1729,7 +1804,7 @@ function endGame(){
   document.getElementById('btn-pause').textContent='Pause';
   playDeath(0.7);
   renderAiMinimap(true);
-  if(mpMode){mpSendGameOver();endMpGame();}
+  if(mpMode){mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setTimeout(()=>offerRematch(),800);}
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
