@@ -1855,7 +1855,8 @@ function endGame(){
   document.getElementById('btn-pause').textContent='Pause';
   playDeath(0.7);
   renderAiMinimap(true);
-  const fo=document.getElementById('forfeit-overlay');if(fo)fo.remove();if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
+  const fo=document.getElementById('forfeit-overlay');if(fo)fo.remove();
+  if(mpMode){mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
