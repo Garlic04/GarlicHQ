@@ -964,12 +964,12 @@ function handleGameMessage(e){
     if(!gameOver)mpWin();
   }
   if(msg.type==='opponentLeft'){
-    if(!gameOver){
-      mpWin();
+    if(!mpInRematchWait){
+      // game still in progress — opponent left mid-game, we win
+      if(!gameOver)mpWin();
     } else {
-      // game already over — we're in rematch/leave screen
+      // post-game rematch screen — opponent closed tab or clicked Leave
       setRematchStatus('Opponent has left.');
-      // grey out rematch button so it's clear they're gone
       const btns=[document.getElementById('rematch-overlay'),document.getElementById('win-mp-btns')];
       btns.forEach(el=>{
         if(!el)return;
