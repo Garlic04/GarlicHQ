@@ -725,7 +725,7 @@ function startMpGame(msg){
   };
   mpSocket.onmessage=handleGameMessage;
   mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(gameOver){handleOpponentDisconnect();}};
 }
 
 function startLobbyGame(){
@@ -926,7 +926,7 @@ function connectToMatchmaking(){
       };
       mpSocket.onmessage=handleGameMessage;
       mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(gameOver){handleOpponentDisconnect();}};
     }
   };
 
@@ -1144,6 +1144,15 @@ function offerRematch(){
   boardWrap.appendChild(el);
 }
 
+function handleOpponentDisconnect(){
+  setRematchStatus('Opponent has left.');
+  // grey out rematch button
+  const overlayBtn=document.querySelector('#rematch-overlay button');
+  if(overlayBtn){overlayBtn.style.opacity='0.35';overlayBtn.style.pointerEvents='none';}
+  const winBtn=document.querySelector('#win-mp-btns button');
+  if(winBtn){winBtn.style.opacity='0.35';winBtn.style.pointerEvents='none';}
+}
+
 function startRematch(){
   if(!mpSocket||mpSocket.readyState!==WebSocket.OPEN){setRematchStatus('Connection lost');return;}
   if(mpRematchRequested){
@@ -1171,7 +1180,7 @@ function doRematch(){
   // re-attach game handlers in case they were cleared
   mpSocket.onmessage=handleGameMessage;
   mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
-  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+  mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(gameOver){handleOpponentDisconnect();}};
   startGame();
 }
 
