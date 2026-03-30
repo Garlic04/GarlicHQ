@@ -127,6 +127,7 @@ nav {
       <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="startMatchmaking()" style="font-size:13px;padding:8px 22px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Quick Match</button>
         <button onclick="goToLobbyList()" style="font-size:13px;padding:8px 22px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Lobbies</button>
+        <button onclick="goToLeaderboard()" style="font-size:13px;padding:8px 22px;background:#0a1a2e;border-color:#c8a84b;color:#e8c86c;">🏆 Ranks</button>
         <button onclick="showSpScreen()" style="font-size:13px;padding:8px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
       </div>
     </div>
@@ -182,6 +183,18 @@ nav {
       <div id="mp-lobby-guest-host-name" style="font-family:'IM Fell English',serif;color:#a08040;font-size:14px;margin-bottom:8px;"></div>
       <div style="font-family:'IM Fell English',serif;color:#4a3010;font-size:13px;margin-bottom:22px;">Waiting for host to start...</div>
       <button onclick="leaveLobby()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">← Leave</button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="mp-leaderboard" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-family:Cinzel,serif;color:#e8c86c;font-size:17px;letter-spacing:1px;">🏆 Hall of Fame</span>
+        <button onclick="refreshLeaderboard()" id="lb-refresh" style="font-size:11px;padding:4px 12px;background:#0a0a0a;border-color:#5a3d00;color:#a08040;">↻</button>
+      </div>
+      <div id="lb-list" style="min-height:120px;max-height:280px;overflow-y:auto;border:1px solid #3a2800;border-radius:4px;background:#0d0a04;">
+        <div id="lb-loading" style="font-family:'IM Fell English',serif;color:#4a3010;font-size:13px;padding:32px 0;text-align:center;">Loading...</div>
+      </div>
+      <button onclick="showMpEntryScreen()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;margin-top:14px;">← Back</button>
     </div>
 
   </div>
@@ -515,6 +528,7 @@ let mpSocket=null;
 let mpUsername='';
 let mpRoomId='';
 let mpPlayerData=null;
+let mpOpponentUsername='';
 let mpMinimapFresh=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 // ── Lobby system ─────────────────────────────────────────────────────────────
@@ -523,7 +537,7 @@ let lobbyRoomId='';
 let isLobbyHost=false;
 
 function showMpEntryScreen(){
-  ['mp-waiting','mp-lobby-list','mp-create-lobby','mp-lobby-host','mp-lobby-guest'].forEach(id=>{
+  ['mp-waiting','mp-lobby-list','mp-create-lobby','mp-lobby-host','mp-lobby-guest','mp-leaderboard'].forEach(id=>{
     document.getElementById(id).style.display='none';
   });
   document.getElementById('mp-entry').style.display='block';
@@ -580,11 +594,16 @@ function renderLobbyList(lobbies){
     row.className='lobby-row';
     row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #1e1200;';
     const nameColour=lobby.hostColour||'#e8c86c';
-    const label=lobby.hostLabel?` <span style="color:#888;font-size:10px;">[${lobby.hostLabel}]</span>`:'';
+    const labelHtml=lobby.hostLabel?` <span style="color:#c8a84b;font-size:11px;font-family:Cinzel,serif;">[${lobby.hostLabel}]</span>`:'';
+    const wl=lobby.hostWins!=null?`<span style="color:#6a9e6a;font-size:11px;">${lobby.hostWins}W</span><span style="color:#4a3010;font-size:11px;"> / </span><span style="color:#9e4a4a;font-size:11px;">${lobby.hostLosses||0}L</span>`:'';
     row.innerHTML=`
       <div style="text-align:left;">
-        <div style="font-family:Cinzel,serif;font-size:14px;color:#c8a84c;margin-bottom:3px;">${lobby.lobbyName}</div>
-        <div style="font-family:'IM Fell English',serif;font-size:12px;color:${nameColour};">${lobby.hostName}${label} <span style="color:#4a3010;">· ${lobby.hostRank}</span></div>
+        <div style="font-family:Cinzel,serif;font-size:15px;color:#e8c86c;margin-bottom:4px;letter-spacing:0.5px;">${lobby.lobbyName}</div>
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+          <span style="font-family:Cinzel,serif;font-size:13px;color:${nameColour};">${lobby.hostName}${labelHtml}</span>
+          <span style="font-family:Cinzel,serif;font-size:11px;color:#7a9ab5;">· ${lobby.hostRank}</span>
+          ${wl?`<span style="margin-left:2px;">${wl}</span>`:''}
+        </div>
       </div>
       <button onclick="joinLobby('${lobby.id}')" style="font-size:13px;padding:7px 18px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;white-space:nowrap;">Join</button>`;
     container.appendChild(row);
@@ -616,7 +635,7 @@ async function createLobby(){
   if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
-      lobbySocket.send(JSON.stringify({type:'open-lobby',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,lobbyName:nameInput,lobbyRoomId:lobbyRoomId}));
+      lobbySocket.send(JSON.stringify({type:'open-lobby',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,lobbyName:nameInput,lobbyRoomId:lobbyRoomId,wins:mpPlayerData?.wins||0,losses:mpPlayerData?.losses||0}));
     });
   }
   // connect to own lobby room
@@ -681,6 +700,7 @@ function connectToLobbyRoom(roomId, asHost){
 
 function startMpGame(msg){
   document.getElementById('opponent-select').style.display='none';
+  mpOpponentUsername=msg.opponentName||'';
   mpMode=true;
   document.getElementById('npc-name').style.display='none';
   const oppLabelEl=document.getElementById('opponent-label');
@@ -881,6 +901,7 @@ function connectToMatchmaking(){
       mpRoomId=msg.roomId;
       // set up UI immediately
       document.getElementById('opponent-select').style.display='none';
+      mpOpponentUsername=msg.opponentName||'';
       mpMode=true;
       document.getElementById('npc-name').style.display='none';
       const oppLabelEl=document.getElementById('opponent-label');
@@ -1091,8 +1112,11 @@ function offerRematch(){
 
 function startRematch(){
   setRematchStatus('Waiting for opponent...');
-  // both players derive same rematch lobby from original room — use lobby approach
-  const url=`${PARTYKIT_URL}/parties/main/duel-arena-lobby`;
+  // Derive a stable rematch room from both players' names (sorted so both get same room)
+  const names=[mpUsername,mpOpponentUsername].map(n=>n.toLowerCase()).sort();
+  const rematchRoomId='rematch-'+names[0]+'-'+names[1];
+  const url=`${PARTYKIT_URL}/parties/main/${rematchRoomId}`;
+  if(mpSocket&&mpSocket.readyState===WebSocket.OPEN){mpSocket.close();}
   mpSocket=new WebSocket(url);
   mpSocket.onopen=()=>{
     getRankData().then(data=>{
@@ -1105,9 +1129,10 @@ function startRematch(){
     if(msg.type==='matched'){
       const el=document.getElementById('rematch-overlay');if(el)el.remove();
       document.getElementById('win-overlay').classList.remove('show');
+      mpOpponentUsername=msg.opponentName||mpOpponentUsername;
       mpMode=true;
       mpRoomId=msg.roomId;
-      // set up UI
+      // restore opponent UI (name/rank persists from previous game)
       const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
       document.getElementById('npc-head-img').src=oppRank.img;
       const rOppLabel=document.getElementById('opponent-label');
@@ -1118,7 +1143,7 @@ function startRematch(){
       document.getElementById('ai-status').textContent='Fighting! ⚔';
       document.getElementById('btn-pause').disabled=true;
       setMpButtons(true);
-      // connect to game room — start after join sent
+      // connect to game room
       mpSocket.close();
       const url2=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
       mpSocket=new WebSocket(url2);
@@ -1149,6 +1174,57 @@ function declineRematch(){
   showOpponentSelect(false);
 }
 
+
+async function goToLeaderboard(){
+  if(!await authenticateForMp())return;
+  showMpEntryScreen();
+  document.getElementById('mp-entry').style.display='none';
+  document.getElementById('mp-leaderboard').style.display='block';
+  refreshLeaderboard();
+}
+
+async function refreshLeaderboard(){
+  const loadEl=document.getElementById('lb-loading');
+  const listEl=document.getElementById('lb-list');
+  if(loadEl)loadEl.style.display='block';
+  try{
+    const res=await fetch(WORKER_URL+'/leaderboard?limit=20');
+    const data=await res.json();
+    if(loadEl)loadEl.style.display='none';
+    // clear old rows
+    [...listEl.querySelectorAll('.lb-row')].forEach(el=>el.remove());
+    if(!data.leaderboard||data.leaderboard.length===0){
+      if(loadEl){loadEl.style.display='block';loadEl.textContent='No players yet!';}
+      return;
+    }
+    data.leaderboard.forEach((p,i)=>{
+      const row=document.createElement('div');
+      row.className='lb-row';
+      const isMe=p.username===mpUsername;
+      row.style.cssText=`display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #1e1200;${isMe?'background:rgba(200,168,75,0.07);':''}`;
+      const colour=p.colour||'#e8c86c';
+      const label=p.label?` <span style="color:#c8a84b;font-size:10px;font-family:Cinzel,serif;">[${p.label}]</span>`:'';
+      const rank=getCurrentRank(p.wins);
+      const rankColour=rank.colour||'#a08040';
+      const medals=['🥇','🥈','🥉'];
+      const pos=i<3?medals[i]:`<span style="color:#4a3010;font-size:11px;">${i+1}</span>`;
+      row.innerHTML=`
+        <div style="width:28px;text-align:center;font-size:14px;">${pos}</div>
+        <div style="flex:1;text-align:left;padding-left:6px;">
+          <span style="font-family:Cinzel,serif;font-size:13px;color:${colour};">${p.username}${label}</span>
+          <span style="font-family:Cinzel,serif;font-size:10px;color:${rankColour};margin-left:6px;">· ${rank.name}</span>
+        </div>
+        <div style="text-align:right;font-family:Cinzel,serif;font-size:12px;">
+          <span style="color:#6a9e6a;">${p.wins}W</span>
+          <span style="color:#4a3010;"> / </span>
+          <span style="color:#9e4a4a;">${p.losses||0}L</span>
+        </div>`;
+      listEl.appendChild(row);
+    });
+  }catch(e){
+    if(loadEl){loadEl.style.display='block';loadEl.textContent='Failed to load — try again';}
+  }
+}
 
 const RANKS=[
   {name:'Bronze',  wins:0,   img:'https://oldschool.runescape.wiki/images/Bronze_med_helm_detail.png',  colour:'#cd7f32'},
@@ -1213,6 +1289,16 @@ async function recordWin(){
   updatePlayerRankUI();
   if(newRank.name!==oldRank.name){
     setTimeout(()=>showRankUp(newRank),1200);
+  }
+  // sync win to D1
+  if(mpUsername&&mpOpponentUsername){
+    try{
+      const res=await fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpUsername,loser:mpOpponentUsername})});
+      if(res.ok){
+        const d=await res.json();
+        if(mpPlayerData)mpPlayerData.wins=d.wins;
+      }
+    }catch(e){console.warn('Win sync failed:',e);}
   }
 }
 function showRankUp(rank){
@@ -2313,6 +2399,10 @@ function endGame(){
     mpSendGameOver();
     mpMode=false;
     document.getElementById('btn-pause').disabled=false;
+    // record loss to D1
+    if(mpUsername&&mpOpponentUsername){
+      fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
+    }
     // socket stays open — needed to receive winner's reveal and for rematch
     setTimeout(()=>offerRematch(),800);
   }
