@@ -610,12 +610,14 @@ function connectToMatchmaking(){
 
 function handleGameMessage(e){
   const msg=JSON.parse(e.data);
+  console.log('MP msg received:',msg.type, msg);
   if(msg.type==='attack'){
     const d=msg.data;
     if(msg.attackType==='sword')landSword(d.h,d.sw,d.wid,null);
     else if(msg.attackType==='sprinkle')landSprinkles(d.count,d.wid);
   }
   if(msg.type==='board'){
+    console.log('Rendering board, cells filled:', msg.cells.filter(v=>v>0).length);
     renderMpMinimap(msg.cells, msg.reveal||false);
   }
   if(msg.type==='gameOver'){
@@ -632,13 +634,14 @@ function mpSendAttack(attackType,data){
 }
 
 function mpSendBoard(reveal=false){
-  if(!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
+  if(!mpSocket||mpSocket.readyState!==WebSocket.OPEN){console.log('mpSendBoard skipped - socket state:',mpSocket?.readyState);return;}
   const cells=[];
   for(let r=0;r<ROWS;r++)
     for(let c=0;c<COLS;c++){
       const b=board[r][c];
       cells.push(!b?0:b.grey?2:1);
     }
+  console.log('Sending board, filled cells:', cells.filter(v=>v>0).length, 'reveal:', reveal);
   mpSocket.send(JSON.stringify({type:'board',cells,reveal}));
 }
 
