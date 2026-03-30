@@ -600,9 +600,23 @@ function mpWin(){
 
 function confirmForfeit(){
   if(!mpMode||!started||gameOver)return;
-  if(confirm('Forfeit this match?')){
-    endGame();
-  }
+  // show in-game confirm overlay
+  const boardWrap=document.getElementById('board-wrap');if(!boardWrap)return;
+  const existing=document.getElementById('forfeit-overlay');if(existing)return;
+  const el=document.createElement('div');
+  el.id='forfeit-overlay';
+  el.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;background:rgba(0,0,0,0.6);';
+  el.innerHTML=`
+    <div style="font-family:Cinzel,serif;font-size:13px;color:#e8c86c;margin-bottom:12px;text-shadow:1px 1px 0 #000;">Forfeit this match?</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="doForfeit()" style="font-size:12px;padding:6px 20px;background:#2a0a0a;border-color:#aa2222;color:#ff6666;">Forfeit</button>
+      <button onclick="document.getElementById('forfeit-overlay').remove()" style="font-size:12px;padding:6px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Cancel</button>
+    </div>`;
+  boardWrap.appendChild(el);
+}
+function doForfeit(){
+  const el=document.getElementById('forfeit-overlay');if(el)el.remove();
+  endGame();
 }
 function setMpButtons(inMp){
   document.getElementById('btn-pause').style.display=inMp?'none':'block';
@@ -1841,7 +1855,7 @@ function endGame(){
   document.getElementById('btn-pause').textContent='Pause';
   playDeath(0.7);
   renderAiMinimap(true);
-  if(mpMode){mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
+  const fo=document.getElementById('forfeit-overlay');if(fo)fo.remove();if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
