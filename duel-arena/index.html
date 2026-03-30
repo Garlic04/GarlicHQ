@@ -582,7 +582,8 @@ function connectToMatchmaking(){
       // start game immediately
       document.getElementById('opponent-select').style.display='none';
       mpMode=true;
-      document.getElementById('npc-name').textContent=msg.opponentName;
+      // hide npc-name subtext in MP — heading already shows full name
+      document.getElementById('npc-name').style.display='none';
       // show opponent name with special colour/label if they have one
       const oppLabelEl=document.getElementById('opponent-label');
       if(msg.opponentColour){
@@ -625,6 +626,9 @@ function handleGameMessage(e){
     if(msg.attackType==='sword')landSword(d.h,d.sw,d.wid,null);
     else if(msg.attackType==='sprinkle')landSprinkles(d.count,d.wid);
   }
+  if(msg.type==='board'){
+    renderMpMinimap(msg.cells, msg.reveal||false);
+  }
   if(msg.type==='gameOver'){
     if(!gameOver)mpWin();
   }
@@ -638,6 +642,49 @@ function mpSendAttack(attackType,data){
   mpSocket.send(JSON.stringify({type:'attack',attackType,data}));
 }
 
+function mpSendBoard(reveal=false){
+  if(!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
+  const cells=[];
+  for(let r=0;r<ROWS;r++)
+    for(let c=0;c<COLS;c++){
+      const b=board[r][c];
+      cells.push(!b?0:b.grey?2:1);
+    }
+  mpSocket.send(JSON.stringify({type:'board',cells,reveal}));
+}
+
+function renderMpMinimap(cells, reveal=false){
+  const canvas=document.getElementById('ai-minimap');if(!canvas)return;
+  canvas.style.display='block';
+  const ctx=canvas.getContext('2d');
+  const cw=canvas.width/COLS,ch=canvas.height/ROWS;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const v=cells[r*COLS+c];
+      if(v===0)continue;
+      const x=c*cw,y=r*ch;
+      if(reveal){
+        // on reveal show grey blocks as grey, normal as gold with border
+        if(v===2){
+          ctx.fillStyle='#777';
+          ctx.fillRect(x,y,cw,ch);
+        } else {
+          ctx.fillStyle='rgba(200,168,75,0.55)';
+          ctx.fillRect(x,y,cw,ch);
+          ctx.strokeStyle='rgba(200,168,75,0.9)';
+          ctx.lineWidth=1;
+          ctx.strokeRect(x+0.5,y+0.5,cw-1,ch-1);
+        }
+      } else {
+        // during game — all blocks show as solid gold mass (same as SP)
+        ctx.fillStyle='rgba(200,168,75,0.55)';
+        ctx.fillRect(x,y,cw,ch);
+      }
+    }
+  }
+}
+
 function mpSendGameOver(){
   if(!mpMode||!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
   mpSocket.send(JSON.stringify({type:'gameOver',winner:mpUsername}));
@@ -646,6 +693,7 @@ function mpSendGameOver(){
 function mpWin(){
   paused=true;clearInterval(mainTimer);
   recordWin();
+  mpSendBoard(true); // send our final board as reveal to opponent
   // show win overlay with MP rematch buttons
   document.getElementById('win-sp-btns').style.display='none';
   document.getElementById('win-mp-btns').style.display='flex';
@@ -690,7 +738,9 @@ function setMpButtons(inMp){
     const oppLabel=document.getElementById('opponent-label');
     if(oppLabel){oppLabel.textContent='Opponent';oppLabel.style.color='';}
     const npcName=document.getElementById('npc-name');
-    if(npcName){npcName.textContent='';npcName.style.color='';}
+    if(npcName){npcName.textContent='';npcName.style.color='';npcName.style.display='';}
+    const minimap=document.getElementById('ai-minimap');
+    if(minimap)minimap.style.display='block';
   }
 }
 function setRematchStatus(txt){
@@ -749,6 +799,7 @@ function startRematch(){
       const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
       document.getElementById('npc-head-img').src=oppRank.img;
       const rOppLabel=document.getElementById('opponent-label');
+      document.getElementById('npc-name').style.display='none';
       if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;document.getElementById('npc-name').style.color=msg.opponentColour;}
       else{rOppLabel.style.color='';document.getElementById('npc-name').style.color='';}
       rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
@@ -877,6 +928,7 @@ function lockPiece(){
   if(fused)playFuse(0.4);
   playThud(0.25);
   falling=null;tickGreyDecay();render();waitingForChain=true;
+  mpSendBoard();
   setTimeout(()=>gravityThenChain(0),FUSE_FLASH_MS);
 }
 
@@ -1931,7 +1983,7 @@ function endGame(){
   playDeath(0.7);
   renderAiMinimap(true);
   const fo=document.getElementById('forfeit-overlay');if(fo)fo.remove();
-  if(mpMode){mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
+  if(mpMode){mpSendBoard(true);mpSendGameOver();mpMode=false;if(mpSocket){mpSocket.close();mpSocket=null;}document.getElementById('btn-pause').disabled=false;setMpButtons(false);setTimeout(()=>offerRematch(),800);}
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
@@ -2316,7 +2368,11 @@ function aiFindBreaks(){
 }
 
 function renderAiMinimap(reveal=false){
-  const canvas=document.getElementById('ai-minimap');if(!canvas||!aiBoard)return;
+  const canvas=document.getElementById('ai-minimap');if(!canvas)return;
+  // in MP we don't have the opponent's board — hide minimap
+  if(mpMode||(!aiBoard&&!reveal)){canvas.style.display='none';return;}
+  canvas.style.display='block';
+  if(!aiBoard)return;
   const ctx=canvas.getContext('2d');
   const cw=canvas.width/COLS,ch=canvas.height/ROWS;
   ctx.clearRect(0,0,canvas.width,canvas.height);
