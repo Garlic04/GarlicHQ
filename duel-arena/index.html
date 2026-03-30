@@ -631,8 +631,10 @@ function joinLobby(roomId){
 let lobbyGameSocket=null;
 
 function connectToLobbyRoom(roomId, asHost){
+  console.log('Connecting to lobby room:', roomId, 'asHost:', asHost);
   lobbyGameSocket=new WebSocket(`${PARTYKIT_URL}/parties/main/${roomId}`);
   lobbyGameSocket.onopen=()=>{
+    console.log('Lobby room socket open, sending join');
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
       lobbyGameSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
@@ -640,6 +642,7 @@ function connectToLobbyRoom(roomId, asHost){
   };
   lobbyGameSocket.onmessage=(e)=>{
     const msg=JSON.parse(e.data);
+    console.log('Lobby room msg:', msg.type, msg);
     if(msg.type==='guest-joined'&&asHost){
       document.getElementById('mp-lobby-host-status').textContent='';
       document.getElementById('mp-lobby-guest-info').style.display='block';
