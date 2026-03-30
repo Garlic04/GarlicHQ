@@ -82,7 +82,9 @@ nav {
   <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Duel Arena</a>
 </nav>
 <div id="opponent-select" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;">
-  <div style="background:#1a1209;border:2px solid #c8a84b;border-radius:6px;padding:32px 40px;text-align:center;min-width:480px;">
+
+  <!-- Single player screen -->
+  <div id="osel-sp" style="background:#1a1209;border:2px solid #c8a84b;border-radius:6px;padding:32px 40px;text-align:center;min-width:480px;">
     <h2 style="font-family:Cinzel,serif;color:#e8c86c;font-size:22px;letter-spacing:2px;margin-bottom:6px;">⚔ Choose Your Opponent ⚔</h2>
     <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:24px;">Who do you challenge?</p>
     <div style="display:flex;gap:24px;justify-content:center;">
@@ -103,10 +105,34 @@ nav {
       </div>
     </div>
     <button onclick="confirmOpponent()" id="btn-confirm-opponent" style="margin-top:24px;font-size:13px;padding:8px 36px;opacity:0.4;pointer-events:none;">Fight!</button>
+    <div style="margin-top:16px;border-top:1px solid #3a2800;padding-top:16px;">
+      <button onclick="showMpScreen()" style="font-size:12px;padding:6px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">⚔ Multiplayer</button>
+    </div>
     <div id="opponent-select-resume" style="display:none;margin-top:10px;">
       <button onclick="document.getElementById('opponent-select').style.display='none';if(paused){paused=false;document.getElementById('btn-pause').textContent='Pause';document.getElementById('msg').textContent='';mainTimer=setInterval(tick,softDrop?FAST_MS:BASE_MS);if(floaterGroups.length>0)scheduleFloatStep();}" style="font-size:11px;padding:5px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Resume Game</button>
     </div>
   </div>
+
+  <!-- Multiplayer screen -->
+  <div id="osel-mp" style="display:none;background:#1a1209;border:2px solid #2277dd;border-radius:6px;padding:32px 40px;text-align:center;min-width:360px;">
+    <h2 style="font-family:Cinzel,serif;color:#5ac8f5;font-size:20px;letter-spacing:2px;margin-bottom:6px;">⚔ Multiplayer ⚔</h2>
+    <!-- Entry: username input -->
+    <div id="mp-entry">
+      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:20px;">Enter your name to find an opponent</p>
+      <input id="mp-username" type="text" maxlength="16" placeholder="Your name..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;">
+      <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+        <button onclick="startMatchmaking()" style="font-size:12px;padding:7px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Find Match</button>
+        <button onclick="showSpScreen()" style="font-size:12px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
+      </div>
+    </div>
+    <!-- Waiting for opponent -->
+    <div id="mp-waiting" style="display:none;">
+      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin:0 0 8px;">Searching for opponent...</p>
+      <div id="mp-status" style="color:#a08040;font-size:11px;font-family:'IM Fell English',serif;margin-bottom:16px;">Connecting...</div>
+      <button onclick="cancelMatchmaking()" style="font-size:11px;padding:5px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Cancel</button>
+    </div>
+  </div>
+
 </div>
 <div id="scale-wrap">
 <div id="app">
@@ -420,7 +446,132 @@ function playChain(mult,volume=0.5){
     try{const a=new Audio(CHAIN_SRC);a.volume=volume;a.play();}catch(e){}
   }
 }
-// ── Rank System ───────────────────────────────────────────────────────────────
+// ── Multiplayer ───────────────────────────────────────────────────────────────
+const PARTYKIT_URL='https://duel-arena-server.garlic04.partykit.dev';
+let mpMode=false;        // true when in a multiplayer game
+let mpSocket=null;       // active WebSocket
+let mpUsername='';       // local player's chosen name
+let mpRoomId='';         // current room ID
+
+function showMpScreen(){
+  document.getElementById('osel-sp').style.display='none';
+  document.getElementById('osel-mp').style.display='block';
+  document.getElementById('mp-entry').style.display='block';
+  document.getElementById('mp-waiting').style.display='none';
+}
+function showSpScreen(){
+  document.getElementById('osel-sp').style.display='block';
+  document.getElementById('osel-mp').style.display='none';
+}
+
+function startMatchmaking(){
+  const nameInput=document.getElementById('mp-username').value.trim();
+  if(!nameInput){document.getElementById('mp-username').focus();return;}
+  mpUsername=nameInput;
+  document.getElementById('mp-entry').style.display='none';
+  document.getElementById('mp-waiting').style.display='block';
+  document.getElementById('mp-status').textContent='Connecting...';
+  connectToMatchmaking();
+}
+
+function cancelMatchmaking(){
+  if(mpSocket){mpSocket.close();mpSocket=null;}
+  showSpScreen();
+  document.getElementById('mp-entry').style.display='block';
+  document.getElementById('mp-waiting').style.display='none';
+}
+
+function connectToMatchmaking(){
+  // use a shared 'lobby' room — server pairs first two players
+  mpRoomId='lobby-'+Math.floor(Date.now()/30000); // new lobby every 30s
+  const url=`${PARTYKIT_URL}/parties/main/${encodeURIComponent(mpRoomId)}`;
+  mpSocket=new WebSocket(url);
+
+  mpSocket.onopen=()=>{
+    document.getElementById('mp-status').textContent='Waiting for opponent...';
+    getRankData().then(data=>{
+      const rank=getCurrentRank(data.wins);
+      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+    });
+  };
+
+  mpSocket.onmessage=(e)=>{
+    const msg=JSON.parse(e.data);
+
+    if(msg.type==='waiting'){
+      document.getElementById('mp-status').textContent='Waiting for opponent...';
+    }
+
+    if(msg.type==='matched'){
+      // opponent found — start MP game
+      document.getElementById('opponent-select').style.display='none';
+      mpMode=true;
+      // update opponent panel with real player info
+      document.getElementById('npc-name').textContent=msg.opponentName;
+      document.getElementById('npc-head-img').src='https://oldschool.runescape.wiki/images/Player_head_icon.png';
+      document.getElementById('ai-status').textContent='Fighting! ⚔';
+      document.getElementById('btn-pause').disabled=true; // no pause in MP
+      startGame();
+    }
+
+    if(msg.type==='attack'){
+      // receive attack from opponent — land it on our board
+      const d=msg.data;
+      if(msg.attackType==='sword') landSword(d.h,d.sw,d.wid,null);
+      else if(msg.attackType==='sprinkle') landSprinkles(d.count,d.wid);
+    }
+
+    if(msg.type==='gameOver'){
+      // opponent lost — we win
+      if(!gameOver){
+        mpWin();
+      }
+    }
+
+    if(msg.type==='opponentLeft'){
+      if(!gameOver){
+        document.getElementById('msg').textContent='Opponent left';
+        endMpGame();
+      }
+    }
+  };
+
+  mpSocket.onerror=()=>{
+    document.getElementById('mp-status').textContent='Connection error — try again';
+    document.getElementById('mp-waiting').style.display='none';
+    document.getElementById('mp-entry').style.display='block';
+  };
+
+  mpSocket.onclose=()=>{
+    if(mpMode)return; // expected close after game ends
+  };
+}
+
+function mpSendAttack(attackType,data){
+  if(!mpMode||!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
+  mpSocket.send(JSON.stringify({type:'attack',attackType,data}));
+}
+
+function mpSendGameOver(){
+  if(!mpMode||!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
+  mpSocket.send(JSON.stringify({type:'gameOver',winner:mpUsername}));
+}
+
+function mpWin(){
+  // we won — opponent sent gameOver
+  paused=true;clearInterval(mainTimer);
+  recordWin();
+  document.getElementById('win-overlay').classList.add('show');
+  endMpGame();
+}
+
+function endMpGame(){
+  mpMode=false;
+  if(mpSocket){mpSocket.close();mpSocket=null;}
+  document.getElementById('btn-pause').disabled=false;
+}
+
+
 const RANKS=[
   {name:'Bronze',  wins:0,   img:'https://oldschool.runescape.wiki/images/Bronze_med_helm_detail.png',  colour:'#cd7f32'},
   {name:'Iron',    wins:5,   img:'https://oldschool.runescape.wiki/images/Iron_med_helm_detail.png',    colour:'#a8a9ad'},
@@ -1059,6 +1210,7 @@ function computeLandRowOnBoard(targetBoard,h,sw,startCol){
 }
 
 function landSwordOnAi(h,sw,wid){
+  if(mpMode){mpSendAttack('sword',{h,sw,wid});return;}
   if(!aiBoard||aiGameOver)return;
   const preferredCol=getNextSwordCol(sw);
   const hand=getNextHandedness();
@@ -1090,6 +1242,7 @@ function landSwordOnAi(h,sw,wid){
 }
 
 function landSprinklesOnAi(count,wid){
+  if(mpMode){mpSendAttack('sprinkle',{count,wid});return;}
   if(!aiBoard||aiGameOver)return;
   const side=swordQueueIndex%2===0?'right':'left';
   swordQueueIndex++;
@@ -1565,12 +1718,8 @@ function endGame(){
   document.getElementById('btn-pause').textContent='Pause';
   playDeath(0.7);
   renderAiMinimap(true);
-  // slight delay before clearing sprites so final board state is visible
-  setTimeout(()=>{
-    clearAllSprites();
-    document.getElementById('falling-overlay').innerHTML='';
-    render();
-  },100);
+  if(mpMode){mpSendGameOver();endMpGame();}
+  setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
 function startGame(){
   board=makeBoard();score=0;cleared=0;level=1;gameOver=false;paused=false;started=true;waitingForChain=false;softDrop=false;
@@ -2263,13 +2412,13 @@ function confirmOpponent(){
   startGame();
 }
 function showOpponentSelect(canResume=false){
-  // pause the game if it's running and not already paused
   if(started&&!gameOver&&!paused){
     paused=true;
     clearInterval(mainTimer);clearTimeout(floatTimer);
     document.getElementById('btn-pause').textContent='Resume';
     document.getElementById('msg').textContent='PAUSED';
   }
+  showSpScreen();
   document.getElementById('opponent-select').style.display='flex';
   document.getElementById('opponent-select-resume').style.display=canResume?'block':'none';
   ['easy','medium','hard'].forEach(d=>{
