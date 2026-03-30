@@ -568,43 +568,32 @@ function connectToMatchmaking(){
       // close lobby connection, join private game room
       mpSocket.close();
       mpRoomId=msg.roomId;
+      // set up UI immediately
+      document.getElementById('opponent-select').style.display='none';
+      mpMode=true;
+      document.getElementById('npc-name').style.display='none';
+      const oppLabelEl=document.getElementById('opponent-label');
+      if(msg.opponentColour){oppLabelEl.style.color=msg.opponentColour;}
+      else{oppLabelEl.style.color='';}
+      oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
+      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
+      document.getElementById('npc-head-img').src=oppRank.img;
+      document.getElementById('ai-status').textContent='Fighting! ⚔';
+      document.getElementById('btn-pause').disabled=true;
+      setMpButtons(true);
+      // connect to game room — start game once socket is open and join sent
       const url=`${PARTYKIT_URL}/parties/main/${mpRoomId}`;
       mpSocket=new WebSocket(url);
       mpSocket.onopen=()=>{
         getRankData().then(data=>{
           const rank=getCurrentRank(data.wins);
           mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
+          startGame();
         });
       };
       mpSocket.onmessage=handleGameMessage;
       mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
       mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
-      // start game immediately
-      document.getElementById('opponent-select').style.display='none';
-      mpMode=true;
-      // hide npc-name subtext in MP — heading already shows full name
-      document.getElementById('npc-name').style.display='none';
-      // show opponent name with special colour/label if they have one
-      const oppLabelEl=document.getElementById('opponent-label');
-      if(msg.opponentColour){
-        oppLabelEl.style.color=msg.opponentColour;
-        document.getElementById('npc-name').style.color=msg.opponentColour;
-      } else {
-        oppLabelEl.style.color='';
-        document.getElementById('npc-name').style.color='';
-      }
-      oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
-      // show opponent's rank helmet
-      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
-      document.getElementById('npc-head-img').src=oppRank.img;
-      const rOppLabel=document.getElementById('opponent-label');
-      if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;document.getElementById('npc-name').style.color=msg.opponentColour;}
-      else{rOppLabel.style.color='';document.getElementById('npc-name').style.color='';}
-      rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
-      document.getElementById('ai-status').textContent='Fighting! ⚔';
-      document.getElementById('btn-pause').disabled=true;
-      setMpButtons(true);
-      startGame();
     }
   };
 
@@ -784,6 +773,18 @@ function startRematch(){
       document.getElementById('win-overlay').classList.remove('show');
       mpMode=true;
       mpRoomId=msg.roomId;
+      // set up UI
+      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
+      document.getElementById('npc-head-img').src=oppRank.img;
+      const rOppLabel=document.getElementById('opponent-label');
+      document.getElementById('npc-name').style.display='none';
+      if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;}
+      else{rOppLabel.style.color='';}
+      rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
+      document.getElementById('ai-status').textContent='Fighting! ⚔';
+      document.getElementById('btn-pause').disabled=true;
+      setMpButtons(true);
+      // connect to game room — start after join sent
       mpSocket.close();
       const url2=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
       mpSocket=new WebSocket(url2);
@@ -791,22 +792,12 @@ function startRematch(){
         getRankData().then(data=>{
           const rank=getCurrentRank(data.wins);
           mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
+          startGame();
         });
       };
       mpSocket.onmessage=handleGameMessage;
       mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
       mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
-      const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
-      document.getElementById('npc-head-img').src=oppRank.img;
-      const rOppLabel=document.getElementById('opponent-label');
-      document.getElementById('npc-name').style.display='none';
-      if(msg.opponentColour){rOppLabel.style.color=msg.opponentColour;document.getElementById('npc-name').style.color=msg.opponentColour;}
-      else{rOppLabel.style.color='';document.getElementById('npc-name').style.color='';}
-      rOppLabel.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
-      document.getElementById('ai-status').textContent='Fighting! ⚔';
-      document.getElementById('btn-pause').disabled=true;
-      setMpButtons(true);
-      startGame();
     }
     if(msg.type==='waiting'){setRematchStatus('Waiting for opponent...');}
   };
