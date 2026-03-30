@@ -355,7 +355,7 @@ const FUSE_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Low_Level_
 const BREAK_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Chivalry.ogg.mp3';
 const CHAIN_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/herblorelevel.wav';
 const SWORD_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Dragon_claws_special_attack_2.wav.ogg';
-const DEATH_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/You_Are_Dead!(v1).ogg';
+const DEATH_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/You_Are_Dead%21(v1).ogg';
 // Preload all sounds so there's no delay on first play
 [THUD_SRC,FUSE_SRC,BREAK_SRC,CHAIN_SRC,SWORD_SRC,DEATH_SRC].forEach(src=>{const a=new Audio();a.preload='auto';a.src=src;});
 let chainAudioCtx=null;
@@ -1512,7 +1512,7 @@ function landHorizontalSword(h,w,wid,side){
 
 function findBreaks(){const toBreak=new Set();for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const b=board[r][c];if(!b||!b.isBreaker||b.grey)continue;const conn=getConnected(r,c,b.w);if(conn.length>1)conn.forEach(k=>toBreak.add(k));}return[...toBreak].map(k=>{const[r,c]=k.split(',').map(Number);return{r,c};});}
 function getConnected(sr,sc,wid){const vis=new Set(),q=[[sr,sc]];while(q.length){const[r,c]=q.pop(),k=r+','+c;if(vis.has(k))continue;vis.add(k);for(const[dr,dc] of[[-1,0],[1,0],[0,-1],[0,1]]){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc]&&board[nr][nc].w===wid&&!board[nr][nc].grey&&!vis.has(nr+','+nc))q.push([nr,nc]);}}return[...vis];}
-function endGame(){waitingForChain=false;gameOver=true;started=false;clearInterval(mainTimer);clearTimeout(floatTimer);stopAi();document.getElementById('msg').textContent='GAME OVER';document.getElementById('btn-start').textContent='Restart';document.getElementById('btn-pause').disabled=true;document.getElementById('btn-pause').textContent='Pause';playDeath(0.7);renderAiMinimap(true);}
+function endGame(){waitingForChain=false;gameOver=true;started=false;clearInterval(mainTimer);clearTimeout(floatTimer);stopAi();stopRaf();clearAllSprites();document.getElementById('falling-overlay').innerHTML='';document.getElementById('msg').textContent='GAME OVER';document.getElementById('btn-start').textContent='Restart';document.getElementById('btn-pause').disabled=true;document.getElementById('btn-pause').textContent='Pause';playDeath(0.7);renderAiMinimap(true);}
 function startGame(){
   board=makeBoard();score=0;cleared=0;level=1;gameOver=false;paused=false;started=true;waitingForChain=false;softDrop=false;
   attackQueue.forEach(a=>stopPreview(a.preview));
