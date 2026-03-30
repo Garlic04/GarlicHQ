@@ -81,7 +81,7 @@ nav {
 <nav>
   <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Duel Arena</a>
 </nav>
-<div id="opponent-select" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;">
+<div id="opponent-select" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;">
 
   <!-- Single player screen -->
   <div id="osel-sp" style="background:#1a1209;border:2px solid #c8a84b;border-radius:6px;padding:32px 40px;text-align:center;min-width:480px;">
@@ -608,10 +608,12 @@ function setMpButtons(inMp){
   document.getElementById('btn-pause').style.display=inMp?'none':'block';
   document.getElementById('btn-forfeit').style.display=inMp?'block':'none';
 }
+function setRematchStatus(txt){
   const s1=document.getElementById('rematch-status');
   const s2=document.getElementById('win-rematch-status');
   if(s1)s1.textContent=txt;
   if(s2)s2.textContent=txt;
+}
 }
 
 function offerRematch(){
@@ -2564,7 +2566,7 @@ document.getElementById('btn-pause').addEventListener('click',()=>{
     if(floaterGroups.length>0)scheduleFloatStep();
   }
 });
-buildBoard();buildLegend();render();applyScale();showOpponentSelect(false);
+buildBoard();buildLegend();render();applyScale();
 </script>
 </body>
 </html>
