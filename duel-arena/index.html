@@ -114,72 +114,74 @@ nav {
   </div>
 
   <!-- Multiplayer screen -->
-  <div id="osel-mp" style="display:none;background:#1a1209;border:2px solid #2277dd;border-radius:6px;padding:32px 40px;text-align:center;min-width:400px;">
-    <h2 style="font-family:Cinzel,serif;color:#5ac8f5;font-size:20px;letter-spacing:2px;margin-bottom:6px;">⚔ Multiplayer ⚔</h2>
+  <div id="osel-mp" style="display:none;background:#1a1209;border:2px solid #2277dd;border-radius:6px;padding:28px 36px;text-align:center;min-width:440px;">
+    <h2 style="font-family:Cinzel,serif;color:#5ac8f5;font-size:20px;letter-spacing:2px;margin-bottom:18px;">⚔ Multiplayer ⚔</h2>
 
     <!-- Entry: username + PIN -->
     <div id="mp-entry">
-      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:16px;">Enter your name and PIN to play</p>
-      <input id="mp-username" type="text" maxlength="16" placeholder="Username..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;display:block;margin:0 auto 8px;">
-      <input id="mp-pin" type="password" maxlength="4" placeholder="4-digit PIN..." style="font-family:Cinzel,serif;font-size:13px;padding:8px 12px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:200px;text-align:center;display:block;margin:0 auto;">
-      <div id="mp-entry-error" style="color:#ff6666;font-size:11px;font-family:'IM Fell English',serif;margin-top:8px;min-height:16px;"></div>
-      <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:11px;margin:6px 0 16px;">New name? It will be registered with your PIN.<br>Returning? Enter same name + PIN to reclaim it.</p>
+      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:14px;margin-bottom:14px;">Enter your name and PIN to play</p>
+      <input id="mp-username" type="text" maxlength="16" placeholder="Username..." style="font-family:Cinzel,serif;font-size:14px;padding:9px 14px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:210px;text-align:center;display:block;margin:0 auto 8px;">
+      <input id="mp-pin" type="password" maxlength="4" placeholder="4-digit PIN..." style="font-family:Cinzel,serif;font-size:14px;padding:9px 14px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:210px;text-align:center;display:block;margin:0 auto;">
+      <div id="mp-entry-error" style="color:#ff6666;font-size:12px;font-family:'IM Fell English',serif;margin-top:8px;min-height:18px;"></div>
+      <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:11px;margin:4px 0 18px;">New name? It will be registered with your PIN.<br>Returning? Enter same name + PIN to reclaim it.</p>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button onclick="startMatchmaking()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Quick Match</button>
-        <button onclick="goToLobbyList()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Lobbies</button>
-        <button onclick="showSpScreen()" style="font-size:12px;padding:7px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
+        <button onclick="startMatchmaking()" style="font-size:13px;padding:8px 22px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Quick Match</button>
+        <button onclick="goToLobbyList()" style="font-size:13px;padding:8px 22px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Lobbies</button>
+        <button onclick="showSpScreen()" style="font-size:13px;padding:8px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
       </div>
     </div>
 
     <!-- Waiting for quick match -->
     <div id="mp-waiting" style="display:none;">
-      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin:0 0 8px;">Searching for opponent...</p>
-      <div id="mp-status" style="color:#a08040;font-size:11px;font-family:'IM Fell English',serif;margin-bottom:16px;">Connecting...</div>
-      <button onclick="cancelMatchmaking()" style="font-size:11px;padding:5px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Cancel</button>
+      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:15px;margin:0 0 10px;">Searching for opponent...</p>
+      <div id="mp-status" style="color:#a08040;font-size:13px;font-family:'IM Fell English',serif;margin-bottom:20px;">Connecting...</div>
+      <button onclick="cancelMatchmaking()" style="font-size:13px;padding:8px 22px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Cancel</button>
     </div>
 
     <!-- Lobby list -->
     <div id="mp-lobby-list" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <span style="font-family:Cinzel,serif;color:#e8c86c;font-size:13px;">Open Lobbies</span>
-        <button onclick="showCreateLobby()" style="font-size:11px;padding:4px 14px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">+ Create</button>
+        <span style="font-family:Cinzel,serif;color:#e8c86c;font-size:16px;letter-spacing:1px;">Open Lobbies</span>
+        <button onclick="showCreateLobby()" style="font-size:12px;padding:6px 16px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">+ Create</button>
       </div>
-      <div id="lobby-list-items" style="min-height:80px;max-height:200px;overflow-y:auto;border:1px solid #2a1a00;border-radius:3px;padding:4px;">
-        <div id="lobby-list-empty" style="font-family:'IM Fell English',serif;color:#5a3d00;font-size:12px;padding:20px;">No open lobbies — create one!</div>
+      <div id="lobby-list-items" style="min-height:110px;max-height:260px;overflow-y:auto;border:1px solid #2a1800;border-radius:4px;background:#0d0a04;">
+        <div id="lobby-list-empty" style="font-family:'IM Fell English',serif;color:#4a3010;font-size:14px;padding:32px 0;">No open lobbies — create one!</div>
       </div>
-      <button onclick="showMpEntryScreen()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;margin-top:10px;">Back</button>
+      <button onclick="showMpEntryScreen()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;margin-top:14px;">← Back</button>
     </div>
 
     <!-- Create lobby -->
     <div id="mp-create-lobby" style="display:none;">
-      <p style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:12px;">Name your lobby</p>
-      <input id="mp-lobby-name" type="text" maxlength="24" placeholder="e.g. Garlic's game" style="font-family:Cinzel,serif;font-size:12px;padding:7px 10px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:220px;text-align:center;display:block;margin:0 auto 8px;">
-      <div id="mp-lobby-error" style="color:#ff6666;font-size:11px;font-family:'IM Fell English',serif;min-height:16px;margin-bottom:8px;"></div>
-      <div style="display:flex;gap:8px;justify-content:center;">
-        <button onclick="createLobby()" style="font-size:12px;padding:7px 24px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Create Lobby</button>
-        <button onclick="showLobbyList()" style="font-size:11px;padding:7px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Back</button>
+      <p style="font-family:Cinzel,serif;color:#e8c86c;font-size:16px;letter-spacing:1px;margin-bottom:6px;">Create a Lobby</p>
+      <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:12px;margin-bottom:16px;">Give your lobby a name</p>
+      <input id="mp-lobby-name" type="text" maxlength="24" placeholder="e.g. Garlic's game" style="font-family:Cinzel,serif;font-size:14px;padding:9px 14px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:230px;text-align:center;display:block;margin:0 auto 8px;">
+      <div id="mp-lobby-error" style="color:#ff6666;font-size:12px;font-family:'IM Fell English',serif;min-height:18px;margin-bottom:10px;"></div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="createLobby()" style="font-size:13px;padding:8px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Create</button>
+        <button onclick="showLobbyList()" style="font-size:13px;padding:8px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">← Back</button>
       </div>
     </div>
 
     <!-- Lobby waiting room (host view) -->
     <div id="mp-lobby-host" style="display:none;">
-      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin-bottom:4px;" id="mp-lobby-host-name"></p>
-      <div id="mp-lobby-host-status" style="font-family:'IM Fell English',serif;color:#a08040;font-size:11px;margin-bottom:16px;">Waiting for opponent...</div>
-      <div id="mp-lobby-guest-info" style="display:none;margin-bottom:12px;padding:8px;border:1px solid #2277dd;border-radius:3px;background:#0a1220;">
-        <div id="mp-lobby-guest-name" style="font-family:Cinzel,serif;color:#e8c86c;font-size:12px;"></div>
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
-          <button onclick="startLobbyGame()" style="font-size:12px;padding:6px 20px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Start!</button>
-          <button onclick="kickGuest()" style="font-size:11px;padding:6px 14px;background:#2a0a0a;border-color:#aa2222;color:#ff6666;">Kick</button>
+      <p style="font-family:Cinzel,serif;color:#e8c86c;font-size:17px;letter-spacing:1px;margin-bottom:6px;" id="mp-lobby-host-name"></p>
+      <div id="mp-lobby-host-status" style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:20px;">Waiting for opponent...</div>
+      <div id="mp-lobby-guest-info" style="display:none;margin-bottom:16px;padding:14px 18px;border:1px solid #2277dd;border-radius:4px;background:#0a1220;">
+        <div id="mp-lobby-guest-name" style="font-family:Cinzel,serif;color:#e8c86c;font-size:15px;margin-bottom:14px;"></div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button onclick="startLobbyGame()" style="font-size:14px;padding:9px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">▶ Start</button>
+          <button onclick="kickGuest()" style="font-size:13px;padding:9px 18px;background:#2a0a0a;border-color:#aa2222;color:#ff6666;">✕ Kick</button>
         </div>
       </div>
-      <button onclick="closeLobby()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Close Lobby</button>
+      <button onclick="closeLobby()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Close Lobby</button>
     </div>
 
     <!-- Lobby waiting room (guest view) -->
     <div id="mp-lobby-guest" style="display:none;">
-      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:13px;margin-bottom:4px;">Waiting for host to start...</p>
-      <div id="mp-lobby-guest-host-name" style="font-family:'IM Fell English',serif;color:#a08040;font-size:11px;margin-bottom:16px;"></div>
-      <button onclick="leaveLobby()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>
+      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:16px;letter-spacing:1px;margin-bottom:10px;">In Lobby</p>
+      <div id="mp-lobby-guest-host-name" style="font-family:'IM Fell English',serif;color:#a08040;font-size:14px;margin-bottom:8px;"></div>
+      <div style="font-family:'IM Fell English',serif;color:#4a3010;font-size:13px;margin-bottom:22px;">Waiting for host to start...</div>
+      <button onclick="leaveLobby()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">← Leave</button>
     </div>
 
   </div>
@@ -535,8 +537,9 @@ async function goToLobbyList(){
 }
 
 function showLobbyList(){
-  document.getElementById('mp-entry').style.display='none';
-  document.getElementById('mp-create-lobby').style.display='none';
+  ['mp-entry','mp-create-lobby','mp-lobby-host','mp-lobby-guest'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
   document.getElementById('mp-lobby-list').style.display='block';
 }
 
@@ -575,15 +578,15 @@ function renderLobbyList(lobbies){
   lobbies.forEach(lobby=>{
     const row=document.createElement('div');
     row.className='lobby-row';
-    row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-bottom:1px solid #1a1000;';
+    row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #1e1200;';
     const nameColour=lobby.hostColour||'#e8c86c';
-    const label=lobby.hostLabel?` <span style="color:#888;font-size:9px;">[${lobby.hostLabel}]</span>`:'';
+    const label=lobby.hostLabel?` <span style="color:#888;font-size:10px;">[${lobby.hostLabel}]</span>`:'';
     row.innerHTML=`
       <div style="text-align:left;">
-        <div style="font-family:Cinzel,serif;font-size:11px;color:#a08040;">${lobby.lobbyName}</div>
-        <div style="font-family:'IM Fell English',serif;font-size:10px;color:${nameColour};">${lobby.hostName}${label}</div>
+        <div style="font-family:Cinzel,serif;font-size:14px;color:#c8a84c;margin-bottom:3px;">${lobby.lobbyName}</div>
+        <div style="font-family:'IM Fell English',serif;font-size:12px;color:${nameColour};">${lobby.hostName}${label} <span style="color:#4a3010;">· ${lobby.hostRank}</span></div>
       </div>
-      <button onclick="joinLobby('${lobby.id}')" style="font-size:10px;padding:4px 12px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Join</button>`;
+      <button onclick="joinLobby('${lobby.id}')" style="font-size:13px;padding:7px 18px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;white-space:nowrap;">Join</button>`;
     container.appendChild(row);
   });
 }
@@ -601,8 +604,9 @@ async function createLobby(){
 
   isLobbyHost=true;
   lobbyRoomId='lobby-'+Math.random().toString(36).slice(2,9);
-  // show host waiting screen
+  // show host waiting screen — hide all other lobby screens
   document.getElementById('mp-create-lobby').style.display='none';
+  document.getElementById('mp-lobby-list').style.display='none';
   document.getElementById('mp-lobby-host').style.display='block';
   document.getElementById('mp-lobby-host-name').textContent=nameInput;
   document.getElementById('mp-lobby-host-status').textContent='Waiting for opponent...';
