@@ -387,12 +387,12 @@ function fuseBlocks(){
   if(newGroups>0)return true;
   return false;
 }
-const THUD_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Equip_sword.wav.mp3';
-const FUSE_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Low_Level_Alchemy.ogg.mp3';
-const BREAK_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/Chivalry.ogg.mp3';
-const CHAIN_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/herblorelevel.wav';
-const SWORD_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/swordstrike.wav.ogg';
-const DEATH_SRC='https://garlic04.github.io/GarlicHQ/duel-arena/sounds/You_Are_Dead.ogg';
+const THUD_SRC='https://garlichq.com/duel-arena/sounds/Equip_sword.wav.mp3';
+const FUSE_SRC='https://garlichq.com/duel-arena/sounds/Low_Level_Alchemy.ogg.mp3';
+const BREAK_SRC='https://garlichq.com/duel-arena/sounds/Chivalry.ogg.mp3';
+const CHAIN_SRC='https://garlichq.com/duel-arena/sounds/herblorelevel.wav';
+const SWORD_SRC='https://garlichq.com/duel-arena/sounds/swordstrike.wav.ogg';
+const DEATH_SRC='https://garlichq.com/duel-arena/sounds/You_Are_Dead.ogg';
 // Preload all sounds so there's no delay on first play
 [THUD_SRC,FUSE_SRC,BREAK_SRC,CHAIN_SRC,SWORD_SRC,DEATH_SRC].forEach(src=>{const a=new Audio();a.preload='auto';a.src=src;});
 let chainAudioCtx=null;
@@ -639,9 +639,11 @@ function mpSendBoard(reveal=false){
   for(let r=0;r<ROWS;r++)
     for(let c=0;c<COLS;c++){
       const b=board[r][c];
-      cells.push(!b?0:b.grey?2:1);
+      if(!b){cells.push(0);}
+      else if(b.grey){cells.push(reveal?-1:2);} // -1 = grey on reveal
+      else{cells.push(reveal?b.w+10:1);} // w+10 encodes colour for reveal (10=red,11=yellow,12=green,13=blue)
     }
-  console.log('Sending board, filled cells:', cells.filter(v=>v>0).length, 'reveal:', reveal);
+  console.log('Sending board, filled cells:', cells.filter(v=>v!==0).length, 'reveal:', reveal);
   mpSocket.send(JSON.stringify({type:'board',cells,reveal}));
 }
 
@@ -657,19 +659,21 @@ function renderMpMinimap(cells, reveal=false){
       if(v===0)continue;
       const x=c*cw,y=r*ch;
       if(reveal){
-        // on reveal show grey blocks as grey, normal as gold with border
-        if(v===2){
+        if(v===-1){
+          // grey attack block
           ctx.fillStyle='#777';
           ctx.fillRect(x,y,cw,ch);
-        } else {
-          ctx.fillStyle='rgba(200,168,75,0.55)';
+        } else if(v>=10){
+          // coloured block — decode weapon index
+          const wid=v-10;
+          ctx.fillStyle=WEAPONS[wid].bg;
           ctx.fillRect(x,y,cw,ch);
-          ctx.strokeStyle='rgba(200,168,75,0.9)';
+          ctx.strokeStyle=WEAPONS[wid].border;
           ctx.lineWidth=1;
           ctx.strokeRect(x+0.5,y+0.5,cw-1,ch-1);
         }
       } else {
-        // during game — all blocks show as solid gold mass (same as SP)
+        // during game — all blocks solid gold
         ctx.fillStyle='rgba(200,168,75,0.55)';
         ctx.fillRect(x,y,cw,ch);
       }
