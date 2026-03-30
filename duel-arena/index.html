@@ -482,9 +482,8 @@ function cancelMatchmaking(){
 }
 
 function connectToMatchmaking(){
-  // use a shared 'lobby' room — server pairs first two players
-  mpRoomId='lobby-'+Math.floor(Date.now()/30000); // new lobby every 30s
-  const url=`${PARTYKIT_URL}/parties/main/${encodeURIComponent(mpRoomId)}`;
+  mpRoomId='duel-arena-lobby';
+  const url=`${PARTYKIT_URL}/parties/main/${mpRoomId}`;
   mpSocket=new WebSocket(url);
 
   mpSocket.onopen=()=>{
@@ -503,36 +502,28 @@ function connectToMatchmaking(){
     }
 
     if(msg.type==='matched'){
-      // opponent found — start MP game
+      // close lobby connection, join private game room
+      mpSocket.close();
+      mpRoomId=msg.roomId;
+      const url=`${PARTYKIT_URL}/parties/main/${mpRoomId}`;
+      mpSocket=new WebSocket(url);
+      mpSocket.onopen=()=>{
+        getRankData().then(data=>{
+          const rank=getCurrentRank(data.wins);
+          mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name}));
+        });
+      };
+      mpSocket.onmessage=handleGameMessage;
+      mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
+      mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}};
+      // start game immediately
       document.getElementById('opponent-select').style.display='none';
       mpMode=true;
-      // update opponent panel with real player info
       document.getElementById('npc-name').textContent=msg.opponentName;
       document.getElementById('npc-head-img').src='https://oldschool.runescape.wiki/images/Player_head_icon.png';
       document.getElementById('ai-status').textContent='Fighting! ⚔';
-      document.getElementById('btn-pause').disabled=true; // no pause in MP
+      document.getElementById('btn-pause').disabled=true;
       startGame();
-    }
-
-    if(msg.type==='attack'){
-      // receive attack from opponent — land it on our board
-      const d=msg.data;
-      if(msg.attackType==='sword') landSword(d.h,d.sw,d.wid,null);
-      else if(msg.attackType==='sprinkle') landSprinkles(d.count,d.wid);
-    }
-
-    if(msg.type==='gameOver'){
-      // opponent lost — we win
-      if(!gameOver){
-        mpWin();
-      }
-    }
-
-    if(msg.type==='opponentLeft'){
-      if(!gameOver){
-        document.getElementById('msg').textContent='Opponent left';
-        endMpGame();
-      }
     }
   };
 
@@ -543,8 +534,26 @@ function connectToMatchmaking(){
   };
 
   mpSocket.onclose=()=>{
-    if(mpMode)return; // expected close after game ends
+    if(mpMode)return;
   };
+}
+
+function handleGameMessage(e){
+  const msg=JSON.parse(e.data);
+  if(msg.type==='attack'){
+    const d=msg.data;
+    if(msg.attackType==='sword')landSword(d.h,d.sw,d.wid,null);
+    else if(msg.attackType==='sprinkle')landSprinkles(d.count,d.wid);
+  }
+  if(msg.type==='gameOver'){
+    if(!gameOver)mpWin();
+  }
+  if(msg.type==='opponentLeft'){
+    if(!gameOver){
+      document.getElementById('msg').textContent='Opponent left';
+      endMpGame();
+    }
+  }
 }
 
 function mpSendAttack(attackType,data){
