@@ -211,16 +211,19 @@ nav {
 <div id="ui">
   <div id="panel-left">
     <div class="rs-box" style="text-align:center">
+      <h3>Next</h3>
+      <div id="next-inner" style="transform:scale(0.72);transform-origin:top center;margin-bottom:-10px;"></div>
+    </div>
+    <div class="rs-box" style="text-align:center">
       <h3 id="player-name-label">You</h3>
-      <div id="player-head" style="width:48px;height:48px;margin:4px auto 0;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
+      <div id="player-head" style="width:32px;height:32px;margin:3px auto 2px;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
         <img id="player-head-img" src="https://oldschool.runescape.wiki/images/Bronze_med_helm_detail.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
       </div>
-      <div id="player-rank-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;margin-top:3px;">Bronze</div>
-      <div id="player-wins-label" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;margin-top:2px;letter-spacing:0.5px;">0 wins</div>
+      <div id="player-rank-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;"></div>
+      <div id="player-wins-label" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;letter-spacing:0.5px;margin-bottom:3px;"></div>
+      <canvas id="self-minimap" width="48" height="100" style="display:block;margin:0 auto;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
     </div>
-    <div class="rs-box"><h3>Next</h3><div id="next-inner"></div></div>
     <div class="rs-box" style="display:none"><h3>Chain</h3><div class="stat-val" id="chain-val" style="font-size:15px">-</div><div id="chain-text" style="font-size:10px;color:#e87040;font-family:Cinzel,serif;min-height:12px"></div></div>
-
   </div>
   <div>
     <div id="board-wrap">
@@ -254,7 +257,7 @@ nav {
       <div id="npc-head" style="width:48px;height:48px;margin:4px auto 0;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
         <img id="npc-head-img" src="https://oldschool.runescape.wiki/images/Highwayman_chathead.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
       </div>
-      <canvas id="ai-minimap" width="48" height="130" style="display:block;margin:4px auto 0;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
+      <canvas id="ai-minimap" width="48" height="100" style="display:block;margin:4px auto 0;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
       <div id="ai-status" style="font-size:9px;color:#a08040;margin-top:4px;font-family:Cinzel,serif;">Waiting</div>
     </div>
     <div id="btn-row" style="display:flex;flex-direction:column;gap:4px;width:80px;">
@@ -1200,6 +1203,7 @@ function handleGameMessage(e){
   }
   if(msg.type==='teamEliminated'){
     const myTeamLost=msg.team===mpTeam;
+    const ko=document.getElementById('ko-overlay');if(ko)ko.remove();
     if(!gameOver){
       if(myTeamLost){mpLose();}
       else{mpWin();}
@@ -1510,7 +1514,11 @@ function markPlayerKnockedOut(name){
   // add skull overlay
   const skull=document.createElement('div');
   skull.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;pointer-events:none;';
-  skull.textContent='💀';
+  const _si=document.createElement('img');
+  _si.src='https://oldschool.runescape.wiki/images/Skull.png';
+  _si.style.cssText='width:20px;height:20px;image-rendering:pixelated;';
+  _si.onerror=function(){this.replaceWith(document.createTextNode('💀'));};
+  skull.appendChild(_si);
   card.appendChild(skull);
   // if this was our target, shift to next alive opponent
   if(name===mpTarget){
@@ -1651,6 +1659,17 @@ function doRematch(){
   mpSocket.onerror=()=>{document.getElementById('msg').textContent='Connection error';endMpGame();};
   mpSocket.onclose=()=>{if(mpMode){document.getElementById('msg').textContent='Disconnected';endMpGame();}else if(mpInRematchWait){handleOpponentDisconnect();}};
   startGame();
+}
+
+function leaveTeamGame(){
+  // Knocked-out player leaves mid-game
+  const ko=document.getElementById('ko-overlay');if(ko)ko.remove();
+  if(mpSocket){mpSocket.close();mpSocket=null;}
+  if(mpIsTeamGame)teardownTeamPanels();
+  mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
+  mpInRematchWait=false;
+  setMpButtons(false);
+  showOpponentSelect(false);
 }
 
 function declineRematch(){
@@ -2889,10 +2908,24 @@ function endGame(){
     mpSendGameOver();
     mpMode=false;
     if(mpIsTeamGame){
-      // Knocked out in a team game — board freezes, stay connected as spectator
+      // Knocked out in a team game — show overlay with Leave button only
       // Game end (win/loss) comes via teamEliminated
-      document.getElementById('msg').textContent='Knocked out!';
       document.getElementById('btn-pause').disabled=false;
+      const boardWrap=document.getElementById('board-wrap');
+      if(boardWrap){
+        const stale=document.getElementById('ko-overlay');if(stale)stale.remove();
+        const ko=document.createElement('div');
+        ko.id='ko-overlay';
+        ko.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;background:rgba(0,0,0,0.6);';
+        ko.innerHTML=`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <img src="https://oldschool.runescape.wiki/images/Skull.png" style="width:24px;height:24px;image-rendering:pixelated;" onerror="this.style.display='none'">
+            <span style="font-family:Cinzel,serif;font-size:20px;color:#e8c86c;text-shadow:1px 1px 0 #000;">Knocked Out</span>
+          </div>
+          <div style="font-family:'IM Fell English',serif;font-size:13px;color:#a08040;margin-bottom:16px;">Your team fights on...</div>
+          <button onclick="leaveTeamGame()" style="font-size:12px;padding:6px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>`;
+        boardWrap.appendChild(ko);
+      }
       // keep socket open to receive teamEliminated
     } else {
       mpInRematchWait=true;
@@ -3292,6 +3325,42 @@ function aiFindBreaks(){
   return[...toBreak].map(k=>{const[r,c]=k.split(',').map(Number);return{r,c};});
 }
 
+function renderSelfMinimap(){
+  const canvas=document.getElementById('self-minimap');
+  if(!canvas||!board)return;
+  const ctx=canvas.getContext('2d');
+  const cw=canvas.width/COLS,ch=canvas.height/ROWS;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const b=board[r][c];
+      if(!b)continue;
+      if(b.grey){
+        ctx.fillStyle='#555';
+        ctx.fillRect(c*cw,r*ch,cw,ch);
+      } else {
+        ctx.fillStyle=WEAPONS[b.w].bg;
+        ctx.fillRect(c*cw,r*ch,cw,ch);
+        ctx.strokeStyle=WEAPONS[b.w].border;
+        ctx.lineWidth=0.5;
+        ctx.strokeRect(c*cw+0.5,r*ch+0.5,cw-1,ch-1);
+      }
+    }
+  }
+  // draw falling piece
+  if(falling){
+    falling.pair.forEach(pc=>{
+      const r=falling.row+pc.dr,c=falling.col+pc.dc;
+      if(r<0||r>=ROWS||c<0||c>=COLS)return;
+      ctx.fillStyle=WEAPONS[pc.w].bg;
+      ctx.fillRect(c*cw,r*ch,cw,ch);
+      ctx.strokeStyle=WEAPONS[pc.w].border;
+      ctx.lineWidth=0.5;
+      ctx.strokeRect(c*cw+0.5,r*ch+0.5,cw-1,ch-1);
+    });
+  }
+}
+
 function renderAiMinimap(reveal=false){
   const canvas=document.getElementById('ai-minimap');if(!canvas)return;
   // in MP mode, minimap is managed by renderMpMinimap — don't touch it
@@ -3523,6 +3592,7 @@ function renderGroupOutlines(){
 
 function render(){
   if(!board)return;
+  renderSelfMinimap();
   const skip=new Set();
   sprites.forEach(s=>skip.add(s.targetR+','+s.targetC));
   for(const grp of floaterGroups)for(const{r,c} of grp.cells)skip.add(r+','+c);
