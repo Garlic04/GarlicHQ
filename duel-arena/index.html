@@ -221,7 +221,7 @@ nav {
       </div>
       <div id="player-rank-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;"></div>
       <div id="player-wins-label" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;letter-spacing:0.5px;margin-bottom:3px;"></div>
-      <canvas id="self-minimap" width="48" height="100" style="display:block;margin:0 auto;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
+      <canvas id="self-minimap" width="48" height="143" style="display:block;margin:0 auto;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
     </div>
     <div class="rs-box" style="display:none"><h3>Chain</h3><div class="stat-val" id="chain-val" style="font-size:15px">-</div><div id="chain-text" style="font-size:10px;color:#e87040;font-family:Cinzel,serif;min-height:12px"></div></div>
   </div>
@@ -234,8 +234,8 @@ nav {
       <div id="falling-overlay"></div>
       <div id="win-overlay">
         <div id="win-box">
-          <h2>⚔ VICTORY ⚔</h2>
-          <p>The opponent has been defeated!</p>
+          <h2 id="win-title">⚔ VICTORY ⚔</h2>
+          <p id="win-subtitle">The opponent has been defeated!</p>
           <div id="win-sp-btns">
             <button onclick="document.getElementById('win-overlay').classList.remove('show');showOpponentSelect(false)">Play Again</button>
           </div>
@@ -243,6 +243,9 @@ nav {
             <button onclick="startRematch()" style="font-size:12px;padding:6px 20px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Rematch</button>
             <button onclick="declineRematch()" style="font-size:11px;padding:5px 16px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>
             <div id="win-rematch-status" style="font-family:'IM Fell English',serif;font-size:11px;color:#a08040;margin-top:4px;"></div>
+          </div>
+          <div id="lose-mp-btns" style="display:none;flex-direction:column;gap:6px;align-items:center;">
+            <button onclick="declineRematch()" style="font-size:12px;padding:6px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Leave</button>
           </div>
         </div>
       </div>
@@ -257,7 +260,7 @@ nav {
       <div id="npc-head" style="width:48px;height:48px;margin:4px auto 0;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
         <img id="npc-head-img" src="https://oldschool.runescape.wiki/images/Highwayman_chathead.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
       </div>
-      <canvas id="ai-minimap" width="48" height="100" style="display:block;margin:4px auto 0;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
+      <canvas id="ai-minimap" width="48" height="143" style="display:block;margin:4px auto 0;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
       <div id="ai-status" style="font-size:9px;color:#a08040;margin-top:4px;font-family:Cinzel,serif;">Waiting</div>
     </div>
     <div id="btn-row" style="display:flex;flex-direction:column;gap:4px;width:80px;">
@@ -1397,7 +1400,7 @@ function buildTeamPanels(){
 
   const cardW=82;
   // scale canvas height: full=110, shrinks slightly for more players
-  const canvasH=Math.max(60, 110-Math.max(0,mpOpponents.length-2)*12);
+  const canvasH=Math.max(70, 143-Math.max(0,mpOpponents.length-2)*15);
 
   const oppList=document.createElement('div');
   oppList.id='mp-opp-list';
@@ -1437,7 +1440,7 @@ function buildTeamPanels(){
     tmPanel.appendChild(arrowRow);
   }
 
-  const tmCanvasH=Math.max(60, 110-Math.max(0,mpTeammates.length-2)*12);
+  const tmCanvasH=Math.max(70, 143-Math.max(0,mpTeammates.length-2)*15);
   const tmList=document.createElement('div');
   tmList.id='mp-tm-list';
   tmList.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:center;overflow:hidden;';
@@ -1537,6 +1540,9 @@ function mpWin(){
   paused=true;clearInterval(mainTimer);
   recordWin();
   mpSendBoard(true); // send our final board as reveal to opponent
+  document.getElementById('win-title').textContent='⚔ VICTORY ⚔';
+  document.getElementById('win-subtitle').textContent='The opponent has been defeated!';
+  document.getElementById('lose-mp-btns').style.display='none';
   // reset rematch button to default state
   const winRematchBtn=document.querySelector('#win-mp-btns button');
   if(winRematchBtn){winRematchBtn.textContent='Rematch';winRematchBtn.style.borderColor='#2277dd';winRematchBtn.style.color='#5ac8f5';}
@@ -1555,6 +1561,34 @@ function mpWin(){
   document.getElementById('btn-pause').disabled=false;
   // socket stays open for rematch — only closed in declineRematch or startRematch
 
+}
+
+function mpLose(){
+  mpInRematchWait=true;
+  paused=true;clearInterval(mainTimer);
+  recordLoss();
+  mpSendBoard(true);
+  document.getElementById('win-title').textContent='⚔ DEFEAT ⚔';
+  document.getElementById('win-subtitle').textContent='You have been defeated!';
+  document.getElementById('win-sp-btns').style.display='none';
+  document.getElementById('win-mp-btns').style.display='none';
+  document.getElementById('lose-mp-btns').style.display='flex';
+  document.getElementById('win-rematch-status').textContent='';
+  document.getElementById('win-overlay').classList.add('show');
+  mpMode=false;
+  if(mpIsTeamGame)teardownTeamPanels();
+  mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
+  document.getElementById('btn-pause').disabled=false;
+  // update D1 result
+  if(mpUsername&&mpOpponentUsername){
+    fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
+  }
+  // update local wins display
+  getRankData().then(data=>{
+    const r=getCurrentRank(data.wins);
+    const wl=document.getElementById('player-wins-label');
+    if(wl)wl.textContent=data.wins+'W / '+(data.losses||0)+'L';
+  });
 }
 
 function confirmForfeit(){
@@ -1679,6 +1713,9 @@ function declineRematch(){
   document.getElementById('win-overlay').classList.remove('show');
   document.getElementById('win-sp-btns').style.display='block';
   document.getElementById('win-mp-btns').style.display='none';
+  document.getElementById('lose-mp-btns').style.display='none';
+  document.getElementById('win-title').textContent='⚔ VICTORY ⚔';
+  document.getElementById('win-subtitle').textContent='The opponent has been defeated!';
   if(mpSocket){mpSocket.close();mpSocket=null;}
   document.getElementById('btn-pause').disabled=false;
   setMpButtons(false);
@@ -3339,24 +3376,19 @@ function renderSelfMinimap(){
         ctx.fillStyle='#555';
         ctx.fillRect(c*cw,r*ch,cw,ch);
       } else {
-        ctx.fillStyle=WEAPONS[b.w].bg;
+        // gold blocks like opponent minimap during game
+        ctx.fillStyle='rgba(200,168,75,0.55)';
         ctx.fillRect(c*cw,r*ch,cw,ch);
-        ctx.strokeStyle=WEAPONS[b.w].border;
-        ctx.lineWidth=0.5;
-        ctx.strokeRect(c*cw+0.5,r*ch+0.5,cw-1,ch-1);
       }
     }
   }
-  // draw falling piece
+  // draw falling piece as gold too
   if(falling){
     falling.pair.forEach(pc=>{
       const r=falling.row+pc.dr,c=falling.col+pc.dc;
       if(r<0||r>=ROWS||c<0||c>=COLS)return;
-      ctx.fillStyle=WEAPONS[pc.w].bg;
+      ctx.fillStyle='rgba(200,168,75,0.75)';
       ctx.fillRect(c*cw,r*ch,cw,ch);
-      ctx.strokeStyle=WEAPONS[pc.w].border;
-      ctx.lineWidth=0.5;
-      ctx.strokeRect(c*cw+0.5,r*ch+0.5,cw-1,ch-1);
     });
   }
 }
