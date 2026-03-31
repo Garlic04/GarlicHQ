@@ -154,9 +154,17 @@ nav {
     <!-- Create lobby -->
     <div id="mp-create-lobby" style="display:none;">
       <p style="font-family:Cinzel,serif;color:#e8c86c;font-size:16px;letter-spacing:1px;margin-bottom:6px;">Create a Lobby</p>
-      <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:12px;margin-bottom:16px;">Give your lobby a name</p>
+      <p style="font-family:'IM Fell English',serif;color:#6a5020;font-size:12px;margin-bottom:12px;">Give your lobby a name</p>
       <input id="mp-lobby-name" type="text" maxlength="24" placeholder="e.g. Garlic's game" style="font-family:Cinzel,serif;font-size:14px;padding:9px 14px;background:#0e0c08;border:1px solid #2277dd;color:#e8c86c;border-radius:3px;width:230px;text-align:center;display:block;margin:0 auto 8px;">
-      <div id="mp-lobby-error" style="color:#ff6666;font-size:12px;font-family:'IM Fell English',serif;min-height:18px;margin-bottom:10px;"></div>
+      <div style="margin:14px auto 4px;width:260px;">
+        <div style="font-family:'IM Fell English',serif;color:#a08040;font-size:12px;margin-bottom:8px;">Team size</div>
+        <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
+          <span style="font-family:Cinzel,serif;color:#5ac8f5;font-size:14px;min-width:38px;text-align:right;" id="lobby-size-label">1v1</span>
+          <input id="mp-lobby-size" type="range" min="1" max="8" value="1" oninput="updateLobbySizeLabel()" style="width:140px;accent-color:#2277dd;cursor:pointer;">
+          <span style="font-family:Cinzel,serif;color:#4a5a6a;font-size:11px;min-width:38px;text-align:left;">8v8</span>
+        </div>
+      </div>
+      <div id="mp-lobby-error" style="color:#ff6666;font-size:12px;font-family:'IM Fell English',serif;min-height:18px;margin-bottom:10px;margin-top:8px;"></div>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="createLobby()" style="font-size:13px;padding:8px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">Create</button>
         <button onclick="showLobbyList()" style="font-size:13px;padding:8px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">← Back</button>
@@ -165,23 +173,21 @@ nav {
 
     <!-- Lobby waiting room (host view) -->
     <div id="mp-lobby-host" style="display:none;">
-      <p style="font-family:Cinzel,serif;color:#e8c86c;font-size:17px;letter-spacing:1px;margin-bottom:6px;" id="mp-lobby-host-name"></p>
-      <div id="mp-lobby-host-status" style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:20px;">Waiting for opponent...</div>
-      <div id="mp-lobby-guest-info" style="display:none;margin-bottom:16px;padding:14px 18px;border:1px solid #2277dd;border-radius:4px;background:#0a1220;">
-        <div id="mp-lobby-guest-name" style="font-family:Cinzel,serif;color:#e8c86c;font-size:15px;margin-bottom:14px;"></div>
-        <div style="display:flex;gap:10px;justify-content:center;">
-          <button onclick="startLobbyGame()" style="font-size:14px;padding:9px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">▶ Start</button>
-          <button onclick="kickGuest()" style="font-size:13px;padding:9px 18px;background:#2a0a0a;border-color:#aa2222;color:#ff6666;">✕ Kick</button>
-        </div>
+      <p style="font-family:Cinzel,serif;color:#e8c86c;font-size:17px;letter-spacing:1px;margin-bottom:4px;" id="mp-lobby-host-name"></p>
+      <div id="mp-lobby-host-status" style="font-family:'IM Fell English',serif;color:#a08040;font-size:12px;margin-bottom:12px;"></div>
+      <div id="mp-lobby-team-grid-host" style="display:flex;gap:12px;justify-content:center;margin-bottom:14px;"></div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="startLobbyGame()" id="lobby-start-btn" style="font-size:14px;padding:9px 28px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;">▶ Start</button>
+        <button onclick="closeLobby()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Close Lobby</button>
       </div>
-      <button onclick="closeLobby()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">Close Lobby</button>
     </div>
 
     <!-- Lobby waiting room (guest view) -->
     <div id="mp-lobby-guest" style="display:none;">
-      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:16px;letter-spacing:1px;margin-bottom:10px;">In Lobby</p>
-      <div id="mp-lobby-guest-host-name" style="font-family:'IM Fell English',serif;color:#a08040;font-size:14px;margin-bottom:8px;"></div>
-      <div style="font-family:'IM Fell English',serif;color:#4a3010;font-size:13px;margin-bottom:22px;">Waiting for host to start...</div>
+      <p style="font-family:Cinzel,serif;color:#5ac8f5;font-size:16px;letter-spacing:1px;margin-bottom:4px;">In Lobby</p>
+      <div id="mp-lobby-guest-host-name" style="font-family:'IM Fell English',serif;color:#a08040;font-size:13px;margin-bottom:12px;"></div>
+      <div id="mp-lobby-team-grid-guest" style="display:flex;gap:12px;justify-content:center;margin-bottom:14px;"></div>
+      <div style="font-family:'IM Fell English',serif;color:#4a3010;font-size:12px;margin-bottom:14px;">Click an empty slot to join that team</div>
       <button onclick="leaveLobby()" style="font-size:13px;padding:7px 20px;background:#1a1209;border-color:#5a3d00;color:#a08040;">← Leave</button>
     </div>
 
@@ -540,6 +546,106 @@ let mpInRematchWait=false; // cleared on first board update of new game // full 
 let lobbySocket=null;
 let lobbyRoomId='';
 let isLobbyHost=false;
+let lobbyTeamSize=1; // slots per side (symmetric)
+let lobbySlots=[]; // [{team:0|1, slot:0-based, name, rank, colour, label, wins, losses}]
+
+function updateLobbySizeLabel(){
+  const v=parseInt(document.getElementById('mp-lobby-size').value);
+  document.getElementById('lobby-size-label').textContent=v+'v'+v;
+}
+
+function buildTeamGrid(containerId, isHost){
+  const container=document.getElementById(containerId);
+  if(!container)return;
+  container.innerHTML='';
+  const teamNames=['Team A','Team B'];
+  const teamColors=['#3a6ea8','#8a3a3a'];
+  const teamBorders=['#2277dd','#aa2222'];
+  for(let t=0;t<2;t++){
+    const col=document.createElement('div');
+    col.style.cssText='min-width:130px;max-width:180px;flex:1;';
+    const hdr=document.createElement('div');
+    hdr.style.cssText=`font-family:Cinzel,serif;font-size:12px;color:${teamColors[t]};margin-bottom:6px;letter-spacing:1px;`;
+    hdr.textContent=teamNames[t];
+    col.appendChild(hdr);
+    for(let s=0;s<lobbyTeamSize;s++){
+      const player=lobbySlots.find(p=>p.team===t&&p.slot===s);
+      const slot=document.createElement('div');
+      const isEmpty=!player;
+      const isMe=player&&player.name===mpUsername;
+      slot.style.cssText=`padding:6px 10px;margin-bottom:5px;border:1px solid ${isEmpty?'#2a2010':teamBorders[t]};border-radius:3px;background:${isEmpty?'#0a0906':'#0a1220'};min-height:44px;display:flex;flex-direction:column;justify-content:center;position:relative;`;
+      if(isEmpty){
+        slot.style.cursor=(isHost?'default':'pointer');
+        const emptyLbl=document.createElement('div');
+        emptyLbl.style.cssText="font-family:'IM Fell English',serif;color:#3a2a10;font-size:12px;";
+        emptyLbl.textContent='Open slot';
+        slot.appendChild(emptyLbl);
+        if(!isHost){
+          slot.onclick=()=>requestJoinSlot(t,s);
+          slot.onmouseenter=()=>{slot.style.borderColor=teamBorders[t];slot.style.background='#0d1018';};
+          slot.onmouseleave=()=>{slot.style.borderColor='#2a2010';slot.style.background='#0a0906';};
+        }
+      } else {
+        const nameColour=player.colour||'#e8c86c';
+        const nameRow=document.createElement('div');
+        nameRow.style.cssText='display:flex;align-items:center;gap:4px;';
+        const nameSpan=document.createElement('span');
+        nameSpan.style.cssText=`font-family:Cinzel,serif;font-size:13px;color:${nameColour};`;
+        nameSpan.textContent=player.name+(player.label?' ['+player.label+']':'');
+        nameRow.appendChild(nameSpan);
+        slot.appendChild(nameRow);
+        const metaRow=document.createElement('div');
+        metaRow.style.cssText='display:flex;align-items:center;gap:6px;margin-top:2px;';
+        const rankSpan=document.createElement('span');
+        rankSpan.style.cssText="font-family:'IM Fell English',serif;color:#7a9ab5;font-size:11px;";
+        rankSpan.textContent=player.rank||'';
+        metaRow.appendChild(rankSpan);
+        if(player.wins!=null){
+          const wlSpan=document.createElement('span');
+          wlSpan.style.cssText='font-size:11px;';
+          wlSpan.innerHTML=`<span style="color:#6a9e6a;">${player.wins}W</span><span style="color:#4a3010;"> / </span><span style="color:#9e4a4a;">${player.losses||0}L</span>`;
+          metaRow.appendChild(wlSpan);
+        }
+        slot.appendChild(metaRow);
+        if(isHost&&!isMe){
+          const kickBtn=document.createElement('button');
+          kickBtn.textContent='✕';
+          kickBtn.title='Kick';
+          kickBtn.style.cssText='position:absolute;top:4px;right:4px;font-size:10px;padding:1px 5px;background:#2a0a0a;border:1px solid #aa2222;color:#ff6666;cursor:pointer;border-radius:2px;';
+          kickBtn.onclick=(e)=>{e.stopPropagation();kickPlayerFromSlot(player.name);};
+          slot.appendChild(kickBtn);
+        }
+      }
+      col.appendChild(slot);
+    }
+    container.appendChild(col);
+  }
+}
+
+function refreshTeamGrids(){
+  if(document.getElementById('mp-lobby-host').style.display!=='none') buildTeamGrid('mp-lobby-team-grid-host',true);
+  if(document.getElementById('mp-lobby-guest').style.display!=='none') buildTeamGrid('mp-lobby-team-grid-guest',false);
+  // update start button state
+  const startBtn=document.getElementById('lobby-start-btn');
+  if(startBtn&&isLobbyHost){
+    const hasA=lobbySlots.some(p=>p.team===0);
+    const hasB=lobbySlots.some(p=>p.team===1);
+    startBtn.disabled=!(hasA&&hasB);
+    startBtn.style.opacity=(hasA&&hasB)?'1':'0.4';
+  }
+}
+
+function requestJoinSlot(team,slot){
+  if(lobbyGameSocket&&lobbyGameSocket.readyState===WebSocket.OPEN){
+    lobbyGameSocket.send(JSON.stringify({type:'assign-slot',name:mpUsername,team,slot}));
+  }
+}
+
+function kickPlayerFromSlot(name){
+  if(lobbyGameSocket&&lobbyGameSocket.readyState===WebSocket.OPEN){
+    lobbyGameSocket.send(JSON.stringify({type:'kick-player',targetName:name}));
+  }
+}
 
 function showMpEntryScreen(){
   ['mp-waiting','mp-lobby-list','mp-create-lobby','mp-lobby-host','mp-lobby-guest','mp-leaderboard'].forEach(id=>{
@@ -547,6 +653,8 @@ function showMpEntryScreen(){
   });
   document.getElementById('mp-entry').style.display='block';
   if(lobbySocket){lobbySocket.close();lobbySocket=null;}
+  lobbySlots=[];
+  lobbyTeamSize=1;
 }
 
 async function goToLobbyList(){
@@ -567,6 +675,8 @@ function showCreateLobby(){
   document.getElementById('mp-create-lobby').style.display='block';
   document.getElementById('mp-lobby-name').value=mpUsername+"'s game";
   document.getElementById('mp-lobby-error').textContent='';
+  document.getElementById('mp-lobby-size').value=1;
+  document.getElementById('lobby-size-label').textContent='1v1';
 }
 
 function connectToLobbyList(){
@@ -601,9 +711,13 @@ function renderLobbyList(lobbies){
     const nameColour=lobby.hostColour||'#e8c86c';
     const labelHtml=lobby.hostLabel?` <span style="color:#c8a84b;font-size:11px;font-family:Cinzel,serif;">[${lobby.hostLabel}]</span>`:'';
     const wl=lobby.hostWins!=null?`<span style="color:#6a9e6a;font-size:11px;">${lobby.hostWins}W</span><span style="color:#4a3010;font-size:11px;"> / </span><span style="color:#9e4a4a;font-size:11px;">${lobby.hostLosses||0}L</span>`:'';
+    const ts=lobby.teamSize&&lobby.teamSize>1?`<span style="font-family:Cinzel,serif;font-size:11px;color:#5a7a9a;margin-left:4px;">${lobby.teamSize}v${lobby.teamSize}</span>`:'';
     row.innerHTML=`
       <div style="text-align:left;">
-        <div style="font-family:Cinzel,serif;font-size:15px;color:#e8c86c;margin-bottom:4px;letter-spacing:0.5px;">${lobby.lobbyName}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+          <span style="font-family:Cinzel,serif;font-size:15px;color:#e8c86c;letter-spacing:0.5px;">${lobby.lobbyName}</span>
+          ${ts}
+        </div>
         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
           <span style="font-family:Cinzel,serif;font-size:13px;color:${nameColour};">${lobby.hostName}${labelHtml}</span>
           <span style="font-family:Cinzel,serif;font-size:11px;color:#7a9ab5;">· ${lobby.hostRank}</span>
@@ -627,29 +741,34 @@ async function createLobby(){
   }catch(e){errEl.textContent='Connection error';return;}
 
   isLobbyHost=true;
+  lobbyTeamSize=parseInt(document.getElementById('mp-lobby-size').value)||1;
   lobbyRoomId='lobby-'+Math.random().toString(36).slice(2,9);
-  // show host waiting screen — hide all other lobby screens
-  document.getElementById('mp-create-lobby').style.display='none';
-  document.getElementById('mp-lobby-list').style.display='none';
-  document.getElementById('mp-lobby-host').style.display='block';
-  document.getElementById('mp-lobby-host-name').textContent=nameInput;
-  document.getElementById('mp-lobby-host-status').textContent='Waiting for opponent...';
-  document.getElementById('mp-lobby-guest-info').style.display='none';
 
-  // announce to lobby list
-  if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
-    getRankData().then(data=>{
-      const rank=getCurrentRank(data.wins);
-      lobbySocket.send(JSON.stringify({type:'open-lobby',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,lobbyName:nameInput,lobbyRoomId:lobbyRoomId,wins:mpPlayerData?.wins||0,losses:mpPlayerData?.losses||0}));
-    });
-  }
-  // connect to own lobby room
-  connectToLobbyRoom(lobbyRoomId, true);
+  // seed host into Team A slot 0
+  getRankData().then(rankData=>{
+    const rank=getCurrentRank(rankData.wins);
+    lobbySlots=[{team:0,slot:0,name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,wins:mpPlayerData?.wins||0,losses:mpPlayerData?.losses||0}];
+    // show host waiting screen
+    document.getElementById('mp-create-lobby').style.display='none';
+    document.getElementById('mp-lobby-list').style.display='none';
+    document.getElementById('mp-lobby-host').style.display='block';
+    document.getElementById('mp-lobby-host-name').textContent=nameInput;
+    document.getElementById('mp-lobby-host-status').textContent='Waiting for players...';
+    buildTeamGrid('mp-lobby-team-grid-host',true);
+    refreshTeamGrids();
+    // announce to lobby list
+    if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+      lobbySocket.send(JSON.stringify({type:'open-lobby',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,lobbyName:nameInput,lobbyRoomId:lobbyRoomId,wins:mpPlayerData?.wins||0,losses:mpPlayerData?.losses||0,teamSize:lobbyTeamSize}));
+    }
+    // connect to own lobby room
+    connectToLobbyRoom(lobbyRoomId, true);
+  });
 }
 
 function joinLobby(roomId){
   isLobbyHost=false;
   lobbyRoomId=roomId;
+  lobbySlots=[];
   document.getElementById('mp-lobby-list').style.display='none';
   document.getElementById('mp-lobby-guest').style.display='block';
   document.getElementById('mp-lobby-guest-host-name').textContent='Connecting...';
@@ -665,25 +784,44 @@ function connectToLobbyRoom(roomId, asHost){
     console.log('Lobby room socket open, sending join');
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
-      lobbyGameSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
+      lobbyGameSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,wins:mpPlayerData?.wins||0,losses:mpPlayerData?.losses||0,teamSize:asHost?lobbyTeamSize:undefined}));
     });
   };
   lobbyGameSocket.onmessage=(e)=>{
     const msg=JSON.parse(e.data);
     console.log('Lobby room msg:', msg.type, msg);
+
+    // lobby-config: sent to guest on join — contains teamSize + full slot list
+    if(msg.type==='lobby-config'&&!asHost){
+      lobbyTeamSize=msg.teamSize||1;
+      lobbySlots=msg.slots||[];
+      const hostColour=msg.hostColour||'#e8c86c';
+      document.getElementById('mp-lobby-guest-host-name').innerHTML=`<span style="color:${hostColour}">${msg.hostName}</span>'s lobby &middot; ${lobbyTeamSize}v${lobbyTeamSize}`;
+      buildTeamGrid('mp-lobby-team-grid-guest',false);
+      refreshTeamGrids();
+    }
+
+    // slots-updated: broadcast any time someone joins/moves/is kicked
+    if(msg.type==='slots-updated'){
+      lobbySlots=msg.slots||[];
+      if(msg.teamSize) lobbyTeamSize=msg.teamSize;
+      refreshTeamGrids();
+      if(asHost){
+        const total=lobbySlots.length;
+        document.getElementById('mp-lobby-host-status').textContent=total<=1?'Waiting for players...':`${total} player${total!==1?'s':''} in lobby`;
+      }
+    }
+
+    // legacy guest-joined (kept for backwards compat but now superseded by slots-updated)
     if(msg.type==='guest-joined'&&asHost){
-      document.getElementById('mp-lobby-host-status').textContent='';
-      document.getElementById('mp-lobby-guest-info').style.display='block';
-      const guestColour=msg.guestColour||'#e8c86c';
-      const guestLabel=msg.guestLabel?` [${msg.guestLabel}]`:'';
-      document.getElementById('mp-lobby-guest-name').innerHTML=`<span style="color:${guestColour}">${msg.guestName}${guestLabel}</span> wants to duel!`;
+      // handled via slots-updated now
     }
     if(msg.type==='lobby-joined'&&!asHost){
-      const hostColour=msg.hostColour||'#e8c86c';
-      document.getElementById('mp-lobby-guest-host-name').innerHTML=`Joined <span style="color:${hostColour}">${msg.hostName}</span>'s lobby`;
+      // handled via lobby-config now
     }
     if(msg.type==='kicked'){
       document.getElementById('mp-lobby-guest').style.display='none';
+      lobbySlots=[];
       showLobbyList();
       connectToLobbyList();
       lobbyGameSocket.close();
@@ -692,6 +830,7 @@ function connectToLobbyRoom(roomId, asHost){
       // transition to game
       document.getElementById('mp-lobby-host').style.display='none';
       document.getElementById('mp-lobby-guest').style.display='none';
+      lobbySlots=[];
       // close lobby list socket
       if(lobbySocket){lobbySocket.close();lobbySocket=null;}
       startMpGame(msg);
@@ -743,10 +882,9 @@ function startLobbyGame(){
 }
 
 function kickGuest(){
+  // legacy 1v1 kick — now handled by kickPlayerFromSlot per slot
   if(lobbyGameSocket&&lobbyGameSocket.readyState===WebSocket.OPEN){
     lobbyGameSocket.send(JSON.stringify({type:'kick-guest'}));
-    document.getElementById('mp-lobby-guest-info').style.display='none';
-    document.getElementById('mp-lobby-host-status').textContent='Waiting for opponent...';
   }
 }
 
