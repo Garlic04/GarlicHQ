@@ -221,6 +221,7 @@ nav {
       </div>
       <div id="player-rank-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;"></div>
       <div id="player-wins-label" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;letter-spacing:0.5px;margin-bottom:3px;"></div>
+      <div id="mp-dots-self" style="display:none;flex-wrap:wrap;gap:3px;justify-content:center;min-height:10px;padding:2px 0;margin-bottom:2px;"></div>
       <canvas id="self-minimap" width="48" height="143" style="display:block;margin:0 auto;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
     </div>
     <div class="rs-box" style="display:none"><h3>Chain</h3><div class="stat-val" id="chain-val" style="font-size:15px">-</div><div id="chain-text" style="font-size:10px;color:#e87040;font-family:Cinzel,serif;min-height:12px"></div></div>
@@ -899,18 +900,25 @@ function startMpGame(msg){
   }
 
   // set default target using round-robin across opponents
+  // always falls back to first opponent so no-one is ever unassigned
   if(mpIsTeamGame&&mpOpponents.length>0){
-    // find my index within my team
     const myTeamPlayers=mpTeamPlayers.filter(p=>p.team===mpTeam);
     const myIdx=myTeamPlayers.findIndex(p=>p.name===mpUsername);
+    // if more teammates than opponents, wrap — guarantees everyone has a target
     const targetIdx=(myIdx>=0?myIdx:0)%mpOpponents.length;
     mpTarget=mpOpponents[targetIdx].name;
   } else {
     mpTarget=mpOpponents[0]?.name||null;
   }
+  // safety: if still no target, assign first available opponent
+  if(mpIsTeamGame&&!mpTarget&&mpOpponents.length>0){
+    mpTarget=mpOpponents[0].name;
+  }
 
   // build team panel UI before game starts
   buildTeamPanels();
+  const selfDotsEl=document.getElementById('mp-dots-self');
+  if(selfDotsEl)selfDotsEl.style.display=mpIsTeamGame?'flex':'none';
   updateTargetingDots();
 
   // connect to game room
@@ -1359,13 +1367,11 @@ function buildPlayerCard(player, isOpponent, cardW, canvasH, canvasW){
   wl.innerHTML=`<span style="color:#6a9e6a;">${player.wins||0}W</span><span style="color:#4a3010;"> / </span><span style="color:#9e4a4a;">${player.losses||0}L</span>`;
   card.appendChild(wl);
 
-  // targeting dots (opponents only)
-  if(isOpponent){
-    const dotsRow=document.createElement('div');
-    dotsRow.id='mp-dots-'+player.name.replace(/[^a-z0-9]/gi,'_');
-    dotsRow.style.cssText='display:flex;flex-wrap:wrap;gap:2px;justify-content:center;min-height:8px;';
-    card.appendChild(dotsRow);
-  }
+  // targeting dots — shown on all cards (opponents show who is targeting them, allies/self too)
+  const dotsRow=document.createElement('div');
+  dotsRow.id='mp-dots-'+player.name.replace(/[^a-z0-9]/gi,'_');
+  dotsRow.style.cssText='display:flex;flex-wrap:wrap;gap:3px;justify-content:center;min-height:10px;padding:2px 0;';
+  card.appendChild(dotsRow);
 
   // minimap canvas
   const canvas=document.createElement('canvas');
@@ -1476,6 +1482,9 @@ function teardownTeamPanels(){
   const aiPanel=document.getElementById('ai-panel');
   const oldCard=aiPanel.querySelector('.rs-box');
   if(oldCard)oldCard.style.display='';
+  // hide self dots
+  const selfDots=document.getElementById('mp-dots-self');
+  if(selfDots){selfDots.style.display='none';selfDots.innerHTML='';}
 }
 
 function refreshOppPanelVisibility(){
@@ -1530,35 +1539,60 @@ function setMpTarget(name){
 const mpTargetMap={};
 
 function updateTargetingDots(){
-  // collect how many people are targeting each opponent
-  const counts={}; // targetName -> count
-  mpOpponents.forEach(p=>{counts[p.name]=0;});
-  // count from mpTargetMap (includes ourselves)
+  // build full target counts for ALL players (opponents and allies/self)
+  const allPlayers=[...mpOpponents,...mpTeammates,{name:mpUsername,team:mpTeam}];
+  const counts={};
+  allPlayers.forEach(p=>{counts[p.name]=0;});
+
+  // count teammate targets from mpTargetMap
   Object.values(mpTargetMap).forEach(t=>{if(counts[t]!==undefined)counts[t]++;});
-  // add our own target
+  // count our own target
   if(mpTarget&&counts[mpTarget]!==undefined)counts[mpTarget]++;
 
-  mpOpponents.forEach(p=>{
+  allPlayers.forEach(p=>{
     const safeId=p.name.replace(/[^a-z0-9]/gi,'_');
     const dotsRow=document.getElementById('mp-dots-'+safeId);
     if(!dotsRow)return;
     dotsRow.innerHTML='';
-    let n=counts[p.name]||0;
-    // every 5 = 1 orange dot
+    const n=counts[p.name]||0;
+    if(n===0)return;
     const oranges=Math.floor(n/5);
     const singles=n%5;
     for(let i=0;i<oranges;i++){
       const d=document.createElement('div');
-      d.style.cssText='width:7px;height:7px;border-radius:50%;background:#ff8800;flex-shrink:0;';
+      d.title=`${n} players targeting`;
+      // orange dot = 5 attackers
+      d.style.cssText='width:9px;height:9px;border-radius:50%;background:#ff6600;box-shadow:0 0 3px #ff6600;flex-shrink:0;';
       dotsRow.appendChild(d);
     }
     for(let i=0;i<singles;i++){
       const d=document.createElement('div');
-      // use a neutral yellow-gold dot (no per-weapon colour in this game)
-      d.style.cssText='width:6px;height:6px;border-radius:50%;background:#c8a84b;flex-shrink:0;';
+      d.title=`${n} player${n!==1?'s':''} targeting`;
+      d.style.cssText='width:8px;height:8px;border-radius:50%;background:#e8c86c;box-shadow:0 0 2px #c8a84b;flex-shrink:0;';
       dotsRow.appendChild(d);
     }
   });
+
+  // also update self-card dots (player card in left panel)
+  const selfSafeId=mpUsername.replace(/[^a-z0-9]/gi,'_');
+  const selfDots=document.getElementById('mp-dots-self');
+  if(selfDots){
+    selfDots.innerHTML='';
+    const n=counts[mpUsername]||0;
+    if(n>0){
+      const oranges=Math.floor(n/5),singles=n%5;
+      for(let i=0;i<oranges;i++){
+        const d=document.createElement('div');
+        d.style.cssText='width:9px;height:9px;border-radius:50%;background:#ff6600;box-shadow:0 0 3px #ff6600;flex-shrink:0;';
+        selfDots.appendChild(d);
+      }
+      for(let i=0;i<singles;i++){
+        const d=document.createElement('div');
+        d.style.cssText='width:8px;height:8px;border-radius:50%;background:#e8c86c;box-shadow:0 0 2px #c8a84b;flex-shrink:0;';
+        selfDots.appendChild(d);
+      }
+    }
+  }
 }
 
 function markPlayerKnockedOut(name){
@@ -1578,11 +1612,22 @@ function markPlayerKnockedOut(name){
   _si.onerror=function(){this.replaceWith(document.createTextNode('💀'));};
   skull.appendChild(_si);
   card.appendChild(skull);
+  // clear this player's dot from the targeting display
+  const koDots=document.getElementById('mp-dots-'+safeId);
+  if(koDots)koDots.innerHTML='';
+
+  // remove from mpTargetMap so their dot doesn't count anymore
+  delete mpTargetMap[name];
+
   // if this was our target, shift to next alive opponent
   if(name===mpTarget){
     const nextAlive=mpOpponents.find(p=>p.name!==name&&!p.knockedOut);
     if(nextAlive)setMpTarget(nextAlive.name);
+    else mpTarget=null;
   }
+
+  // refresh all dots now that this player is gone
+  updateTargetingDots();
 }
 
 function mpSendGameOver(){
