@@ -2965,14 +2965,8 @@ function endGame(){
       }
       // keep socket open to receive teamEliminated
     } else {
-      mpInRematchWait=true;
-      document.getElementById('btn-pause').disabled=false;
-      // record loss to D1
-      if(mpUsername&&mpOpponentUsername){
-        fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
-      }
-      // socket stays open — needed to receive winner's reveal and for rematch
-      setTimeout(()=>offerRematch(),800);
+      // 1v1 loss — show defeat screen
+      setTimeout(()=>mpLose(),400);
     }
   }
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
@@ -3368,21 +3362,30 @@ function renderSelfMinimap(){
   const ctx=canvas.getContext('2d');
   const cw=canvas.width/COLS,ch=canvas.height/ROWS;
   ctx.clearRect(0,0,canvas.width,canvas.height);
+  // draw locked board cells
   for(let r=0;r<ROWS;r++){
     for(let c=0;c<COLS;c++){
       const b=board[r][c];
       if(!b)continue;
-      if(b.grey){
-        ctx.fillStyle='#555';
-        ctx.fillRect(c*cw,r*ch,cw,ch);
-      } else {
-        // gold blocks like opponent minimap during game
-        ctx.fillStyle='rgba(200,168,75,0.55)';
+      if(b.grey){ctx.fillStyle='#555';}
+      else{ctx.fillStyle='rgba(200,168,75,0.55)';}
+      ctx.fillRect(c*cw,r*ch,cw,ch);
+    }
+  }
+  // also draw floater group cells (they are nulled from board during animation)
+  if(floaterGroups){
+    for(const grp of floaterGroups){
+      for(const cell of grp.cells){
+        const {r,c,piece}=cell;
+        if(r<0||r>=ROWS||c<0||c>=COLS)continue;
+        const b=piece||board[r][c];
+        if(!b)continue;
+        ctx.fillStyle=b.grey?'#555':'rgba(200,168,75,0.55)';
         ctx.fillRect(c*cw,r*ch,cw,ch);
       }
     }
   }
-  // draw falling piece as gold too
+  // draw falling piece
   if(falling){
     falling.pair.forEach(pc=>{
       const r=falling.row+pc.dr,c=falling.col+pc.dc;
