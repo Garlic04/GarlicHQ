@@ -1566,7 +1566,6 @@ function mpWin(){
 function mpLose(){
   mpInRematchWait=true;
   paused=true;clearInterval(mainTimer);
-  recordLoss();
   mpSendBoard(true);
   document.getElementById('win-title').textContent='⚔ DEFEAT ⚔';
   document.getElementById('win-subtitle').textContent='You have been defeated!';
@@ -1886,7 +1885,10 @@ function lockPiece(){
   const fused=fuseBlocks();
   if(fused)playFuse(0.4);
   playThud(0.25);
-  falling=null;tickGreyDecay();render();waitingForChain=true;
+  falling=null;
+  // clear falling sprites BEFORE render so board cells aren't skipped
+  sprites.forEach(s=>s.el.remove());sprites=[];
+  tickGreyDecay();render();waitingForChain=true;
   mpSendBoard();
   setTimeout(()=>gravityThenChain(0),FUSE_FLASH_MS);
 }
@@ -3387,8 +3389,7 @@ function renderSelfMinimap(){
   }
   // draw falling piece
   if(falling){
-    falling.pair.forEach(pc=>{
-      const r=falling.row+pc.dr,c=falling.col+pc.dc;
+    fallingCells(falling).forEach(({r,c})=>{
       if(r<0||r>=ROWS||c<0||c>=COLS)return;
       ctx.fillStyle='rgba(200,168,75,0.75)';
       ctx.fillRect(c*cw,r*ch,cw,ch);
@@ -3593,6 +3594,7 @@ function animFrame(now){
     floatSprites.forEach(s=>{s.visualY=s.fromY+(cellTop(s.cell.r)-s.fromY)*p;s.el.style.transform=`translate(${cellLeft(s.cell.c)}px,${s.visualY}px)`;});
     if(p<1)needsMore=true;
   }
+  renderSelfMinimap();
   if(needsMore)rafId=requestAnimationFrame(animFrame);
 }
 function renderGroupOutlines(){
