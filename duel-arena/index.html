@@ -911,6 +911,7 @@ function startMpGame(msg){
 
   // build team panel UI before game starts
   buildTeamPanels();
+  updateTargetingDots();
 
   // connect to game room
   const url=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
@@ -1194,6 +1195,13 @@ function handleGameMessage(e){
       });
     }
   }
+  if(msg.type==='target-update'){
+    // another player changed their target
+    if(msg.from&&msg.target){
+      mpTargetMap[msg.from]=msg.target;
+      updateTargetingDots();
+    }
+  }
   if(msg.type==='playerLeft'){
     // Mark card as knocked out / greyed (player disconnected mid-game)
     markPlayerKnockedOut(msg.name);
@@ -1351,6 +1359,14 @@ function buildPlayerCard(player, isOpponent, cardW, canvasH, canvasW){
   wl.innerHTML=`<span style="color:#6a9e6a;">${player.wins||0}W</span><span style="color:#4a3010;"> / </span><span style="color:#9e4a4a;">${player.losses||0}L</span>`;
   card.appendChild(wl);
 
+  // targeting dots (opponents only)
+  if(isOpponent){
+    const dotsRow=document.createElement('div');
+    dotsRow.id='mp-dots-'+player.name.replace(/[^a-z0-9]/gi,'_');
+    dotsRow.style.cssText='display:flex;flex-wrap:wrap;gap:2px;justify-content:center;min-height:8px;';
+    card.appendChild(dotsRow);
+  }
+
   // minimap canvas
   const canvas=document.createElement('canvas');
   canvas.id=canvasId;
@@ -1397,9 +1413,9 @@ function buildTeamPanels(){
   }
 
   const cardW=82;
-  // canvas: keep correct aspect ratio (ROWS/COLS = 13/6)
-  // height scales down with more players; width = height * 6/13
-  const canvasH=Math.max(70, 143-Math.max(0,mpOpponents.length-2)*15);
+  // use the larger side to set canvas height so both sides match
+  const maxPlayers=Math.max(mpOpponents.length, mpTeammates.length+1);
+  const canvasH=Math.max(70, 143-Math.max(0,maxPlayers-2)*15);
   const canvasW=Math.round(canvasH*6/13);
 
   const oppList=document.createElement('div');
@@ -1437,8 +1453,8 @@ function buildTeamPanels(){
     tmPanel.appendChild(arrowRow);
   }
 
-  const tmCanvasH=Math.max(70, 143-Math.max(0,mpTeammates.length-2)*15);
-  const tmCanvasW=Math.round(tmCanvasH*6/13);
+  const tmCanvasH=canvasH;
+  const tmCanvasW=canvasW;
   const tmList=document.createElement('div');
   tmList.id='mp-tm-list';
   tmList.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:center;overflow:hidden;';
@@ -1502,6 +1518,46 @@ function setMpTarget(name){
   list.querySelectorAll('[id^="mp-card-"]').forEach(card=>{
     const isTarget=card.dataset.playerName===name;
     card.style.borderColor=isTarget?'#5ac8f5':'#5a3d00';
+  });
+  // broadcast target change so server can relay to others (for future dot display)
+  if(mpSocket&&mpSocket.readyState===WebSocket.OPEN){
+    mpSocket.send(JSON.stringify({type:'target-update',from:mpUsername,target:name}));
+  }
+  updateTargetingDots();
+}
+
+// mpTargetMap: who each player is targeting. {playerName: targetName}
+const mpTargetMap={};
+
+function updateTargetingDots(){
+  // collect how many people are targeting each opponent
+  const counts={}; // targetName -> count
+  mpOpponents.forEach(p=>{counts[p.name]=0;});
+  // count from mpTargetMap (includes ourselves)
+  Object.values(mpTargetMap).forEach(t=>{if(counts[t]!==undefined)counts[t]++;});
+  // add our own target
+  if(mpTarget&&counts[mpTarget]!==undefined)counts[mpTarget]++;
+
+  mpOpponents.forEach(p=>{
+    const safeId=p.name.replace(/[^a-z0-9]/gi,'_');
+    const dotsRow=document.getElementById('mp-dots-'+safeId);
+    if(!dotsRow)return;
+    dotsRow.innerHTML='';
+    let n=counts[p.name]||0;
+    // every 5 = 1 orange dot
+    const oranges=Math.floor(n/5);
+    const singles=n%5;
+    for(let i=0;i<oranges;i++){
+      const d=document.createElement('div');
+      d.style.cssText='width:7px;height:7px;border-radius:50%;background:#ff8800;flex-shrink:0;';
+      dotsRow.appendChild(d);
+    }
+    for(let i=0;i<singles;i++){
+      const d=document.createElement('div');
+      // use a neutral yellow-gold dot (no per-weapon colour in this game)
+      d.style.cssText='width:6px;height:6px;border-radius:50%;background:#c8a84b;flex-shrink:0;';
+      dotsRow.appendChild(d);
+    }
   });
 }
 
