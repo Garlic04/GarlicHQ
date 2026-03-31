@@ -546,6 +546,10 @@ let mpTeamPlayers=[]; // all players: [{name,rank,colour,label,team,wins,losses}
 let mpOpponents=[]; // players on the opposing team
 let mpTeammates=[]; // players on my team (excluding me)
 let mpIsTeamGame=false;
+let mpTarget=null; // name of opponent currently being targeted
+let mpOppPage=0; // carousel page index for opponent panel
+let mpTeamPage=0; // carousel page index for teammate panel
+const MP_PANEL_MAX=3; // cards visible before carousel kicks in
 let mpInRematchWait=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 // ── Lobby system ─────────────────────────────────────────────────────────────
@@ -888,6 +892,20 @@ function startMpGame(msg){
     document.getElementById('ai-status').textContent='Fighting! ⚔';
   }
 
+  // set default target using round-robin across opponents
+  if(mpIsTeamGame&&mpOpponents.length>0){
+    // find my index within my team
+    const myTeamPlayers=mpTeamPlayers.filter(p=>p.team===mpTeam);
+    const myIdx=myTeamPlayers.findIndex(p=>p.name===mpUsername);
+    const targetIdx=(myIdx>=0?myIdx:0)%mpOpponents.length;
+    mpTarget=mpOpponents[targetIdx].name;
+  } else {
+    mpTarget=mpOpponents[0]?.name||null;
+  }
+
+  // build team panel UI before game starts
+  buildTeamPanels();
+
   // connect to game room
   const url=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
   mpSocket=new WebSocket(url);
@@ -1119,19 +1137,25 @@ function handleGameMessage(e){
   const msg=JSON.parse(e.data);
   console.log('MP msg received:',msg.type, msg);
   if(msg.type==='attack'){
+    // in team games only apply if we are the target (or no target set = 1v1)
+    if(msg.target&&msg.target!==mpUsername)return;
     const d=msg.data;
     if(msg.attackType==='sword')landSword(d.h,d.sw,d.wid,null);
     else if(msg.attackType==='sprinkle')landSprinkles(d.count,d.wid);
   }
   if(msg.type==='board'){
-    console.log('Rendering board, cells filled:', msg.cells.filter(v=>v>0).length);
-    if(!msg.reveal&&mpMinimapFresh){
-      // first live board update — clear any previous reveal
-      const canvas=document.getElementById('ai-minimap');
-      if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
-      mpMinimapFresh=false;
+    const sender=msg.sender||null;
+    if(mpIsTeamGame&&sender){
+      renderMpMinimapFor(sender, msg.cells, msg.reveal||false);
+    } else {
+      // 1v1 legacy path
+      if(!msg.reveal&&mpMinimapFresh){
+        const canvas=document.getElementById('ai-minimap');
+        if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+        mpMinimapFresh=false;
+      }
+      renderMpMinimapFor('__legacy__', msg.cells, msg.reveal||false);
     }
-    renderMpMinimap(msg.cells, msg.reveal||false);
   }
   if(msg.type==='gameOver'){
     if(!gameOver)mpWin();
@@ -1152,20 +1176,13 @@ function handleGameMessage(e){
     }
   }
   if(msg.type==='playerLeft'){
-    // Team game: a player left but the game continues
-    mpOpponents=mpOpponents.filter(p=>p.name!==msg.name);
-    mpTeammates=mpTeammates.filter(p=>p.name!==msg.name);
-    mpTeamPlayers=mpTeamPlayers.filter(p=>p.name!==msg.name);
-    // Update opponent display if it was the one we were tracking
-    if(msg.name===mpOpponentUsername&&mpOpponents.length>0){
-      const nextOpp=mpOpponents[0];
-      mpOpponentUsername=nextOpp.name;
-      const oppLabelEl=document.getElementById('opponent-label');
-      oppLabelEl.style.color=nextOpp.colour||'';
-      oppLabelEl.textContent=nextOpp.label?nextOpp.name+' ['+nextOpp.label+']':nextOpp.name;
-      const oppRank=RANKS.find(r=>r.name===nextOpp.rank)||RANKS[0];
-      document.getElementById('npc-head-img').src=oppRank.img;
-    }
+    // Mark card as knocked out / greyed (player disconnected mid-game)
+    markPlayerKnockedOut(msg.name);
+    // mark in arrays so auto-target skips them
+    const leavingOpp=mpOpponents.find(p=>p.name===msg.name);
+    if(leavingOpp)leavingOpp.knockedOut=true;
+    const leavingTm=mpTeammates.find(p=>p.name===msg.name);
+    if(leavingTm)leavingTm.knockedOut=true;
     document.getElementById('msg').textContent=msg.name+' has left.';
     setTimeout(()=>{if(document.getElementById('msg').textContent===msg.name+' has left.')document.getElementById('msg').textContent='';},3000);
   }
@@ -1196,7 +1213,9 @@ function handleGameMessage(e){
 
 function mpSendAttack(attackType,data){
   if(!mpMode||!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
-  mpSocket.send(JSON.stringify({type:'attack',attackType,data}));
+  // in team games, tag the attack with the target name
+  const target=mpIsTeamGame?(mpTarget||null):null;
+  mpSocket.send(JSON.stringify({type:'attack',attackType,data,target}));
 }
 
 function mpSendBoard(reveal=false){
@@ -1211,11 +1230,15 @@ function mpSendBoard(reveal=false){
       else{cells.push(reveal?b.w+10:1);}
     }
   console.log('Sending board, filled cells:', cells.filter(v=>v!==0).length, 'reveal:', reveal);
-  mpSocket.send(JSON.stringify({type:'board',cells,reveal}));
+  mpSocket.send(JSON.stringify({type:'board',cells,reveal,sender:mpUsername}));
 }
 
-function renderMpMinimap(cells, reveal=false){
-  const canvas=document.getElementById('ai-minimap');if(!canvas)return;
+function renderMpMinimapFor(name, cells, reveal=false){
+  // name='__legacy__' for 1v1 path using the original canvas
+  const canvas=name==='__legacy__'
+    ? document.getElementById('ai-minimap')
+    : document.getElementById('mp-canvas-'+name.replace(/[^a-z0-9]/gi,'_'));
+  if(!canvas)return;
   canvas.style.display='block';
   const ctx=canvas.getContext('2d');
   const cw=canvas.width/COLS,ch=canvas.height/ROWS;
@@ -1227,11 +1250,9 @@ function renderMpMinimap(cells, reveal=false){
       const x=c*cw,y=r*ch;
       if(reveal){
         if(v===-1){
-          // grey attack block
           ctx.fillStyle='#777';
           ctx.fillRect(x,y,cw,ch);
         } else if(v>=20){
-          // breaker — dark bg with coloured dot
           const wid=v-20;
           ctx.fillStyle='rgba(0,0,0,0.5)';
           ctx.fillRect(x,y,cw,ch);
@@ -1240,7 +1261,6 @@ function renderMpMinimap(cells, reveal=false){
           ctx.arc(x+cw/2,y+ch/2,Math.min(cw,ch)*0.25,0,Math.PI*2);
           ctx.fill();
         } else if(v>=10){
-          // normal coloured block
           const wid=v-10;
           ctx.fillStyle=WEAPONS[wid].bg;
           ctx.fillRect(x,y,cw,ch);
@@ -1249,11 +1269,241 @@ function renderMpMinimap(cells, reveal=false){
           ctx.strokeRect(x+0.5,y+0.5,cw-1,ch-1);
         }
       } else {
-        // during game — all blocks solid gold
         ctx.fillStyle='rgba(200,168,75,0.55)';
         ctx.fillRect(x,y,cw,ch);
       }
     }
+  }
+}
+
+// ── Team panel rendering ───────────────────────────────────────────────────
+
+function mpCanvasId(name){
+  return 'mp-canvas-'+name.replace(/[^a-z0-9]/gi,'_');
+}
+
+function buildPlayerCard(player, isOpponent, cardW, canvasH){
+  const rank=RANKS.find(r=>r.name===player.rank)||RANKS[0];
+  const nameColour=player.colour||'#e8c86c';
+  const isTarget=isOpponent&&player.name===mpTarget;
+  const cardId='mp-card-'+player.name.replace(/[^a-z0-9]/gi,'_');
+  const canvasId=mpCanvasId(player.name);
+
+  const card=document.createElement('div');
+  card.id=cardId;
+  card.dataset.playerName=player.name;
+  card.style.cssText=`
+    background:rgba(20,13,5,0.85);
+    border:2px solid ${isTarget?'#5ac8f5':isOpponent?'#5a3d00':'#2a3d1a'};
+    border-radius:2px;
+    padding:5px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    cursor:${isOpponent?'pointer':'default'};
+    transition:border-color 0.15s;
+    width:${cardW}px;
+    flex-shrink:0;
+    position:relative;
+  `;
+
+  if(isOpponent){
+    card.onclick=()=>setMpTarget(player.name);
+  }
+
+  // rank head
+  const head=document.createElement('img');
+  head.src=rank.img;
+  head.style.cssText='width:32px;height:32px;object-fit:contain;image-rendering:pixelated;';
+  head.onerror=()=>{head.style.display='none';};
+  card.appendChild(head);
+
+  // name
+  const nameEl=document.createElement('div');
+  nameEl.style.cssText=`font-family:Cinzel,serif;font-size:9px;color:${nameColour};text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${cardW-10}px;`;
+  nameEl.textContent=player.label?player.name+' ['+player.label+']':player.name;
+  card.appendChild(nameEl);
+
+  // W/L
+  const wl=document.createElement('div');
+  wl.style.cssText='font-size:8px;text-align:center;';
+  wl.innerHTML=`<span style="color:#6a9e6a;">${player.wins||0}W</span><span style="color:#4a3010;"> / </span><span style="color:#9e4a4a;">${player.losses||0}L</span>`;
+  card.appendChild(wl);
+
+  // minimap canvas
+  const canvas=document.createElement('canvas');
+  canvas.id=canvasId;
+  canvas.width=cardW-10;
+  canvas.height=canvasH;
+  canvas.style.cssText='display:block;border:1px solid #3a2800;background:#080604;image-rendering:pixelated;';
+  card.appendChild(canvas);
+
+  return card;
+}
+
+function buildTeamPanels(){
+  if(!mpIsTeamGame)return;
+  mpOppPage=0;
+  mpTeamPage=0;
+
+  // ── Right panel: opponents ────────────────────────────────────────────────
+  const aiPanel=document.getElementById('ai-panel');
+  // Hide the old 1v1 opponent card
+  const oldCard=aiPanel.querySelector('.rs-box');
+  if(oldCard)oldCard.style.display='none';
+
+  const oppPanel=document.createElement('div');
+  oppPanel.id='mp-opp-panel';
+  oppPanel.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;width:90px;';
+
+  const oppHeader=document.createElement('div');
+  oppHeader.style.cssText='font-family:Cinzel,serif;font-size:9px;color:#9e4a4a;letter-spacing:1px;margin-bottom:2px;';
+  oppHeader.textContent='ENEMIES';
+  oppPanel.appendChild(oppHeader);
+
+  // carousel arrows if needed
+  if(mpOpponents.length>MP_PANEL_MAX){
+    const arrowRow=document.createElement('div');
+    arrowRow.style.cssText='display:flex;gap:6px;align-items:center;margin-bottom:2px;';
+    const upBtn=document.createElement('button');
+    upBtn.textContent='▲';
+    upBtn.style.cssText='font-size:9px;padding:1px 6px;';
+    upBtn.onclick=()=>scrollOppPanel(-1);
+    const downBtn=document.createElement('button');
+    downBtn.textContent='▼';
+    downBtn.style.cssText='font-size:9px;padding:1px 6px;';
+    downBtn.onclick=()=>scrollOppPanel(1);
+    arrowRow.appendChild(upBtn);
+    arrowRow.appendChild(downBtn);
+    oppPanel.appendChild(arrowRow);
+  }
+
+  const cardW=82;
+  // scale canvas height: full=110, shrinks slightly for more players
+  const canvasH=Math.max(60, 110-Math.max(0,mpOpponents.length-2)*12);
+
+  const oppList=document.createElement('div');
+  oppList.id='mp-opp-list';
+  oppList.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:center;overflow:hidden;';
+  mpOpponents.forEach(p=>{
+    oppList.appendChild(buildPlayerCard(p,true,cardW,canvasH));
+  });
+  oppPanel.appendChild(oppList);
+  aiPanel.appendChild(oppPanel);
+
+  refreshOppPanelVisibility();
+
+  // ── Left panel: teammates ─────────────────────────────────────────────────
+  if(mpTeammates.length===0)return; // no teammates in 1v1 or solo teams
+
+  const leftPanel=document.getElementById('panel-left');
+
+  const tmPanel=document.createElement('div');
+  tmPanel.id='mp-tm-panel';
+  tmPanel.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;margin-top:6px;';
+
+  const tmHeader=document.createElement('div');
+  tmHeader.style.cssText='font-family:Cinzel,serif;font-size:9px;color:#4a7a4a;letter-spacing:1px;margin-bottom:2px;';
+  tmHeader.textContent='ALLIES';
+  tmPanel.appendChild(tmHeader);
+
+  if(mpTeammates.length>MP_PANEL_MAX){
+    const arrowRow=document.createElement('div');
+    arrowRow.style.cssText='display:flex;gap:6px;align-items:center;margin-bottom:2px;';
+    const upBtn=document.createElement('button');
+    upBtn.textContent='▲';upBtn.style.cssText='font-size:9px;padding:1px 6px;';
+    upBtn.onclick=()=>scrollTmPanel(-1);
+    const downBtn=document.createElement('button');
+    downBtn.textContent='▼';downBtn.style.cssText='font-size:9px;padding:1px 6px;';
+    downBtn.onclick=()=>scrollTmPanel(1);
+    arrowRow.appendChild(upBtn);arrowRow.appendChild(downBtn);
+    tmPanel.appendChild(arrowRow);
+  }
+
+  const tmCanvasH=Math.max(60, 110-Math.max(0,mpTeammates.length-2)*12);
+  const tmList=document.createElement('div');
+  tmList.id='mp-tm-list';
+  tmList.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:center;overflow:hidden;';
+  mpTeammates.forEach(p=>{
+    tmList.appendChild(buildPlayerCard(p,false,cardW,tmCanvasH));
+  });
+  tmPanel.appendChild(tmList);
+  leftPanel.appendChild(tmPanel);
+
+  refreshTmPanelVisibility();
+}
+
+function teardownTeamPanels(){
+  const op=document.getElementById('mp-opp-panel');
+  if(op)op.remove();
+  const tp=document.getElementById('mp-tm-panel');
+  if(tp)tp.remove();
+  // restore hidden 1v1 card
+  const aiPanel=document.getElementById('ai-panel');
+  const oldCard=aiPanel.querySelector('.rs-box');
+  if(oldCard)oldCard.style.display='';
+}
+
+function refreshOppPanelVisibility(){
+  const list=document.getElementById('mp-opp-list');
+  if(!list)return;
+  const cards=[...list.querySelectorAll('[id^="mp-card-"]')];
+  cards.forEach((card,i)=>{
+    const visible=i>=mpOppPage&&i<mpOppPage+MP_PANEL_MAX;
+    card.style.display=visible?'flex':'none';
+  });
+}
+
+function refreshTmPanelVisibility(){
+  const list=document.getElementById('mp-tm-list');
+  if(!list)return;
+  const cards=[...list.querySelectorAll('[id^="mp-card-"]')];
+  cards.forEach((card,i)=>{
+    const visible=i>=mpTeamPage&&i<mpTeamPage+MP_PANEL_MAX;
+    card.style.display=visible?'flex':'none';
+  });
+}
+
+function scrollOppPanel(dir){
+  const max=Math.max(0,mpOpponents.length-MP_PANEL_MAX);
+  mpOppPage=Math.max(0,Math.min(max,mpOppPage+dir));
+  refreshOppPanelVisibility();
+}
+
+function scrollTmPanel(dir){
+  const max=Math.max(0,mpTeammates.length-MP_PANEL_MAX);
+  mpTeamPage=Math.max(0,Math.min(max,mpTeamPage+dir));
+  refreshTmPanelVisibility();
+}
+
+function setMpTarget(name){
+  mpTarget=name;
+  // update card borders
+  const list=document.getElementById('mp-opp-list');
+  if(!list)return;
+  list.querySelectorAll('[id^="mp-card-"]').forEach(card=>{
+    const isTarget=card.dataset.playerName===name;
+    card.style.borderColor=isTarget?'#5ac8f5':'#5a3d00';
+  });
+}
+
+function markPlayerKnockedOut(name){
+  const safeId=name.replace(/[^a-z0-9]/gi,'_');
+  const card=document.getElementById('mp-card-'+safeId);
+  if(!card)return;
+  card.style.opacity='0.4';
+  card.style.borderColor='#3a3a3a';
+  card.style.pointerEvents='none';
+  // add skull overlay
+  const skull=document.createElement('div');
+  skull.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;pointer-events:none;';
+  skull.textContent='💀';
+  card.appendChild(skull);
+  // if this was our target, shift to next alive opponent
+  if(name===mpTarget){
+    const nextAlive=mpOpponents.find(p=>p.name!==name&&!p.knockedOut);
+    if(nextAlive)setMpTarget(nextAlive.name);
   }
 }
 
@@ -1276,10 +1526,12 @@ function mpWin(){
   document.getElementById('win-rematch-status').textContent='';
   document.getElementById('win-overlay').classList.add('show');
   mpMode=false;
+  if(mpIsTeamGame)teardownTeamPanels();
   mpIsTeamGame=false;
   mpTeamPlayers=[];
   mpOpponents=[];
   mpTeammates=[];
+  mpTarget=null;
   document.getElementById('btn-pause').disabled=false;
   // socket stays open for rematch — only closed in declineRematch or startRematch
 
