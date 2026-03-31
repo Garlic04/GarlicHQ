@@ -928,6 +928,10 @@ function startMpGame(msg){
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
       mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,team:mpTeam}));
+      // broadcast initial target so teammates can show dots immediately
+      if(mpIsTeamGame&&mpTarget){
+        mpSocket.send(JSON.stringify({type:'target-update',from:mpUsername,target:mpTarget}));
+      }
       startGame();
     });
   };
@@ -1491,6 +1495,8 @@ function teardownTeamPanels(){
   // hide self dots
   const selfDots=document.getElementById('mp-dots-self');
   if(selfDots){selfDots.style.display='none';selfDots.innerHTML='';}
+  // clear team state
+  mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
 }
 
 function refreshOppPanelVisibility(){
@@ -1660,14 +1666,9 @@ function mpWin(){
   document.getElementById('win-rematch-status').textContent='';
   document.getElementById('win-overlay').classList.add('show');
   mpMode=false;
-  if(mpIsTeamGame)teardownTeamPanels();
-  mpIsTeamGame=false;
-  mpTeamPlayers=[];
-  mpOpponents=[];
-  mpTeammates=[];
-  mpTarget=null;
   document.getElementById('btn-pause').disabled=false;
   // socket stays open for rematch — only closed in declineRematch or startRematch
+  // NOTE: team panels stay visible so winners can see remaining minimap updates
 
 }
 
@@ -1827,6 +1828,9 @@ function declineRematch(){
   document.getElementById('win-title').textContent='⚔ VICTORY ⚔';
   document.getElementById('win-subtitle').textContent='The opponent has been defeated!';
   if(mpSocket){mpSocket.close();mpSocket=null;}
+  // tear down team panels on leave
+  if(mpIsTeamGame)teardownTeamPanels();
+  mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
   document.getElementById('btn-pause').disabled=false;
   setMpButtons(false);
   showOpponentSelect(false);
