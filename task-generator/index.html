@@ -1961,7 +1961,7 @@
       <div id="milestones-list"></div>
     </div>
   </div>
-  <div class="milestones-trigger" onclick="document.getElementById('milestones-tab').classList.toggle('open')">Milestones</div>
+  <div class="milestones-trigger" onclick="document.getElementById('milestones-tab').classList.toggle('open');scaleSideTabs()">Milestones</div>
 </div>
 
 <div class="shop-tab" id="shop-tab">
@@ -2026,7 +2026,7 @@
       <div class="collection-progress" id="collection-progress"></div>
     </div>
   </div>
-  <div class="collection-trigger" onclick="document.getElementById('collection-tab').classList.toggle('open')">Collection</div>
+  <div class="collection-trigger" onclick="document.getElementById('collection-tab').classList.toggle('open');scaleSideTabs()">Collection</div>
 </div>
 
 </div><!-- /side-tabs wrapper -->
@@ -2971,7 +2971,7 @@ function generateDailyTask() {
     if (!choiceEligible.length) { showError(); return; }
     const t = choiceEligible[randInt(0, choiceEligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
-    const title = t.title.replace('{count}', count);
+    const title = t.title ? t.title.replace('{count}', count) : `${t.name} (${count})`;
     task = { type: t.skill ? 'skill' : 'combat', skill: t.skill || null, name: t.name, icon: t.icon, npcImage: t.npcImage || null, itemImage: t.itemImage || null, multiImages: t.multiImages || null, title, desc: t.desc, note: t.note || null, freeChoice: true };
   } else if (pickType === 'clue') {
       const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
@@ -3608,7 +3608,7 @@ function activateTaskPicker() {
   // Only generate new options if we don't already have a set
   if (!pickerOptions) {
     const options = [];
-    const maxTries = 30;
+    const maxTries = 60;
     let tries = 0;
     while (options.length < 3 && tries < maxTries) {
       tries++;
@@ -3617,6 +3617,7 @@ function activateTaskPicker() {
       if (options.some(o => o.name === task.name)) continue;
       options.push(task);
     }
+    // If we couldn't get 3, show however many we have (min 1)
     if (!options.length) { showToast('Could not generate options — check your stats!'); pickerActive = false; return; }
     pickerOptions = options;
   }
@@ -3735,7 +3736,7 @@ function buildOneTask() {
     if (!eligible.length) return null;
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
-    const title = t.title.replace('{count}', count);
+    const title = t.title ? t.title.replace('{count}', count) : `${t.name} (${count})`;
     task = { type: t.skill ? 'skill' : 'combat', name: t.name, icon: t.icon, npcImage: t.npcImage || null, itemImage: t.itemImage || null, multiImages: t.multiImages || null, title, desc: t.desc, note: t.note || null, freeChoice: true };
   }
   return task;
@@ -4041,36 +4042,23 @@ function scaleSideTabs() {
   const wrapper = document.getElementById('side-tabs-wrapper');
   if (!wrapper) return;
   const vh = window.innerHeight;
-  const NAV_H = 58; // approximate nav height in px
+  const nav = document.querySelector('nav');
+  const NAV_H = nav ? nav.offsetHeight + 8 : 58;
+  const MARGIN = 12; // bottom margin
 
-  // Measure natural height
-  wrapper.style.transform = 'translateY(-50%)';
+  const available = vh - NAV_H - MARGIN;
+
+  // Reset transform to measure natural height
+  wrapper.style.transform = 'none';
+  wrapper.style.top = '0';
   const naturalH = wrapper.scrollHeight;
 
-  let scale = 1;
-  if (naturalH > vh * 0.92) {
-    scale = (vh * 0.92) / naturalH;
-  }
+  const scale = naturalH > available ? available / naturalH : 1;
 
-  // After scaling, check if the top would clip under the nav
-  const scaledH = naturalH * scale;
-  const centerY = vh / 2;
-  const topEdge = centerY - scaledH / 2;
-
-  if (topEdge < NAV_H) {
-    // Shift the wrapper down so its top sits just below the nav
-    const offset = NAV_H - topEdge;
-    wrapper.style.top = `calc(50% + ${offset}px)`;
-  } else {
-    wrapper.style.top = '50%';
-  }
-
-  if (scale < 1) {
-    wrapper.style.transform = `translateY(-50%) scale(${scale.toFixed(3)})`;
-    wrapper.style.transformOrigin = 'right center';
-  } else {
-    wrapper.style.transform = 'translateY(-50%)';
-  }
+  // Position: start just below nav
+  wrapper.style.top = `${NAV_H}px`;
+  wrapper.style.transform = scale < 1 ? `scale(${scale.toFixed(3)})` : 'none';
+  wrapper.style.transformOrigin = 'right top';
 }
 
 window.addEventListener('resize', scaleSideTabs);
