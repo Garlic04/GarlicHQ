@@ -220,7 +220,7 @@ nav {
     </div>
     <div class="rs-box"><h3>Next</h3><div id="next-inner"></div></div>
     <div class="rs-box" style="display:none"><h3>Chain</h3><div class="stat-val" id="chain-val" style="font-size:15px">-</div><div id="chain-text" style="font-size:10px;color:#e87040;font-family:Cinzel,serif;min-height:12px"></div></div>
-    <div class="rs-box"><h3>Controls</h3><div style="font-size:10px;line-height:1.9;color:#a08040">← → Move<br>↑ Rot CCW<br>↓ Rot CW<br>Space Fast drop</div></div>
+
   </div>
   <div>
     <div id="board-wrap">
@@ -1158,7 +1158,19 @@ function handleGameMessage(e){
     }
   }
   if(msg.type==='gameOver'){
-    if(!gameOver)mpWin();
+    if(msg.isTeamGame&&mpIsTeamGame){
+      // Individual knockout in a team game — mark their card, don't end game
+      if(msg.loser){
+        markPlayerKnockedOut(msg.loser);
+        const ko=mpOpponents.find(p=>p.name===msg.loser);
+        if(ko)ko.knockedOut=true;
+        const kot=mpTeammates.find(p=>p.name===msg.loser);
+        if(kot)kot.knockedOut=true;
+      }
+      // Actual game end comes via teamEliminated
+    } else {
+      if(!gameOver)mpWin();
+    }
   }
   if(msg.type==='opponentLeft'){
     if(!mpInRematchWait){
@@ -1508,8 +1520,8 @@ function markPlayerKnockedOut(name){
 }
 
 function mpSendGameOver(){
-  if(!mpMode||!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
-  mpSocket.send(JSON.stringify({type:'gameOver',winner:mpUsername}));
+  if(!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
+  mpSocket.send(JSON.stringify({type:'gameOver',loser:mpUsername,isTeamGame:mpIsTeamGame}));
 }
 
 function mpWin(){
@@ -2876,14 +2888,22 @@ function endGame(){
     mpSendBoard(true);
     mpSendGameOver();
     mpMode=false;
-    mpInRematchWait=true;
-    document.getElementById('btn-pause').disabled=false;
-    // record loss to D1
-    if(mpUsername&&mpOpponentUsername){
-      fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
+    if(mpIsTeamGame){
+      // Knocked out in a team game — board freezes, stay connected as spectator
+      // Game end (win/loss) comes via teamEliminated
+      document.getElementById('msg').textContent='Knocked out!';
+      document.getElementById('btn-pause').disabled=false;
+      // keep socket open to receive teamEliminated
+    } else {
+      mpInRematchWait=true;
+      document.getElementById('btn-pause').disabled=false;
+      // record loss to D1
+      if(mpUsername&&mpOpponentUsername){
+        fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
+      }
+      // socket stays open — needed to receive winner's reveal and for rematch
+      setTimeout(()=>offerRematch(),800);
     }
-    // socket stays open — needed to receive winner's reveal and for rematch
-    setTimeout(()=>offerRematch(),800);
   }
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
 }
