@@ -540,6 +540,12 @@ let mpPlayerData=null;
 let mpOpponentUsername='';
 let mpMinimapFresh=false;
 let mpRematchRequested=false;
+// Team game state
+let mpTeam=0; // my team (0=A, 1=B)
+let mpTeamPlayers=[]; // all players: [{name,rank,colour,label,team,wins,losses}]
+let mpOpponents=[]; // players on the opposing team
+let mpTeammates=[]; // players on my team (excluding me)
+let mpIsTeamGame=false;
 let mpInRematchWait=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 // ── Lobby system ─────────────────────────────────────────────────────────────
@@ -826,7 +832,7 @@ function connectToLobbyRoom(roomId, asHost){
       connectToLobbyList();
       lobbyGameSocket.close();
     }
-    if(msg.type==='matched'){
+    if(msg.type==='matched'||msg.type==='team-matched'){
       // transition to game
       document.getElementById('mp-lobby-host').style.display='none';
       document.getElementById('mp-lobby-guest').style.display='none';
@@ -844,25 +850,51 @@ function connectToLobbyRoom(roomId, asHost){
 
 function startMpGame(msg){
   document.getElementById('opponent-select').style.display='none';
-  mpOpponentUsername=msg.opponentName||'';
   mpMode=true;
-  document.getElementById('npc-name').style.display='none';
-  const oppLabelEl=document.getElementById('opponent-label');
-  if(msg.opponentColour){oppLabelEl.style.color=msg.opponentColour;}
-  else{oppLabelEl.style.color='';}
-  oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
-  const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
-  document.getElementById('npc-head-img').src=oppRank.img;
-  document.getElementById('ai-status').textContent='Fighting! ⚔';
   document.getElementById('btn-pause').disabled=true;
   setMpButtons(true);
+
+  if(msg.type==='team-matched'){
+    // Team game setup
+    mpIsTeamGame=true;
+    mpTeam=msg.myTeam??0;
+    mpTeamPlayers=msg.players||[];
+    mpOpponents=mpTeamPlayers.filter(p=>p.team!==mpTeam);
+    mpTeammates=mpTeamPlayers.filter(p=>p.team===mpTeam&&p.name!==mpUsername);
+    // Use first opponent for the existing opponent display
+    const firstOpp=mpOpponents[0]||{name:'Opponent',rank:'Bronze',colour:null,label:null};
+    mpOpponentUsername=firstOpp.name;
+    document.getElementById('npc-name').style.display='none';
+    const oppLabelEl=document.getElementById('opponent-label');
+    oppLabelEl.style.color=firstOpp.colour||'';
+    oppLabelEl.textContent=firstOpp.label?firstOpp.name+' ['+firstOpp.label+']':firstOpp.name;
+    const oppRank=RANKS.find(r=>r.name===firstOpp.rank)||RANKS[0];
+    document.getElementById('npc-head-img').src=oppRank.img;
+    document.getElementById('ai-status').textContent='Fighting! ⚔';
+  } else {
+    // 1v1 setup (legacy)
+    mpIsTeamGame=false;
+    mpTeamPlayers=[];
+    mpOpponents=[{name:msg.opponentName,rank:msg.opponentRank,colour:msg.opponentColour,label:msg.opponentLabel,team:1}];
+    mpTeammates=[];
+    mpOpponentUsername=msg.opponentName||'';
+    document.getElementById('npc-name').style.display='none';
+    const oppLabelEl=document.getElementById('opponent-label');
+    if(msg.opponentColour){oppLabelEl.style.color=msg.opponentColour;}
+    else{oppLabelEl.style.color='';}
+    oppLabelEl.textContent=msg.opponentLabel?msg.opponentName+' ['+msg.opponentLabel+']':msg.opponentName;
+    const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
+    document.getElementById('npc-head-img').src=oppRank.img;
+    document.getElementById('ai-status').textContent='Fighting! ⚔';
+  }
+
   // connect to game room
   const url=`${PARTYKIT_URL}/parties/main/${msg.roomId}`;
   mpSocket=new WebSocket(url);
   mpSocket.onopen=()=>{
     getRankData().then(data=>{
       const rank=getCurrentRank(data.wins);
-      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null}));
+      mpSocket.send(JSON.stringify({type:'join',name:mpUsername,rank:rank.name,colour:mpPlayerData?.colour||null,label:mpPlayerData?.label||null,team:mpTeam}));
       startGame();
     });
   };
@@ -1119,6 +1151,31 @@ function handleGameMessage(e){
       });
     }
   }
+  if(msg.type==='playerLeft'){
+    // Team game: a player left but the game continues
+    mpOpponents=mpOpponents.filter(p=>p.name!==msg.name);
+    mpTeammates=mpTeammates.filter(p=>p.name!==msg.name);
+    mpTeamPlayers=mpTeamPlayers.filter(p=>p.name!==msg.name);
+    // Update opponent display if it was the one we were tracking
+    if(msg.name===mpOpponentUsername&&mpOpponents.length>0){
+      const nextOpp=mpOpponents[0];
+      mpOpponentUsername=nextOpp.name;
+      const oppLabelEl=document.getElementById('opponent-label');
+      oppLabelEl.style.color=nextOpp.colour||'';
+      oppLabelEl.textContent=nextOpp.label?nextOpp.name+' ['+nextOpp.label+']':nextOpp.name;
+      const oppRank=RANKS.find(r=>r.name===nextOpp.rank)||RANKS[0];
+      document.getElementById('npc-head-img').src=oppRank.img;
+    }
+    document.getElementById('msg').textContent=msg.name+' has left.';
+    setTimeout(()=>{if(document.getElementById('msg').textContent===msg.name+' has left.')document.getElementById('msg').textContent='';},3000);
+  }
+  if(msg.type==='teamEliminated'){
+    const myTeamLost=msg.team===mpTeam;
+    if(!gameOver){
+      if(myTeamLost){mpLose();}
+      else{mpWin();}
+    }
+  }
   if(msg.type==='rematch-request'){
     // Opponent wants a rematch — update their button to show it
     setRematchStatus('Opponent wants a rematch!');
@@ -1219,6 +1276,10 @@ function mpWin(){
   document.getElementById('win-rematch-status').textContent='';
   document.getElementById('win-overlay').classList.add('show');
   mpMode=false;
+  mpIsTeamGame=false;
+  mpTeamPlayers=[];
+  mpOpponents=[];
+  mpTeammates=[];
   document.getElementById('btn-pause').disabled=false;
   // socket stays open for rematch — only closed in declineRematch or startRematch
 
