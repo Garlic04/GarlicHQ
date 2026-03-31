@@ -337,6 +337,8 @@ function movePiece(dc){
 let lastSwapFrame=0;
 function rotatePiece(dir){
   if(!falling||waitingForChain)return;
+  // block rotation while piece is fully above the board — prevents stalling
+  if(fallingCells(falling).every(({r})=>r<0))return;
   const newRot=((falling.rot+dir)+4)%4;
   if(canPlace(falling,0,0,newRot)){falling.rot=newRot;}
   else if(canPlace(falling,0,1,newRot)){falling.rot=newRot;falling.anchorCol+=1;}
@@ -2027,10 +2029,8 @@ function findLandingCol(h,sw,preferredCol,hand){
 }
 
 function landSword(h,sw,wid,_ignored){
-  const preferredCol=getNextSwordCol(sw);
-  const hand=getNextHandedness();
-  const startCol=findLandingCol(h,sw,preferredCol,hand);
-  animateSwordDrop(h,sw,wid,startCol,(landRow,col)=>commitSword(h,sw,wid,landRow,col));
+  // queue like SP — preview flashes until next piece locks, then flushAttackQueue fires
+  queueSword(h,sw,wid);
 }
 
 function animateSprinkleDrop(r,c,wid,patternRow,delay){
