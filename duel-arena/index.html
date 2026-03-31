@@ -1175,6 +1175,7 @@ function handleGameMessage(e){
       }
       // Actual game end comes via teamEliminated
     } else {
+      // Only call mpWin if WE haven't already lost (gameOver=true means we lost)
       if(!gameOver)mpWin();
     }
   }
@@ -1207,10 +1208,9 @@ function handleGameMessage(e){
   if(msg.type==='teamEliminated'){
     const myTeamLost=msg.team===mpTeam;
     const ko=document.getElementById('ko-overlay');if(ko)ko.remove();
-    if(!gameOver){
-      if(myTeamLost){mpLose();}
-      else{mpWin();}
-    }
+    // fire regardless of gameOver — knocked-out players need this too
+    if(myTeamLost){mpLose();}
+    else{mpWin();}
   }
   if(msg.type==='rematch-request'){
     // Opponent wants a rematch — update their button to show it
@@ -1301,7 +1301,8 @@ function mpCanvasId(name){
   return 'mp-canvas-'+name.replace(/[^a-z0-9]/gi,'_');
 }
 
-function buildPlayerCard(player, isOpponent, cardW, canvasH){
+function buildPlayerCard(player, isOpponent, cardW, canvasH, canvasW){
+  canvasW=canvasW||Math.round(canvasH*6/13);
   const rank=RANKS.find(r=>r.name===player.rank)||RANKS[0];
   const nameColour=player.colour||'#e8c86c';
   const isTarget=isOpponent&&player.name===mpTarget;
@@ -1353,7 +1354,7 @@ function buildPlayerCard(player, isOpponent, cardW, canvasH){
   // minimap canvas
   const canvas=document.createElement('canvas');
   canvas.id=canvasId;
-  canvas.width=cardW-10;
+  canvas.width=canvasW;
   canvas.height=canvasH;
   canvas.style.cssText='display:block;border:1px solid #3a2800;background:#080604;image-rendering:pixelated;';
   card.appendChild(canvas);
@@ -1399,14 +1400,16 @@ function buildTeamPanels(){
   }
 
   const cardW=82;
-  // scale canvas height: full=110, shrinks slightly for more players
+  // canvas: keep correct aspect ratio (ROWS/COLS = 13/6)
+  // height scales down with more players; width = height * 6/13
   const canvasH=Math.max(70, 143-Math.max(0,mpOpponents.length-2)*15);
+  const canvasW=Math.round(canvasH*6/13);
 
   const oppList=document.createElement('div');
   oppList.id='mp-opp-list';
   oppList.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:center;overflow:hidden;';
   mpOpponents.forEach(p=>{
-    oppList.appendChild(buildPlayerCard(p,true,cardW,canvasH));
+    oppList.appendChild(buildPlayerCard(p,true,cardW,canvasH,canvasW));
   });
   oppPanel.appendChild(oppList);
   aiPanel.appendChild(oppPanel);
@@ -1441,11 +1444,12 @@ function buildTeamPanels(){
   }
 
   const tmCanvasH=Math.max(70, 143-Math.max(0,mpTeammates.length-2)*15);
+  const tmCanvasW=Math.round(tmCanvasH*6/13);
   const tmList=document.createElement('div');
   tmList.id='mp-tm-list';
   tmList.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:center;overflow:hidden;';
   mpTeammates.forEach(p=>{
-    tmList.appendChild(buildPlayerCard(p,false,cardW,tmCanvasH));
+    tmList.appendChild(buildPlayerCard(p,false,cardW,tmCanvasH,tmCanvasW));
   });
   tmPanel.appendChild(tmList);
   leftPanel.appendChild(tmPanel);
@@ -1511,15 +1515,16 @@ function markPlayerKnockedOut(name){
   const safeId=name.replace(/[^a-z0-9]/gi,'_');
   const card=document.getElementById('mp-card-'+safeId);
   if(!card)return;
-  card.style.opacity='0.4';
   card.style.borderColor='#3a3a3a';
   card.style.pointerEvents='none';
-  // add skull overlay
+  // grey out card contents but not the skull overlay itself
+  [...card.children].forEach(el=>{el.style.opacity='0.3';});
+  // add skull overlay at full opacity
   const skull=document.createElement('div');
-  skull.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;pointer-events:none;';
+  skull.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;';
   const _si=document.createElement('img');
   _si.src='https://oldschool.runescape.wiki/images/Skull.png';
-  _si.style.cssText='width:20px;height:20px;image-rendering:pixelated;';
+  _si.style.cssText='width:24px;height:24px;image-rendering:pixelated;';
   _si.onerror=function(){this.replaceWith(document.createTextNode('💀'));};
   skull.appendChild(_si);
   card.appendChild(skull);
@@ -1564,9 +1569,8 @@ function mpWin(){
 }
 
 function mpLose(){
+  // endGame() already called mpSendBoard, mpSendGameOver, cleared timers, set gameOver=true
   mpInRematchWait=true;
-  paused=true;clearInterval(mainTimer);
-  mpSendBoard(true);
   document.getElementById('win-title').textContent='⚔ DEFEAT ⚔';
   document.getElementById('win-subtitle').textContent='You have been defeated!';
   document.getElementById('win-sp-btns').style.display='none';
@@ -1574,20 +1578,11 @@ function mpLose(){
   document.getElementById('lose-mp-btns').style.display='flex';
   document.getElementById('win-rematch-status').textContent='';
   document.getElementById('win-overlay').classList.add('show');
-  mpMode=false;
-  if(mpIsTeamGame)teardownTeamPanels();
-  mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
   document.getElementById('btn-pause').disabled=false;
   // update D1 result
   if(mpUsername&&mpOpponentUsername){
     fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
   }
-  // update local wins display
-  getRankData().then(data=>{
-    const r=getCurrentRank(data.wins);
-    const wl=document.getElementById('player-wins-label');
-    if(wl)wl.textContent=data.wins+'W / '+(data.losses||0)+'L';
-  });
 }
 
 function confirmForfeit(){
@@ -2967,8 +2962,8 @@ function endGame(){
       }
       // keep socket open to receive teamEliminated
     } else {
-      // 1v1 loss — show defeat screen
-      setTimeout(()=>mpLose(),400);
+      // 1v1 loss — show defeat screen immediately
+      mpLose();
     }
   }
   setTimeout(()=>{clearAllSprites();document.getElementById('falling-overlay').innerHTML='';render();},100);
