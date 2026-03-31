@@ -1324,7 +1324,7 @@ function mpCanvasId(name){
 }
 
 function buildPlayerCard(player, isOpponent, cardW, canvasH, canvasW){
-  canvasW=canvasW||Math.round(canvasH*6/13);
+  canvasW=canvasW||Math.round(canvasH*48/143);
   const rank=RANKS.find(r=>r.name===player.rank)||RANKS[0];
   const nameColour=player.colour||'#e8c86c';
   const isTarget=isOpponent&&player.name===mpTarget;
@@ -1384,7 +1384,7 @@ function buildPlayerCard(player, isOpponent, cardW, canvasH, canvasW){
   canvas.id=canvasId;
   canvas.width=canvasW;
   canvas.height=canvasH;
-  canvas.style.cssText='display:block;border:1px solid #3a2800;background:#080604;image-rendering:pixelated;';
+  canvas.style.cssText=`display:block;width:${canvasW}px;height:${canvasH}px;border:1px solid #3a2800;background:#080604;image-rendering:pixelated;`;
   card.appendChild(canvas);
 
   return card;
@@ -1428,7 +1428,7 @@ function buildTeamPanels(){
   // use the larger side to set canvas height so both sides match
   const maxPlayers=Math.max(mpOpponents.length, mpTeammates.length+1);
   const canvasH=Math.max(70, 143-Math.max(0,maxPlayers-2)*15);
-  const canvasW=Math.round(canvasH*6/13);
+  const canvasW=Math.round(canvasH*48/143); // match static canvas ratio (48x143)
 
   const oppList=document.createElement('div');
   oppList.id='mp-opp-list';
@@ -1646,6 +1646,7 @@ function mpWin(){
   mpInRematchWait=true;
   paused=true;clearInterval(mainTimer);
   recordWin();
+  renderSelfMinimap(true);
   mpSendBoard(true); // send our final board as reveal to opponent
   document.getElementById('win-title').textContent='⚔ VICTORY ⚔';
   document.getElementById('win-subtitle').textContent='The opponent has been defeated!';
@@ -3053,6 +3054,7 @@ function endGame(){
   document.getElementById('btn-pause').textContent='Pause';
   playDeath(0.7);
   renderAiMinimap(true);
+  renderSelfMinimap(true);
   const fo=document.getElementById('forfeit-overlay');if(fo)fo.remove();
   if(mpMode){
     mpSendBoard(true);
@@ -3470,7 +3472,7 @@ function aiFindBreaks(){
   return[...toBreak].map(k=>{const[r,c]=k.split(',').map(Number);return{r,c};});
 }
 
-function renderSelfMinimap(){
+function renderSelfMinimap(reveal=false){
   const canvas=document.getElementById('self-minimap');
   if(!canvas||!board)return;
   const ctx=canvas.getContext('2d');
@@ -3481,31 +3483,53 @@ function renderSelfMinimap(){
     for(let c=0;c<COLS;c++){
       const b=board[r][c];
       if(!b)continue;
-      if(b.grey){ctx.fillStyle='#555';}
-      else{ctx.fillStyle='rgba(200,168,75,0.55)';}
-      ctx.fillRect(c*cw,r*ch,cw,ch);
-    }
-  }
-  // also draw floater group cells (they are nulled from board during animation)
-  if(floaterGroups){
-    for(const grp of floaterGroups){
-      for(const cell of grp.cells){
-        const {r,c,piece}=cell;
-        if(r<0||r>=ROWS||c<0||c>=COLS)continue;
-        const b=piece||board[r][c];
-        if(!b)continue;
-        ctx.fillStyle=b.grey?'#555':'rgba(200,168,75,0.55)';
+      if(reveal){
+        if(b.grey){
+          ctx.fillStyle='#777';
+          ctx.fillRect(c*cw,r*ch,cw,ch);
+        } else if(b.isBreaker){
+          ctx.fillStyle='rgba(0,0,0,0.5)';
+          ctx.fillRect(c*cw,r*ch,cw,ch);
+          ctx.fillStyle=WEAPONS[b.w].border;
+          ctx.beginPath();
+          ctx.arc(c*cw+cw/2,r*ch+ch/2,Math.min(cw,ch)*0.25,0,Math.PI*2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle=WEAPONS[b.w].bg;
+          ctx.fillRect(c*cw,r*ch,cw,ch);
+          ctx.strokeStyle=WEAPONS[b.w].border;
+          ctx.lineWidth=0.5;
+          ctx.strokeRect(c*cw+0.5,r*ch+0.5,cw-1,ch-1);
+        }
+      } else {
+        if(b.grey){ctx.fillStyle='#555';}
+        else{ctx.fillStyle='rgba(200,168,75,0.55)';}
         ctx.fillRect(c*cw,r*ch,cw,ch);
       }
     }
   }
-  // draw falling piece
-  if(falling){
-    fallingCells(falling).forEach(({r,c})=>{
-      if(r<0||r>=ROWS||c<0||c>=COLS)return;
-      ctx.fillStyle='rgba(200,168,75,0.75)';
-      ctx.fillRect(c*cw,r*ch,cw,ch);
-    });
+  if(!reveal){
+    // also draw floater group cells (they are nulled from board during animation)
+    if(floaterGroups){
+      for(const grp of floaterGroups){
+        for(const cell of grp.cells){
+          const {r,c,piece}=cell;
+          if(r<0||r>=ROWS||c<0||c>=COLS)continue;
+          const b=piece||board[r][c];
+          if(!b)continue;
+          ctx.fillStyle=b.grey?'#555':'rgba(200,168,75,0.55)';
+          ctx.fillRect(c*cw,r*ch,cw,ch);
+        }
+      }
+    }
+    // draw falling piece
+    if(falling){
+      fallingCells(falling).forEach(({r,c})=>{
+        if(r<0||r>=ROWS||c<0||c>=COLS)return;
+        ctx.fillStyle='rgba(200,168,75,0.75)';
+        ctx.fillRect(c*cw,r*ch,cw,ch);
+      });
+    }
   }
 }
 
