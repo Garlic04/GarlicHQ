@@ -254,6 +254,12 @@ nav {
     </div>
   </div>
   <div id="ai-panel" style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+    <div id="btn-row" style="display:flex;flex-direction:column;gap:4px;width:80px;">
+      <button id="btn-start" style="width:100%">Start</button>
+      <button id="btn-pause" disabled style="width:100%">Pause</button>
+      <button id="btn-forfeit" style="width:100%;display:none;background:#2a0a0a;border-color:#aa2222;color:#ff6666;" onclick="confirmForfeit()">Forfeit</button>
+      <button id="btn-mute" onclick="muted=!muted;this.textContent=muted?'🔇':'🔊'" style="width:100%">🔊</button>
+    </div>
     <div class="rs-box" style="width:80px;text-align:center">
       <h3 id="opponent-label">Opponent</h3>
       <div id="npc-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;text-align:center;margin-top:3px;">Highwayman</div>
@@ -262,12 +268,6 @@ nav {
       </div>
       <canvas id="ai-minimap" width="48" height="143" style="display:block;margin:4px auto 0;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
       <div id="ai-status" style="font-size:9px;color:#a08040;margin-top:4px;font-family:Cinzel,serif;">Waiting</div>
-    </div>
-    <div id="btn-row" style="display:flex;flex-direction:column;gap:4px;width:80px;">
-      <button id="btn-start" style="width:100%">Start</button>
-      <button id="btn-pause" disabled style="width:100%">Pause</button>
-      <button id="btn-forfeit" style="width:100%;display:none;background:#2a0a0a;border-color:#aa2222;color:#ff6666;" onclick="confirmForfeit()">Forfeit</button>
-      <button id="btn-mute" onclick="muted=!muted;this.textContent=muted?'🔇':'🔊'" style="width:100%">🔊</button>
     </div>
   </div>
   <div id="panel-right">
@@ -1377,10 +1377,7 @@ function buildTeamPanels(){
   oppPanel.id='mp-opp-panel';
   oppPanel.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;width:90px;';
 
-  const oppHeader=document.createElement('div');
-  oppHeader.style.cssText='font-family:Cinzel,serif;font-size:9px;color:#9e4a4a;letter-spacing:1px;margin-bottom:2px;';
-  oppHeader.textContent='ENEMIES';
-  oppPanel.appendChild(oppHeader);
+
 
   // carousel arrows if needed
   if(mpOpponents.length>MP_PANEL_MAX){
@@ -1425,10 +1422,7 @@ function buildTeamPanels(){
   tmPanel.id='mp-tm-panel';
   tmPanel.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;margin-top:6px;';
 
-  const tmHeader=document.createElement('div');
-  tmHeader.style.cssText='font-family:Cinzel,serif;font-size:9px;color:#4a7a4a;letter-spacing:1px;margin-bottom:2px;';
-  tmHeader.textContent='ALLIES';
-  tmPanel.appendChild(tmHeader);
+
 
   if(mpTeammates.length>MP_PANEL_MAX){
     const arrowRow=document.createElement('div');
@@ -3655,7 +3649,14 @@ function render(){
   renderSwordOverlays();
   startRaf();
 }
-function renderNext(){const el=document.getElementById('next-inner');if(!el||!nextPair)return;el.innerHTML='';for(let i=0;i<2;i++){const slot=document.createElement('div');slot.style.cssText='width:30px;height:38px;position:relative;';slot.appendChild(drawCell(nextPair[i],false));el.appendChild(slot);}}
+function syncPanelAlignment(){
+  const nextBox=document.querySelector('#panel-left .rs-box');
+  const btnRow=document.getElementById('btn-row');
+  if(!nextBox||!btnRow)return;
+  btnRow.style.minHeight=nextBox.offsetHeight+'px';
+}
+
+function renderNext(){const el=document.getElementById('next-inner');if(!el||!nextPair)return;el.innerHTML='';for(let i=0;i<2;i++){const slot=document.createElement('div');slot.style.cssText='width:30px;height:38px;position:relative;';slot.appendChild(drawCell(nextPair[i],false));el.appendChild(slot);}requestAnimationFrame(syncPanelAlignment);}
 function buildLegend(){const el=document.getElementById('legend-box');el.innerHTML='<h3 style="font-family:Cinzel,serif;font-size:10px;color:#e8c86c;margin-bottom:5px;letter-spacing:1px">Legend</h3>';WEAPONS.forEach(w=>{const row=document.createElement('div');row.className='leg-row';const sw=document.createElement('div');sw.className='leg-swatch';sw.style.background=w.bg;sw.style.border=`1px solid ${w.border}`;const img=IMGS[w.id];if(img){const cv=document.createElement('canvas');cv.width=24;cv.height=32;cv.style.cssText='position:absolute;top:3px;left:3px;width:24px;height:32px;image-rendering:pixelated;';const ctx=cv.getContext('2d');const draw=()=>ctx.drawImage(img,0,0,24,32);if(img.complete&&!img._failed)draw();else img.addEventListener('load',draw);sw.appendChild(cv);}const lbl=document.createElement('span');lbl.textContent=w.name;lbl.style.cssText='font-size:10px;color:#a08040;';row.appendChild(sw);row.appendChild(lbl);el.appendChild(row);});const note=document.createElement('div');note.style.cssText='font-size:9px;color:#5a3d00;margin-top:3px;line-height:1.4';note.textContent='Dashed=breaker. Up=CCW Down=CW';el.appendChild(note);}
 
 // Held key movement — process left/right independently of tick rate
@@ -3742,7 +3743,7 @@ document.getElementById('btn-pause').addEventListener('click',()=>{
     if(floaterGroups.length>0)scheduleFloatStep();
   }
 });
-buildBoard();buildLegend();render();applyScale();
+buildBoard();buildLegend();render();applyScale();requestAnimationFrame(syncPanelAlignment);
 </script>
 </body>
 </html>
