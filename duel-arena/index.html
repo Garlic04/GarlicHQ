@@ -999,8 +999,11 @@ async function authenticateForMp(){
     mpPlayerData=data;
     mpUsername=data.username;
     try{localStorage.setItem('duel_arena_username',mpUsername);localStorage.setItem('duel_arena_pin',pinInput);}catch(e){}
+    // sync D1 wins/losses into IndexedDB so rank display matches server
+    saveRankData({mode:'sp',wins:data.wins||0,losses:data.losses||0});
     const nameLabel=document.getElementById('player-name-label');
     if(nameLabel){nameLabel.textContent=mpUsername;nameLabel.style.color=mpPlayerData?.colour||'';}
+    updatePlayerRankUI();
     return true;
   }catch(e){document.getElementById('mp-entry-error').textContent='Connection error';return false;}
 }
@@ -1058,13 +1061,15 @@ async function startMatchmaking(){
     mpPlayerData=data;
     mpUsername=data.username;
     try{localStorage.setItem('duel_arena_username',mpUsername);localStorage.setItem('duel_arena_pin',pinInput);}catch(e){}
+    // sync D1 wins/losses into IndexedDB so rank display matches server
+    saveRankData({mode:'sp',wins:data.wins||0,losses:data.losses||0});
 
     const nameLabel=document.getElementById('player-name-label');
     if(nameLabel){
       nameLabel.textContent=mpUsername;
       nameLabel.style.color=mpPlayerData?.colour||'';
     }
-
+    updatePlayerRankUI();
     errorEl.textContent='';
     document.getElementById('mp-entry').style.display='none';
     document.getElementById('mp-waiting').style.display='block';
@@ -1224,7 +1229,8 @@ function handleGameMessage(e){
   if(msg.type==='teamEliminated'){
     const myTeamLost=msg.team===mpTeam;
     const ko=document.getElementById('ko-overlay');if(ko)ko.remove();
-    // fire regardless of gameOver — knocked-out players need this too
+    // This is the ONLY place win/loss is recorded in team games
+    // Fires for all players including knocked-out ones
     if(myTeamLost){mpLose();}
     else{mpWin();}
   }
@@ -1636,6 +1642,7 @@ function mpSendGameOver(){
 }
 
 function mpWin(){
+  if(mpInRematchWait)return; // already recorded
   mpInRematchWait=true;
   paused=true;clearInterval(mainTimer);
   recordWin();
@@ -1664,6 +1671,7 @@ function mpWin(){
 }
 
 function mpLose(){
+  if(mpInRematchWait)return; // already recorded
   // endGame() already called mpSendBoard, mpSendGameOver, cleared timers, set gameOver=true
   mpInRematchWait=true;
   document.getElementById('win-title').textContent='⚔ DEFEAT ⚔';
@@ -1674,9 +1682,21 @@ function mpLose(){
   document.getElementById('win-rematch-status').textContent='';
   document.getElementById('win-overlay').classList.add('show');
   document.getElementById('btn-pause').disabled=false;
-  // update D1 result
-  if(mpUsername&&mpOpponentUsername){
-    fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpOpponentUsername,loser:mpUsername})}).catch(()=>{});
+  // update D1 result and sync losses back to IndexedDB
+  const winnerName=mpIsTeamGame
+    ? (mpOpponents.find(p=>!p.knockedOut)?.name||mpOpponents[0]?.name||mpOpponentUsername)
+    : mpOpponentUsername;
+  if(mpUsername&&winnerName){
+    fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:winnerName,loser:mpUsername})})
+      .then(r=>r.json())
+      .then(d=>{
+        // D1 is authoritative — sync losses to IndexedDB
+        getRankData().then(local=>{
+          saveRankData({mode:'sp',wins:local.wins,losses:d.losses||0});
+          if(mpPlayerData)mpPlayerData.losses=d.losses||0;
+        });
+      })
+      .catch(()=>{});
   }
 }
 
@@ -1918,25 +1938,27 @@ async function updatePlayerRankUI(){
   }
 }
 async function recordWin(){
-  const data=await getRankData();
-  const oldRank=getCurrentRank(data.wins);
-  data.wins=(data.wins||0)+1;
-  saveRankData(data);
-  const newRank=getCurrentRank(data.wins);
-  updatePlayerRankUI();
-  if(newRank.name!==oldRank.name){
-    setTimeout(()=>showRankUp(newRank),1200);
-  }
-  // sync win to D1
-  if(mpUsername&&mpOpponentUsername){
-    try{
-      const res=await fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpUsername,loser:mpOpponentUsername})});
-      if(res.ok){
-        const d=await res.json();
-        if(mpPlayerData)mpPlayerData.wins=d.wins;
+  const loserName=mpIsTeamGame
+    ? (mpOpponents.find(p=>p.knockedOut)?.name||mpOpponents[0]?.name||mpOpponentUsername)
+    : mpOpponentUsername;
+  if(!mpUsername||!loserName)return;
+  try{
+    const res=await fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:mpUsername,loser:loserName})});
+    if(res.ok){
+      const d=await res.json();
+      const newWins=d.wins||0;
+      const oldData=await getRankData();
+      const oldRank=getCurrentRank(oldData.wins);
+      const newRank=getCurrentRank(newWins);
+      // D1 is authoritative — sync to IndexedDB
+      saveRankData({mode:'sp',wins:newWins,losses:d.losses||0});
+      if(mpPlayerData)mpPlayerData.wins=newWins;
+      updatePlayerRankUI();
+      if(newRank.name!==oldRank.name){
+        setTimeout(()=>showRankUp(newRank),1200);
       }
-    }catch(e){console.warn('Win sync failed:',e);}
-  }
+    }
+  }catch(e){console.warn('Win sync failed:',e);}
 }
 function showRankUp(rank){
   const boardWrap=document.getElementById('board-wrap');if(!boardWrap)return;
