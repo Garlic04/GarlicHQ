@@ -24,7 +24,7 @@ body{
 h1{font-family:'Cinzel',serif;color:#c8a84b;font-size:17px;letter-spacing:2px;text-align:center;margin-bottom:8px;width:100%;display:block;}
 #ui{display:flex;gap:12px;align-items:flex-start;position:relative;}
 #app{display:inline-flex;flex-direction:column;align-items:center;padding:10px;background:transparent;text-align:left;}
-#panel-left,#panel-right{display:flex;flex-direction:column;gap:8px;width:105px;margin-top:34px;}
+#panel-left,#panel-right{display:flex;flex-direction:column;gap:8px;width:105px;margin-top:34px;align-items:center;}
 #ai-panel{margin-top:34px;}
 .rs-box{background:rgba(20,13,5,0.75);border:2px solid #5a3d00;border-radius:2px;padding:7px;color:#c8a84b;font-size:11px}
 .rs-box h3{font-family:'Cinzel',serif;font-size:10px;color:#e8c86c;margin-bottom:4px;letter-spacing:1px}
@@ -253,7 +253,7 @@ nav {
       </div>
     </div>
   </div>
-  <div id="ai-panel" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;width:105px;">
+  <div id="ai-panel" style="display:flex;flex-direction:column;gap:6px;align-items:center;width:105px;">
     <div id="btn-row" style="display:flex;flex-direction:column;gap:4px;width:80px;">
       <button id="btn-start" style="width:100%">Start</button>
       <button id="btn-pause" disabled style="width:100%">Pause</button>
@@ -1034,7 +1034,8 @@ function joinAsSpectator(roomId){
     mpIsSpectator=false;
   };
   mpSocket.onclose=()=>{
-    if(mpIsSpectator){endSpectatorView();}
+    // only auto-exit if not already showing game-over overlay
+    if(mpIsSpectator&&!document.getElementById('spec-game-over')){endSpectatorView();}
   };
 }
 
@@ -1167,7 +1168,7 @@ function endSpectatorView(){
   const specLeave=document.getElementById('btn-spec-leave');
   if(specLeave)specLeave.remove();
   // remove spectator panels
-  ['mp-spec-left','mp-spec-right','mp-spec-panel'].forEach(id=>{
+  ['mp-spec-left','mp-spec-right','mp-spec-panel','spec-game-over'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.remove();
   });
   _spectatorSeen.clear();
@@ -1217,7 +1218,10 @@ async function authenticateForMp(){
     // sync D1 wins/losses into IndexedDB so rank display matches server
     saveRankData({mode:'sp',wins:data.wins||0,losses:data.losses||0});
     const nameLabel=document.getElementById('player-name-label');
-    if(nameLabel){nameLabel.textContent=mpUsername;nameLabel.style.color=mpPlayerData?.colour||'';}
+    if(nameLabel){
+      nameLabel.textContent=mpPlayerData?.label?mpUsername+' ['+mpPlayerData.label+']':mpUsername;
+      nameLabel.style.color=mpPlayerData?.colour||'';
+    }
     updatePlayerRankUI();
     return true;
   }catch(e){document.getElementById('mp-entry-error').textContent='Connection error';return false;}
@@ -1281,7 +1285,7 @@ async function startMatchmaking(){
 
     const nameLabel=document.getElementById('player-name-label');
     if(nameLabel){
-      nameLabel.textContent=mpUsername;
+      nameLabel.textContent=mpPlayerData?.label?mpUsername+' ['+mpPlayerData.label+']':mpUsername;
       nameLabel.style.color=mpPlayerData?.colour||'';
     }
     updatePlayerRankUI();
@@ -1443,15 +1447,30 @@ function handleGameMessage(e){
   if(msg.type==='playerLeft'){
     // Mark card as knocked out / greyed (player disconnected mid-game)
     markPlayerKnockedOut(msg.name);
-    // mark in arrays so auto-target skips them
+    // mark in arrays so auto-target skips them and dots clear
     const leavingOpp=mpOpponents.find(p=>p.name===msg.name);
     if(leavingOpp)leavingOpp.knockedOut=true;
     const leavingTm=mpTeammates.find(p=>p.name===msg.name);
     if(leavingTm)leavingTm.knockedOut=true;
+    // remove from targeting map and refresh dots
+    delete mpTargetMap[msg.name];
+    updateTargetingDots();
     document.getElementById('msg').textContent=msg.name+' has left.';
     setTimeout(()=>{if(document.getElementById('msg').textContent===msg.name+' has left.')document.getElementById('msg').textContent='';},3000);
   }
   if(msg.type==='teamEliminated'){
+    if(mpIsSpectator){
+      // Spectator just sees who won
+      const teamNames=['Team A','Team B'];
+      const winner=msg.team===0?1:0;
+      const overlay=document.createElement('div');
+      overlay.id='spec-game-over';
+      overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;background:rgba(0,0,0,0.6);';
+      overlay.innerHTML=`<div style="font-family:Cinzel,serif;font-size:22px;color:#e8c86c;margin-bottom:12px;">${teamNames[winner]} Wins!</div><button onclick="endSpectatorView()" style="font-size:12px;padding:7px 24px;background:#1a1209;border:2px solid #5a3d00;color:#a08040;cursor:pointer;font-family:Cinzel,serif;">Leave</button>`;
+      const boardWrap=document.getElementById('board-wrap');
+      if(boardWrap)boardWrap.appendChild(overlay);
+      return;
+    }
     const myTeamLost=msg.team===mpTeam;
     const ko=document.getElementById('ko-overlay');if(ko)ko.remove();
     // This is the ONLY place win/loss is recorded in team games
@@ -1906,6 +1925,7 @@ function mpSendGameOver(){
 }
 
 function mpWin(){
+  if(mpIsSpectator)return; // spectators don't record wins
   renderSelfMinimap(true); // always reveal own board on win
   if(mpInRematchWait)return; // already recorded
   mpInRematchWait=true;
@@ -1931,6 +1951,7 @@ function mpWin(){
 }
 
 function mpLose(){
+  if(mpIsSpectator)return; // spectators don't record losses
   renderSelfMinimap(true); // reveal own board on loss
   if(mpInRematchWait)return; // already recorded
   // endGame() already called mpSendBoard, mpSendGameOver, cleared timers, set gameOver=true
@@ -1949,13 +1970,16 @@ function mpLose(){
     : mpOpponentUsername;
   if(mpUsername&&winnerName){
     fetch(WORKER_URL+'/update-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({winner:winnerName,loser:mpUsername})})
+      .then(()=>{
+        // fetch our own stats — update-result returns winner's data, not loser's
+        return fetch(WORKER_URL+'/player/'+mpUsername);
+      })
       .then(r=>r.json())
       .then(d=>{
-        // D1 is authoritative — sync losses to IndexedDB
-        getRankData().then(local=>{
-          saveRankData({mode:'sp',wins:local.wins,losses:d.losses||0});
-          if(mpPlayerData)mpPlayerData.losses=d.losses||0;
-        });
+        if(d.wins!==undefined){
+          saveRankData({mode:'sp',wins:d.wins||0,losses:d.losses||0});
+          if(mpPlayerData){mpPlayerData.wins=d.wins||0;mpPlayerData.losses=d.losses||0;}
+        }
       })
       .catch(()=>{});
   }
@@ -3775,8 +3799,8 @@ function renderSelfMinimap(reveal=false){
           ctx.strokeRect(c*cw+0.5,r*ch+0.5,cw-1,ch-1);
         }
       } else {
-        if(b.grey){ctx.fillStyle='#555';}
-        else{ctx.fillStyle='rgba(200,168,75,0.55)';}
+        // during game — gold blocks only, same as opponent minimap
+        ctx.fillStyle='rgba(200,168,75,0.55)';
         ctx.fillRect(c*cw,r*ch,cw,ch);
       }
     }
@@ -3790,19 +3814,12 @@ function renderSelfMinimap(reveal=false){
           if(r<0||r>=ROWS||c<0||c>=COLS)continue;
           const b=piece||board[r][c];
           if(!b)continue;
-          ctx.fillStyle=b.grey?'#555':'rgba(200,168,75,0.55)';
+          ctx.fillStyle='rgba(200,168,75,0.55)';
           ctx.fillRect(c*cw,r*ch,cw,ch);
         }
       }
     }
-    // draw falling piece
-    if(falling){
-      fallingCells(falling).forEach(({r,c})=>{
-        if(r<0||r>=ROWS||c<0||c>=COLS)return;
-        ctx.fillStyle='rgba(200,168,75,0.75)';
-        ctx.fillRect(c*cw,r*ch,cw,ch);
-      });
-    }
+    // don't draw falling piece — matches opponent minimap behaviour
   }
 }
 
