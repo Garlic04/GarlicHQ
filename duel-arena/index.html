@@ -830,6 +830,12 @@ function connectToLobbyRoom(roomId, asHost){
     }
 
     // slots-updated: broadcast any time someone joins/moves/is kicked
+    if(msg.type==='game-starting'){
+      // relay to lobby-list so it marks this lobby as in-progress
+      if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+        lobbySocket.send(JSON.stringify({type:'lobby-in-progress',lobbyRoomId:msg.lobbyRoomId}));
+      }
+    }
     if(msg.type==='slots-updated'){
       lobbySlots=msg.slots||[];
       if(msg.teamSize) lobbyTeamSize=msg.teamSize;
