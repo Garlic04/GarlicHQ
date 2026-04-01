@@ -737,8 +737,9 @@ function renderLobbyList(lobbies){
     const ts=lobby.teamSize&&lobby.teamSize>1?`<span style="font-family:Cinzel,serif;font-size:11px;color:#5a7a9a;margin-left:4px;">${lobby.teamSize}v${lobby.teamSize}</span>`:'';
     const inProgress=lobby.inProgress;
     const progressBadge=inProgress?`<span style="font-family:Cinzel,serif;font-size:10px;color:#c87020;margin-left:4px;">● In Progress</span>`:'';
+    const watchRoomId=lobby.gameRoomId||lobby.id;
     const actionBtn=inProgress
-      ?`<button onclick="joinAsSpectator('${lobby.id}')" style="font-size:12px;padding:7px 14px;background:#1a1209;border-color:#5a3d00;color:#a08040;white-space:nowrap;">Watch</button>`
+      ?`<button onclick="joinAsSpectator('${watchRoomId}')" style="font-size:12px;padding:7px 14px;background:#1a1209;border-color:#5a3d00;color:#a08040;white-space:nowrap;">Watch</button>`
       :`<button onclick="joinLobby('${lobby.id}')" style="font-size:13px;padding:7px 18px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;white-space:nowrap;">Join</button>`;
     row.innerHTML=`
       <div style="text-align:left;">
@@ -831,10 +832,7 @@ function connectToLobbyRoom(roomId, asHost){
 
     // slots-updated: broadcast any time someone joins/moves/is kicked
     if(msg.type==='game-starting'){
-      // relay to lobby-list so it marks this lobby as in-progress
-      if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
-        lobbySocket.send(JSON.stringify({type:'lobby-in-progress',lobbyRoomId:msg.lobbyRoomId}));
-      }
+      // already handled directly in startLobbyGame — ignore here
     }
     if(msg.type==='slots-updated'){
       lobbySlots=msg.slots||[];
@@ -865,8 +863,8 @@ function connectToLobbyRoom(roomId, asHost){
       document.getElementById('mp-lobby-host').style.display='none';
       document.getElementById('mp-lobby-guest').style.display='none';
       lobbySlots=[];
-      // close lobby list socket
-      if(lobbySocket){lobbySocket.close();lobbySocket=null;}
+      // keep lobbySocket open so in-progress lobby stays visible for spectators
+      // it will be closed when the player leaves/finishes the game
       startMpGame(msg);
     }
   };
@@ -914,6 +912,11 @@ function startMpGame(msg){
     const oppRank=RANKS.find(r=>r.name===msg.opponentRank)||RANKS[0];
     document.getElementById('npc-head-img').src=oppRank.img;
     document.getElementById('ai-status').textContent='Fighting! ⚔';
+  }
+
+  // mark lobby as in-progress now that we have the game room ID
+  if(isLobbyHost&&lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+    lobbySocket.send(JSON.stringify({type:'lobby-in-progress',lobbyRoomId:lobbyRoomId,gameRoomId:msg.roomId}));
   }
 
   // set default target using round-robin across opponents
@@ -973,10 +976,7 @@ function startMpGame(msg){
 function startLobbyGame(){
   if(lobbyGameSocket&&lobbyGameSocket.readyState===WebSocket.OPEN){
     lobbyGameSocket.send(JSON.stringify({type:'start-game'}));
-    // announce lobby closed
-    if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
-      lobbySocket.send(JSON.stringify({type:'close-lobby'}));
-    }
+    // lobby-in-progress sent from startMpGame once we have the gameRoomId
   }
 }
 
@@ -1971,6 +1971,11 @@ function declineRematch(){
   document.getElementById('win-title').textContent='⚔ VICTORY ⚔';
   document.getElementById('win-subtitle').textContent='The opponent has been defeated!';
   if(mpSocket){mpSocket.close();mpSocket=null;}
+  // close lobby entry now game is done
+  if(lobbySocket&&lobbySocket.readyState===WebSocket.OPEN){
+    lobbySocket.send(JSON.stringify({type:'close-lobby'}));
+    lobbySocket.close();lobbySocket=null;
+  }
   // tear down team panels on leave
   if(mpIsTeamGame)teardownTeamPanels();
   mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
