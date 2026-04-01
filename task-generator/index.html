@@ -1799,7 +1799,7 @@
       <button class="action-btn reroll" onclick="rerollTask()">↺ Reroll</button><button class="safe-reroll-btn" id="safe-reroll-btn" onclick="safeRerollTask()">🛡 Safe Reroll (<span id="safe-reroll-count">0</span>)</button>
     </div>
     <div id="no-materials-wrap" style="display:none;margin-top:8px;">
-      <button onclick="noMaterialsReroll()" style="width:100%;padding:6px 10px;background:rgba(100,100,100,0.1);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:12px;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold-dim)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">🎒 I don't have the materials — free reroll</button>
+      <button onclick="noMaterialsReroll()" style="width:100%;padding:8px 10px;background:rgba(180,120,30,0.12);border:1px solid rgba(200,160,60,0.4);border-radius:6px;color:#c8a84b;font-size:12px;font-family:'Cinzel',serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.03em;" onmouseover="this.style.background='rgba(180,120,30,0.25)';this.style.borderColor='rgba(200,160,60,0.8)'" onmouseout="this.style.background='rgba(180,120,30,0.12)';this.style.borderColor='rgba(200,160,60,0.4)'">🎒 Missing materials? Free reroll</button>
     </div>
     <div id="extender-actions" style="display:none;margin-top:8px;gap:6px;justify-content:center;">
       <button id="extend-btn" onclick="applyExtender(1.5)" style="flex:1;padding:6px 10px;background:rgba(74,162,74,0.12);border:1px solid #4a8a4a;border-radius:6px;color:#6abf6a;font-size:12px;font-family:inherit;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(74,162,74,0.25)'" onmouseout="this.style.background='rgba(74,162,74,0.12)'">📏 +50% Extend</button>
@@ -2171,8 +2171,8 @@ const QUEST_TASKS = [
 
 const CLUE_TASKS = [
   { name: 'Easy Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
-  { name: 'Medium Clue', icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
-  { name: 'Hard Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   combatReq: 50, note: 'Some hard clue steps require defeating a Zamorak Wizard (level 65). <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Medium Clue', icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', combatReq: 30, note: 'Obtain from guards, tribesmen and other mid-level monsters — or complete one you already have banked. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Hard Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   combatReq: 50, note: 'Obtain from high-level monsters, or complete one you already have banked. Some steps require defeating a Zamorak Wizard (level 65). <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
 ];
 
 const COMBAT_TASKS = [
@@ -2197,14 +2197,14 @@ const COMBAT_TASKS = [
   { name: 'Unicorns',          icon: '🦄', min: 20, max: 50,  loc: 'White Wolf Mountain, north of Ardougne, or Wilderness (black unicorns)', countMin: 20, countMax: 60, prayer: false, npcImage: 'Unicorn_(historical_v1)', note: 'Unicorn horns are used in Herblore (anti-poison potions). Worth picking up! Black unicorns can also be found in the Wilderness.' },
   { name: 'Guards',            icon: '💂', min: 15, max: 55,  loc: 'Varrock or Falador',               countMin: 20, countMax: 60, prayer: false , npcImage: 'Guard' },
   { name: 'Skeletons',         icon: '💀', min: 15, max: 55,  loc: 'Edgeville Dungeon or Karamja Volcano', countMin: 20, countMax: 60, prayer: false , npcImage: 'Skeleton' },
-  { name: 'Black Knights',     icon: '🗡️', min: 25, max: 65,  loc: 'Ice Mountain dungeon',             countMin: 20, countMax: 60, prayer: false , npcImage: 'Black_Knight_(historical)' },
+  { name: 'Black Knights',     icon: '🗡️', min: 40, max: 65,  loc: 'Ice Mountain dungeon',             countMin: 20, countMax: 60, prayer: false , npcImage: 'Black_Knight_(historical)' },
   { name: 'Dark Wizards',      icon: '🧙', min: 15, max: 40,  loc: 'South of Varrock',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Dark_wizard' },
   { name: 'Zombies',            icon: '🧟', min: 15, max: 40,  loc: 'Edgeville Dungeon',                 countMin: 20, countMax: 60,  prayer: false, npcImage: 'Zombie_(Level_13)_(historical)' },
   { name: 'Ghosts',             icon: '👻', min: 15, max: 40,  loc: 'Edgeville Dungeon or Melzar\'s Maze', countMin: 20, countMax: 60,  prayer: false, npcImage: 'Ghost_(historical)' },
   { name: 'Scorpions',          icon: '🦂', min: 20, max: 40,  loc: 'Al-Kharid or Dwarven Mine',          countMin: 20, countMax: 60,  prayer: false, npcImage: 'Scorpion_(historical)' },
   { name: 'Pirates',           icon: '☠️', min: 25, max: 70,  loc: 'Karamja or Brimhaven',              countMin: 20, countMax: 60, prayer: false, npcImage: "Pirate_(Pirates'_Cove)_(historical)" },
-  { name: 'White Knights',     icon: '🛡️', min: 25, max: 70,  loc: 'Falador Castle',                     countMin: 20, countMax: 60, prayer: false, npcImage: 'White_Knight_(historical_v1)' },
-  { name: 'Ardougne Knights',  icon: '⚔️', min: 30, max: 80,  loc: 'Ardougne',                           countMin: 20, countMax: 60, prayer: false, npcImage: 'Knight_of_Ardougne' },
+  { name: 'White Knights',     icon: '🛡️', min: 40, max: 70,  loc: 'Falador Castle',                     countMin: 20, countMax: 60, prayer: false, npcImage: 'White_Knight_(historical_v1)' },
+  { name: 'Ardougne Knights',  icon: '⚔️', min: 50, max: 80,  loc: 'Ardougne',                           countMin: 20, countMax: 60, prayer: false, npcImage: 'Knight_of_Ardougne' },
   { name: 'Werewolves',        icon: '🐺', min: 30, max: 80,  loc: 'Canifis',                            countMin: 20, countMax: 60, prayer: false, npcImage: 'Werewolf_(Imre)', questReq: 'Priest in Peril', note: 'Requires <strong>Priest in Peril</strong> to access Morytania. Use a Wolfbane dagger to prevent them transforming back.' },
   { name: 'Wolves',             icon: '🐺', min: 20, max: 65,  loc: 'White Wolf Mountain',                countMin: 20, countMax: 60,  prayer: false, npcImage: 'Wolf_(historical)' },
   { name: 'Chaos Druids',       icon: '🌿', min: 25, max: 126, loc: 'Edgeville Dungeon or Taverley Dungeon', countMin: 20, countMax: 80, prayer: false, note: 'Great for herb drops. Beware of PKers in Edgeville Dungeon', npcImage: 'Chaos_druid' },
@@ -2613,7 +2613,7 @@ function closeSaveLoad() {
 
 async function exportSave() {
   try {
-    const keys = ['tracker','completedQuests','enabledSkills','challengeEnabled','challengeFreq',
+    const keys = ['tracker','completedQuests','completedClues','enabledSkills','challengeEnabled','challengeFreq',
                    'currentTask','dailyTask','dailyDateKey','dailyDone',
                    'activeContract','contractOptions','collectionLog',
                    'milestonesUnlocked'];
@@ -2928,8 +2928,9 @@ function generateDailyTask() {
   for (let i = 0; i < maxAttempts && !task; i++) {
     pickType = types[randInt(0, 7)];
     if (pickType === 'combat') {
-      let eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+      const lowestStyle1 = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
+      let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle1 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle1 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
       if (!eligible.length) continue;
       const t = eligible[randInt(0, eligible.length - 1)];
       const count = randInt(t.countMin, t.countMax);
@@ -3006,6 +3007,7 @@ function completeDailyTask() {
   tracker.total++;
   tracker.streak++;
   if (tracker.total > (tracker.highWater || 0)) tracker.highWater = tracker.total;
+  const base = taskPointValue(dailyTask);
   const earned = Math.round(base * DAILY_MULTIPLIER);
   const isBonus = tracker.streak % STREAK_BONUS_AT === 0;
   const finalEarned = applyPrestigeMultiplier(isBonus ? earned * BONUS_MULTIPLIER : earned);
@@ -3683,8 +3685,9 @@ function buildOneTask() {
   let task = null;
 
   if (pickType === 'combat') {
-    let eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    const lowestStyle2 = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
+    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle2 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle2 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (!eligible.length) return null;
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4063,6 +4066,57 @@ function scaleSideTabs() {
 
 window.addEventListener('resize', scaleSideTabs);
 
+// ─── Secret Admin Panel ───────────────────────────────────────────────────────
+(function() {
+  let seq = '';
+  const CODE = 'garlic';
+  window.addEventListener('keydown', e => {
+    seq = (seq + e.key.toLowerCase()).slice(-CODE.length);
+    if (seq === CODE) showAdminPanel();
+  });
+})();
+
+function showAdminPanel() {
+  const existing = document.getElementById('admin-panel-overlay');
+  if (existing) { existing.remove(); return; }
+  const overlay = document.createElement('div');
+  overlay.id = 'admin-panel-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:#1a1309;border:2px solid #c8a84b;border-radius:8px;padding:24px;min-width:320px;font-family:'Cinzel',serif;">
+      <div style="color:#c8a84b;font-size:1.1rem;margin-bottom:16px;text-align:center;">🧄 Admin Panel</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <label style="color:#a08040;font-size:0.75rem;">Tasks completed</label>
+        <input id="admin-total" type="number" value="${tracker.total}" style="background:#0d0b08;border:1px solid #5a3d00;color:#c8a84b;padding:6px 10px;border-radius:4px;font-family:inherit;width:100%;">
+        <label style="color:#a08040;font-size:0.75rem;">Current streak</label>
+        <input id="admin-streak" type="number" value="${tracker.streak}" style="background:#0d0b08;border:1px solid #5a3d00;color:#c8a84b;padding:6px 10px;border-radius:4px;font-family:inherit;width:100%;">
+        <label style="color:#a08040;font-size:0.75rem;">Points</label>
+        <input id="admin-points" type="number" value="${tracker.points}" style="background:#0d0b08;border:1px solid #5a3d00;color:#c8a84b;padding:6px 10px;border-radius:4px;font-family:inherit;width:100%;">
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button onclick="applyAdminPanel()" style="flex:1;background:rgba(200,168,75,0.15);border:1px solid #c8a84b;color:#c8a84b;padding:8px;border-radius:4px;font-family:'Cinzel',serif;cursor:pointer;">Apply</button>
+          <button onclick="document.getElementById('admin-panel-overlay').remove()" style="flex:1;background:rgba(100,100,100,0.1);border:1px solid #555;color:#888;padding:8px;border-radius:4px;font-family:'Cinzel',serif;cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+function applyAdminPanel() {
+  const total  = parseInt(document.getElementById('admin-total').value)  || 0;
+  const streak = parseInt(document.getElementById('admin-streak').value) || 0;
+  const points = parseInt(document.getElementById('admin-points').value) || 0;
+  tracker.total   = total;
+  tracker.streak  = streak;
+  tracker.points  = points;
+  tracker.highWater = Math.max(tracker.highWater || 0, total);
+  saveTracker();
+  renderTracker();
+  checkMilestones();
+  document.getElementById('admin-panel-overlay').remove();
+  showToast('🧄 Stats updated!');
+}
+
 const PROCESSING_SKILLS = new Set(['smithing', 'cooking', 'herblore', 'fletching', 'rc', 'crafting']);
 
 function noMaterialsReroll() {
@@ -4222,13 +4276,16 @@ function buyReroll() {
   tracker.points -= SAFE_REROLL_COST;
   tracker.safeRerolls++;
   saveTracker();
+  renderShop();
   renderTracker();
+  if (currentTask) renderTask(currentTask);
   showToast('Safe Reroll purchased!');
 }
 
 function safeRerollTask() {
   if (!tracker.safeRerolls || tracker.safeRerolls <= 0) return;
   tracker.safeRerolls--;
+  if (currentTask) lastTaskName = currentTask.name;
   saveTracker();
   generateTask(true); // true = isReroll, skips streak reset
   renderTracker();
@@ -4555,8 +4612,10 @@ function generateTask(isReroll = false) {
   }
 
   if (pickType === 'combat') {
-    let eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => cb >= t.min && cb <= t.max && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    // Use the player's best combat style level to filter tasks, not just overall cb
+    const lowestStyle = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
+    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4900,6 +4959,8 @@ function completeTask() {
     updateQuestChecklist();
   }
 
+
+
   // Update thieving level on stat page when gaining a thieving level task is completed
   if (taskToComplete.name === 'Gain Thieving levels' && taskToComplete.thiefLevelTarget) {
     const el = document.getElementById('stat-thieving');
@@ -4962,6 +5023,7 @@ function rerollTask() {
     renderTracker();
     showToast('Streak broken! Complete tasks without rerolling to build it back up.');
   }
+  if (currentTask) lastTaskName = currentTask.name;
   generateTask(true);
 }
 
@@ -5078,7 +5140,9 @@ async function loadStats() {
 }
 
 function saveTracker() {
-  dbPut('settings', 'tracker', tracker);
+  // Convert Set to Array for storage
+  const t = { ...tracker, completedClues: [...(tracker.completedClues || [])] };
+  dbPut('settings', 'tracker', t);
 }
 
 async function loadTracker() {
@@ -5095,6 +5159,7 @@ async function loadTracker() {
     tracker.pickerCharges  = d.pickerCharges  || 0;
     tracker.extenderCharges = d.extenderCharges || 0;
     tracker.contractRerolls = d.contractRerolls || 0;
+    tracker.completedClues  = new Set(d.completedClues || []);
   } catch(e) { console.warn('loadTracker failed:', e); }
   renderTracker();
 }
