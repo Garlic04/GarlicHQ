@@ -1043,12 +1043,12 @@ function startSpectatorView(roomId){
   document.getElementById('btn-pause').disabled=true;
   document.getElementById('btn-forfeit').style.display='none';
   document.getElementById('btn-start').style.display='none';
-  // hide player profile card in left panel
-  const playerCard=document.querySelector('#panel-left .rs-box:nth-child(2)');
-  if(playerCard)playerCard.style.display='none';
-  // hide default opponent card in ai-panel
-  const oppCard=document.getElementById('ai-panel').querySelector('.rs-box');
-  if(oppCard)oppCard.style.display='none';
+  // hide Next box, player card, and default opponent card so panels start at the same level
+  document.querySelectorAll('#panel-left .rs-box').forEach(el=>el.style.display='none');
+  document.getElementById('ai-panel').querySelectorAll('.rs-box').forEach(el=>el.style.display='none');
+  // also remove margin-top from ai-panel so both panels align from the top
+  document.getElementById('ai-panel').style.marginTop='0';
+  document.getElementById('panel-left').style.marginTop='0';
   // show leave button
   const existingSpecLeave=document.getElementById('btn-spec-leave');
   if(!existingSpecLeave){
@@ -1084,13 +1084,16 @@ function buildSpectatorPanels(players, isTeamGame, teamSize){
   const canvasH=Math.max(70,143-Math.max(0,maxPlayers-2)*15);
   const canvasW=Math.round(canvasH*48/143);
 
+  // use panel width for cards
+  const panelW=105;
+
   // Left panel — team 0
   const leftPanel=document.getElementById('panel-left');
   const leftContainer=document.createElement('div');
   leftContainer.id='mp-spec-left';
-  leftContainer.style.cssText='display:flex;flex-direction:column;gap:6px;';
+  leftContainer.style.cssText=`display:flex;flex-direction:column;gap:6px;width:${panelW}px;`;
   team0.forEach(p=>{
-    leftContainer.appendChild(_makeSpectatorCard(p,canvasW,canvasH));
+    leftContainer.appendChild(_makeSpectatorCard(p,canvasW,canvasH,panelW));
     _spectatorSeen.add(p.name);
   });
   leftPanel.appendChild(leftContainer);
@@ -1099,20 +1102,21 @@ function buildSpectatorPanels(players, isTeamGame, teamSize){
   const aiPanel=document.getElementById('ai-panel');
   const rightContainer=document.createElement('div');
   rightContainer.id='mp-spec-right';
-  rightContainer.style.cssText='display:flex;flex-direction:column;gap:6px;';
+  rightContainer.style.cssText=`display:flex;flex-direction:column;gap:6px;width:${panelW}px;`;
   team1.forEach(p=>{
-    rightContainer.appendChild(_makeSpectatorCard(p,canvasW,canvasH));
+    rightContainer.appendChild(_makeSpectatorCard(p,canvasW,canvasH,panelW));
     _spectatorSeen.add(p.name);
   });
   aiPanel.appendChild(rightContainer);
 }
 
-function _makeSpectatorCard(player, canvasW, canvasH){
+function _makeSpectatorCard(player, canvasW, canvasH, cardW){
+  cardW=cardW||105;
   const rank=RANKS.find(r=>r.name===player.rank)||RANKS[0];
   const nameColour=player.colour||'#e8c86c';
   const card=document.createElement('div');
   card.className='rs-box';
-  card.style.cssText='text-align:center;position:relative;';
+  card.style.cssText=`text-align:center;position:relative;width:100%;box-sizing:border-box;`;
   if(player.knockedOut)card.style.opacity='0.4';
   const head=document.createElement('img');
   head.src=rank.img;
@@ -1145,7 +1149,7 @@ function _makeSpectatorCard(player, canvasW, canvasH){
 function _buildSpectatorCard(player, panelId, prepend){
   const panel=document.getElementById(panelId);
   if(!panel)return;
-  const card=_makeSpectatorCard(player,48,143);
+  const card=_makeSpectatorCard(player,48,143,105);
   _spectatorSeen.add(player.name);
   if(prepend)panel.insertBefore(card,panel.firstChild);
   else panel.appendChild(card);
@@ -1162,10 +1166,10 @@ function endSpectatorView(){
   });
   _spectatorSeen.clear();
   // restore hidden UI
-  const playerCard=document.querySelector('#panel-left .rs-box:nth-child(2)');
-  if(playerCard)playerCard.style.display='';
-  const oppCard=document.getElementById('ai-panel').querySelector('.rs-box');
-  if(oppCard)oppCard.style.display='';
+  document.querySelectorAll('#panel-left .rs-box').forEach(el=>el.style.display='');
+  document.getElementById('ai-panel').querySelectorAll('.rs-box').forEach(el=>el.style.display='');
+  document.getElementById('ai-panel').style.marginTop='';
+  document.getElementById('panel-left').style.marginTop='';
   document.getElementById('btn-start').style.display='';
   document.getElementById('msg').textContent='Press Start';
   document.getElementById('ai-status').textContent='Waiting';
@@ -1918,6 +1922,7 @@ function mpWin(){
 }
 
 function mpLose(){
+  renderSelfMinimap(true); // reveal own board on loss
   if(mpInRematchWait)return; // already recorded
   // endGame() already called mpSendBoard, mpSendGameOver, cleared timers, set gameOver=true
   mpInRematchWait=true;
