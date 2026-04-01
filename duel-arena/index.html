@@ -219,8 +219,7 @@ nav {
       <div id="player-head" style="width:32px;height:32px;margin:3px auto 2px;overflow:hidden;border:1px solid #5a3d00;border-radius:2px;background:#080604;">
         <img id="player-head-img" src="https://oldschool.runescape.wiki/images/Bronze_med_helm_detail.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
       </div>
-      <div id="player-rank-name" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;"></div>
-      <div id="player-wins-label" style="font-size:8px;color:#a08040;font-family:Cinzel,serif;letter-spacing:0.5px;margin-bottom:3px;"></div>
+      <div id="player-wins-label" style="font-size:8px;font-family:Cinzel,serif;letter-spacing:0.5px;margin-bottom:3px;"></div>
       <div id="mp-dots-self" style="display:none;flex-wrap:wrap;gap:3px;justify-content:center;min-height:10px;padding:2px 0;margin-bottom:2px;"></div>
       <canvas id="self-minimap" width="48" height="143" style="display:block;margin:0 auto;border:1px solid #5a3d00;background:#080604;image-rendering:pixelated;"></canvas>
     </div>
@@ -385,6 +384,7 @@ function setSoftDrop(on){
 }
 let spawnBlockedTicks=0;
 function tick(){
+  if(mpIsSpectator)return;
   if(paused||gameOver||waitingForChain)return;
   if(!falling){
     falling=makeFalling();
@@ -557,6 +557,7 @@ let mpTarget=null; // name of opponent currently being targeted
 let mpOppPage=0; // carousel page index for opponent panel
 let mpTeamPage=0; // carousel page index for teammate panel
 const MP_PANEL_MAX=3; // cards visible before carousel kicks in
+let mpIsSpectator=false; // watching a game without playing
 let mpInRematchWait=false; // cleared on first board update of new game // full player data from Worker including colour/label
 
 // ── Lobby system ─────────────────────────────────────────────────────────────
@@ -672,6 +673,10 @@ function showMpEntryScreen(){
   if(lobbySocket){lobbySocket.close();lobbySocket=null;}
   lobbySlots=[];
   lobbyTeamSize=1;
+  mpIsSpectator=false;
+  _spectatorSeen.clear();
+  const specPanel=document.getElementById('mp-spec-panel');
+  if(specPanel)specPanel.remove();
 }
 
 async function goToLobbyList(){
@@ -707,6 +712,7 @@ function connectToLobbyList(){
     const msg=JSON.parse(e.data);
     if(msg.type==='lobby-list')renderLobbyList(msg.lobbies);
   };
+  // note: lobby-in-progress is handled server-side; updated lobby-list is broadcast automatically
 }
 
 function renderLobbyList(lobbies){
@@ -729,11 +735,16 @@ function renderLobbyList(lobbies){
     const labelHtml=lobby.hostLabel?` <span style="color:#c8a84b;font-size:11px;font-family:Cinzel,serif;">[${lobby.hostLabel}]</span>`:'';
     const wl=lobby.hostWins!=null?`<span style="color:#6a9e6a;font-size:11px;">${lobby.hostWins}W</span><span style="color:#4a3010;font-size:11px;"> / </span><span style="color:#9e4a4a;font-size:11px;">${lobby.hostLosses||0}L</span>`:'';
     const ts=lobby.teamSize&&lobby.teamSize>1?`<span style="font-family:Cinzel,serif;font-size:11px;color:#5a7a9a;margin-left:4px;">${lobby.teamSize}v${lobby.teamSize}</span>`:'';
+    const inProgress=lobby.inProgress;
+    const progressBadge=inProgress?`<span style="font-family:Cinzel,serif;font-size:10px;color:#c87020;margin-left:4px;">● In Progress</span>`:'';
+    const actionBtn=inProgress
+      ?`<button onclick="joinAsSpectator('${lobby.id}')" style="font-size:12px;padding:7px 14px;background:#1a1209;border-color:#5a3d00;color:#a08040;white-space:nowrap;">Watch</button>`
+      :`<button onclick="joinLobby('${lobby.id}')" style="font-size:13px;padding:7px 18px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;white-space:nowrap;">Join</button>`;
     row.innerHTML=`
       <div style="text-align:left;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
           <span style="font-family:Cinzel,serif;font-size:15px;color:#e8c86c;letter-spacing:0.5px;">${lobby.lobbyName}</span>
-          ${ts}
+          ${ts}${progressBadge}
         </div>
         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
           <span style="font-family:Cinzel,serif;font-size:13px;color:${nameColour};">${lobby.hostName}${labelHtml}</span>
@@ -741,7 +752,7 @@ function renderLobbyList(lobbies){
           ${wl?`<span style="margin-left:2px;">${wl}</span>`:''}
         </div>
       </div>
-      <button onclick="joinLobby('${lobby.id}')" style="font-size:13px;padding:7px 18px;background:#0a1a2e;border-color:#2277dd;color:#5ac8f5;white-space:nowrap;">Join</button>`;
+      ${actionBtn}`;
     container.appendChild(row);
   });
 }
@@ -917,6 +928,19 @@ function startMpGame(msg){
 
   // build team panel UI before game starts
   buildTeamPanels();
+  // resize self-minimap to match ally/opponent card canvas size
+  if(mpIsTeamGame){
+    const maxPlayers=Math.max(mpOpponents.length, mpTeammates.length+1);
+    const teamCanvasH=Math.max(70, 143-Math.max(0,maxPlayers-2)*15);
+    const teamCanvasW=Math.round(teamCanvasH*48/143);
+    const selfCanvas=document.getElementById('self-minimap');
+    if(selfCanvas){
+      selfCanvas.width=teamCanvasW;
+      selfCanvas.height=teamCanvasH;
+      selfCanvas.style.width=teamCanvasW+'px';
+      selfCanvas.style.height=teamCanvasH+'px';
+    }
+  }
   const selfDotsEl=document.getElementById('mp-dots-self');
   if(selfDotsEl)selfDotsEl.style.display=mpIsTeamGame?'flex':'none';
   updateTargetingDots();
@@ -973,6 +997,75 @@ function leaveLobby(){
   if(lobbyGameSocket){lobbyGameSocket.close();lobbyGameSocket=null;}
   showLobbyList();
   connectToLobbyList();
+}
+
+function joinAsSpectator(roomId){
+  if(!mpPlayerData){
+    // need to be authenticated to spectate (so we have a username)
+    authenticateForMp().then(ok=>{if(ok)joinAsSpectator(roomId);});
+    return;
+  }
+  // hide lobby list, show loading
+  document.getElementById('mp-lobby-list').style.display='none';
+  document.getElementById('mp-waiting').style.display='block';
+  document.getElementById('mp-status').textContent='Joining as spectator...';
+  mpIsSpectator=true;
+  // connect directly to the game room
+  const url=`${PARTYKIT_URL}/parties/main/${roomId}`;
+  mpSocket=new WebSocket(url);
+  mpSocket.onopen=()=>{
+    mpSocket.send(JSON.stringify({type:'join',name:mpUsername,spectator:true}));
+    document.getElementById('mp-waiting').style.display='none';
+    // build a spectator view — use the standard game screen but locked
+    startSpectatorView(roomId);
+  };
+  mpSocket.onmessage=handleGameMessage;
+  mpSocket.onerror=()=>{
+    document.getElementById('mp-status').textContent='Failed to connect';
+    document.getElementById('mp-waiting').style.display='none';
+    showLobbyList();connectToLobbyList();
+    mpIsSpectator=false;
+  };
+  mpSocket.onclose=()=>{
+    if(mpIsSpectator){endSpectatorView();}
+  };
+}
+
+function startSpectatorView(roomId){
+  document.getElementById('opponent-select').style.display='none';
+  // Build a minimal team panel showing all players we know about from the lobby
+  // (we don't have mpTeamPlayers in spectator mode — panels update as board messages arrive)
+  document.getElementById('ai-status').textContent='Spectating';
+  document.getElementById('npc-name').style.display='none';
+  document.getElementById('btn-pause').disabled=true;
+  setMpButtons(true);
+  // disable forfeit — spectators can't forfeit
+  document.getElementById('btn-forfeit').style.display='none';
+  // show a spectator leave button in place of forfeit
+  const existingSpecLeave=document.getElementById('btn-spec-leave');
+  if(!existingSpecLeave){
+    const specLeave=document.createElement('button');
+    specLeave.id='btn-spec-leave';
+    specLeave.textContent='Leave';
+    specLeave.style.cssText='width:100%;background:#1a1209;border-color:#5a3d00;color:#a08040;';
+    specLeave.onclick=()=>{endSpectatorView();};
+    document.getElementById('btn-row').appendChild(specLeave);
+  }
+  document.getElementById('msg').textContent='Spectating';
+  buildBoard();render();
+}
+
+function endSpectatorView(){
+  mpIsSpectator=false;
+  if(mpSocket){mpSocket.close();mpSocket=null;}
+  const specLeave=document.getElementById('btn-spec-leave');
+  if(specLeave)specLeave.remove();
+  document.getElementById('msg').textContent='Press Start';
+  document.getElementById('ai-status').textContent='Waiting';
+  document.getElementById('btn-forfeit').style.display='none';
+  setMpButtons(false);
+  if(mpIsTeamGame)teardownTeamPanels();
+  showOpponentSelect(false);
 }
 
 async function authenticateForMp(){
@@ -1169,7 +1262,11 @@ function handleGameMessage(e){
   }
   if(msg.type==='board'){
     const sender=msg.sender||null;
-    if(mpIsTeamGame&&sender){
+    if(mpIsSpectator&&sender){
+      // spectator: dynamically build minimap canvases as we see new senders
+      spectatorEnsureCanvas(sender);
+      renderMpMinimapFor(sender, msg.cells, msg.reveal||false);
+    } else if(mpIsTeamGame&&sender){
       renderMpMinimapFor(sender, msg.cells, msg.reveal||false);
     } else {
       // 1v1 legacy path
@@ -1211,6 +1308,9 @@ function handleGameMessage(e){
         if(btn){btn.style.opacity='0.35';btn.style.pointerEvents='none';}
       });
     }
+  }
+  if(msg.type==='spectator-joined'){
+    // confirmation we joined as spectator — nothing special needed client-side
   }
   if(msg.type==='target-update'){
     // another player changed their target
@@ -1257,6 +1357,7 @@ function handleGameMessage(e){
 }
 
 function mpSendAttack(attackType,data){
+  if(mpIsSpectator)return;
   if(!mpMode||!mpSocket||mpSocket.readyState!==WebSocket.OPEN)return;
   // in team games, tag the attack with the target name
   const target=mpIsTeamGame?(mpTarget||null):null;
@@ -1319,6 +1420,36 @@ function renderMpMinimapFor(name, cells, reveal=false){
       }
     }
   }
+}
+
+// ── Spectator canvas management ──────────────────────────────────────────────
+const _spectatorSeen=new Set();
+function spectatorEnsureCanvas(name){
+  if(_spectatorSeen.has(name))return;
+  _spectatorSeen.add(name);
+  // add a minimap card to the ai-panel for this player
+  const aiPanel=document.getElementById('ai-panel');
+  if(!aiPanel)return;
+  let specPanel=document.getElementById('mp-spec-panel');
+  if(!specPanel){
+    specPanel=document.createElement('div');
+    specPanel.id='mp-spec-panel';
+    specPanel.style.cssText='display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:4px;';
+    aiPanel.appendChild(specPanel);
+  }
+  const safeId=name.replace(/[^a-z0-9]/gi,'_');
+  if(document.getElementById('mp-canvas-'+safeId))return;
+  const card=document.createElement('div');
+  card.style.cssText='background:rgba(20,13,5,0.85);border:1px solid #5a3d00;border-radius:2px;padding:4px;text-align:center;';
+  const label=document.createElement('div');
+  label.style.cssText='font-family:Cinzel,serif;font-size:9px;color:#e8c86c;margin-bottom:3px;';
+  label.textContent=name;
+  const canvas=document.createElement('canvas');
+  canvas.id='mp-canvas-'+safeId;
+  canvas.width=48;canvas.height=143;
+  canvas.style.cssText='display:block;width:48px;height:143px;border:1px solid #3a2800;background:#080604;image-rendering:pixelated;';
+  card.appendChild(label);card.appendChild(canvas);
+  specPanel.appendChild(card);
 }
 
 // ── Team panel rendering ───────────────────────────────────────────────────
@@ -1495,6 +1626,12 @@ function teardownTeamPanels(){
   // hide self dots
   const selfDots=document.getElementById('mp-dots-self');
   if(selfDots){selfDots.style.display='none';selfDots.innerHTML='';}
+  // restore self-minimap to full size
+  const selfCanvas=document.getElementById('self-minimap');
+  if(selfCanvas){
+    selfCanvas.width=48;selfCanvas.height=143;
+    selfCanvas.style.width='';selfCanvas.style.height='';
+  }
   // clear team state
   mpIsTeamGame=false;mpTeamPlayers=[];mpOpponents=[];mpTeammates=[];mpTarget=null;
 }
@@ -1648,11 +1785,11 @@ function mpSendGameOver(){
 }
 
 function mpWin(){
+  renderSelfMinimap(true); // always reveal own board on win
   if(mpInRematchWait)return; // already recorded
   mpInRematchWait=true;
   paused=true;clearInterval(mainTimer);
   recordWin();
-  renderSelfMinimap(true);
   mpSendBoard(true); // send our final board as reveal to opponent
   document.getElementById('win-title').textContent='⚔ VICTORY ⚔';
   document.getElementById('win-subtitle').textContent='The opponent has been defeated!';
@@ -1936,10 +2073,10 @@ async function updatePlayerRankUI(){
   const nameEl=document.getElementById('player-rank-name');
   const winsEl=document.getElementById('player-wins-label');
   if(img)img.src=rank.img;
-  if(nameEl){nameEl.textContent=rank.name;nameEl.style.color=rank.colour;}
+  if(nameEl){nameEl.textContent='';} // rank shown via helmet image only
   if(winsEl){
-    const next=RANKS.find(r=>r.wins>data.wins);
-    winsEl.textContent=next?`${data.wins}/${next.wins} wins`:`${data.wins} wins`;
+    const losses=data.losses||0;
+    winsEl.innerHTML=`<span style="color:#6a9e6a;">${data.wins}W</span> <span style="color:#4a3010;">/</span> <span style="color:#9e4a4a;">${losses}L</span>`;
   }
 }
 async function recordWin(){
