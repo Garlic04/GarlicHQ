@@ -2929,8 +2929,8 @@ function generateDailyTask() {
     pickType = types[randInt(0, 7)];
     if (pickType === 'combat') {
       const lowestStyle1 = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
-      let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle1 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle1 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+      let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle1 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle1 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
       if (!eligible.length) continue;
       const t = eligible[randInt(0, eligible.length - 1)];
       const count = randInt(t.countMin, t.countMax);
@@ -3004,6 +3004,9 @@ function completeDailyTask() {
   if (!dailyTask || dailyDone) return;
   dailyDone = true;
 
+  // Persist dailyDone immediately
+  dbPut('settings', 'dailyDone', true);
+
   tracker.total++;
   tracker.streak++;
   if (tracker.total > (tracker.highWater || 0)) tracker.highWater = tracker.total;
@@ -3022,7 +3025,8 @@ function completeDailyTask() {
   saveTracker();
   renderTracker();
   saveDailyTask();
-  logTask({ ...dailyTask, title: '☀ [Daily] ' + dailyTask.title }, finalEarned, isBonus).then(() => loadTaskLog());
+  const dailyTitle = dailyTask.title || dailyTask.name || 'Daily Task';
+  logTask({ ...dailyTask, title: '☀ [Daily] ' + dailyTitle }, finalEarned, isBonus).then(() => loadTaskLog());
 
   // Contract progress — daily tasks count as their underlying type + also as 'daily'
   progressContract('daily', dailyTask.name, extractKillCount(dailyTask));
@@ -3140,7 +3144,7 @@ async function loadDailyTask() {
     const tm = await dbGet('settings', 'taskModified');
     if (tm) taskModified = tm;
     if (d)    dailyDateKey = d;
-    if (done !== null && done !== undefined) dailyDone = done;
+    dailyDone = done === true;
     // If it's a new day, clear the stored task so the roll button shows
     if (dailyDateKey !== todayKey()) { dailyTask = null; dailyDone = false; }
   } catch(e) {}
@@ -3606,6 +3610,7 @@ function activateTaskPicker() {
   if (charges <= 0) return;
   if (currentTask) { showToast('Complete your current task before using the Task Picker.'); return; }
   pickerActive = true;
+  updateGenerateBtn();
 
   // Only generate new options if we don't already have a set
   if (!pickerOptions) {
@@ -3634,7 +3639,7 @@ function activateTaskPicker() {
     const icon = task.npcImage || task.itemImage ? '' : (task.icon || '⚔️');
     div.innerHTML = `
       <div class="contract-option-left">
-        <div class="contract-option-name">${icon ? icon + ' ' : ''}${task.title}</div>
+        <div class="contract-option-name">${icon ? icon + ' ' : ''}${task.title || task.name || ''}</div>
         <div class="contract-option-desc">${task.desc}</div>
       </div>`;
     div.onclick = () => selectPickerTask(task);
@@ -3649,6 +3654,7 @@ function selectPickerTask(task) {
   pickerOptions = null;
   saveTracker();
   pickerActive = false;
+  updateGenerateBtn();
   document.getElementById('task-picker-modal').style.display = 'none';
   currentTask = task;
   taskModified = false;
@@ -3686,8 +3692,8 @@ function buildOneTask() {
 
   if (pickType === 'combat') {
     const lowestStyle2 = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
-    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle2 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle2 <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle2 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle2 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (!eligible.length) return null;
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4112,7 +4118,7 @@ function applyAdminPanel() {
   tracker.highWater = Math.max(tracker.highWater || 0, total);
   saveTracker();
   renderTracker();
-  checkMilestones();
+  renderMilestones();
   document.getElementById('admin-panel-overlay').remove();
   showToast('🧄 Stats updated!');
 }
@@ -4298,6 +4304,9 @@ function updateGenerateBtn() {
   if (currentTask) {
     btn.disabled = true;
     btn.title = 'Complete or reroll your current task first';
+  } else if (pickerActive) {
+    btn.disabled = true;
+    btn.title = 'Choose one of the Task Picker options first';
   } else {
     btn.disabled = false;
     btn.title = '';
@@ -4614,8 +4623,8 @@ function generateTask(isReroll = false) {
   if (pickType === 'combat') {
     // Use the player's best combat style level to filter tasks, not just overall cb
     const lowestStyle = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
-    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || lowestStyle <= t.min) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4762,7 +4771,7 @@ function generateTask(isReroll = false) {
     };
   } else if (pickType === 'clue') {
     const eligibleClues = CLUE_TASKS.filter(t => !t.combatReq || cb >= t.combatReq);
-    if (eligibleClues.length === 0) { showError(); return; }
+    if (eligibleClues.length === 0) { task = null; }
     const t = eligibleClues[randInt(0, eligibleClues.length - 1)];
     task = {
       type: 'clue',
@@ -4794,6 +4803,13 @@ function generateTask(isReroll = false) {
     };
   }
 
+  // If task is null (e.g. no eligible clues/quests), retry with a different type
+  if (!task) {
+    // Avoid infinite loop — only retry once
+    if (!isReroll) generateTask(true);
+    return;
+  }
+
   currentTask = task;
   taskModified = false;
   pickerOptions = null;
@@ -4802,6 +4818,7 @@ function generateTask(isReroll = false) {
   updateGenerateBtn();
   switchTab('tasks');
   renderTask(task);
+  renderShop();
   pushToOverlay(task);
 }
 
@@ -4837,9 +4854,10 @@ function updateKillCounter() {
 }
 
 function renderTask(task) {
+  if (!task) return;
   document.getElementById('task-display').style.display = 'block';
-  document.getElementById('task-title').textContent = task.title;
-  document.getElementById('task-desc').innerHTML = task.desc;
+  document.getElementById('task-title').textContent = task.title || task.name || '';
+  document.getElementById('task-desc').innerHTML = task.desc || '';
 
   const badge = document.getElementById('task-badge');
   badge.textContent = task.type === 'combat' ? '⚔ Combat Task' : task.type === 'clue' ? '🗺 Clue Task' : task.type === 'quest' ? '📜 Quest Task' : '🛠 Skilling Task';
@@ -5004,6 +5022,7 @@ function completeTask() {
 
 function extractKillCount(task) {
   if (task.type !== 'combat' && !task.chain) return 0;
+  if (!task.title) return task.count || 1;
   // Title format: "Kill 80 Cows" or "Kill & Craft Green Dragons"
   const m = task.title.match(/Kill\s+(\d+)/i);
   if (m) return parseInt(m[1]);
