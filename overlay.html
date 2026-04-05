@@ -228,6 +228,10 @@
       <div class="stat-label">Points</div>
       <div class="stat-value points" id="stat-points">0</div>
     </div>
+    <div class="stat" id="kill-stat" style="display:none;">
+      <div class="stat-label" id="kill-label">Kills</div>
+      <div class="stat-value" id="stat-kills" style="color:#4bc8a0;">0</div>
+    </div>
   </div>
 </div>
 
@@ -314,6 +318,21 @@ async function refresh() {
       imgEl.style.display  = 'none';
       iconEl.textContent   = '⚔️';
       iconEl.style.display = 'block';
+    }
+    // Kill counter
+    const killCount  = data.killCount  || 0;
+    const killTarget = data.killTarget || 0;
+    const killStat   = document.getElementById('kill-stat');
+    const killLabel  = document.getElementById('kill-label');
+    const killVal    = document.getElementById('stat-kills');
+    if (killTarget > 1 && currentTask) {
+      killStat.style.display = 'flex';
+      const isAgility = currentTask.skill === 'agility';
+      killLabel.textContent = isAgility ? 'Laps' : 'Kills';
+      killVal.textContent   = `${killCount} / ${killTarget}`;
+      killVal.style.color   = killCount >= killTarget ? '#4bc8a0' : '#e07070';
+    } else {
+      killStat.style.display = 'none';
     }
   } catch(e) {
     console.warn('Overlay refresh error:', e);
