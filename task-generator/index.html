@@ -3905,8 +3905,19 @@ function buildChainTask(primaryTask, stats) {
         smithItems: 'adamant items (e.g. adamant swords, platebody)', smithReq2: 70 },
     ];
 
-    // Find chains the player can do
-    const eligible = miningChains.filter(c => stats['mining'] >= c.mineReq && stats['smithing'] >= c.smithReq);
+    // Find chains the player can do — filter to chains that use the primary ore
+    const oreToChains = {
+      'Copper ore': ['bronze bars'], 'Tin ore': ['bronze bars'],
+      'Iron ore':   ['iron bars', 'steel bars'],
+      'Gold ore':   ['gold bars'],
+      'Mithril ore':['mithril bars'],
+      'Adamantite ore': ['adamant bars'],
+    };
+    const allowedBars = oreToChains[primaryTask.name] || null;
+    const eligible = miningChains.filter(c =>
+      stats['mining'] >= c.mineReq && stats['smithing'] >= c.smithReq &&
+      (!allowedBars || allowedBars.includes(c.barName))
+    );
     if (eligible.length === 0) return null;
 
     const chain = eligible[randInt(0, eligible.length - 1)];
@@ -4731,8 +4742,8 @@ function generateTask(isReroll = false) {
     let chainedTitle, chainedDesc;
     if (chain && chain.barName) {
       chainedTitle = chain.threeStep
-        ? `Mine, Smelt & Smith ${chain.barName}`
-        : `Mine & Smelt ${chain.barName}`;
+        ? `Mine, Smelt & Smith ${chain.count} ${chain.barName}`
+        : `Mine & Smelt ${chain.count} ${chain.barName}`;
       chainedDesc = `Location: ${t.loc}.`;
     } else if (chain && chain.runeName) {
       chainedTitle = `Mine ${chain.count} essence & Craft into ${chain.runeName}`;
@@ -4768,7 +4779,7 @@ function generateTask(isReroll = false) {
       skill: t.skill,
       name: t.name,
       icon: t.icon,
-      itemImage: t.itemImage,
+      itemImage: chain?.barImage || chain?.itemImage || t.itemImage,
       title: chainedTitle,
       desc: chainedDesc,
       note: (t.note || '') + ogreNote || null,
