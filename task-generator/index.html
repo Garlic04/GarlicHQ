@@ -2170,9 +2170,9 @@ const QUEST_TASKS = [
 ];
 
 const CLUE_TASKS = [
-  { name: 'Easy Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: '<a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
-  { name: 'Medium Clue', icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', combatReq: 30, note: 'Obtain from guards, tribesmen and other mid-level monsters — or complete one you already have banked. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
-  { name: 'Hard Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   combatReq: 50, note: 'Obtain from high-level monsters, or complete one you already have banked. Some steps require defeating a Zamorak Wizard (level 65). <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Easy Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete an Easy Clue Scroll',   desc: 'Obtain and complete an easy clue scroll.',   note: 'If you already have a clue in the bank, complete that one instead — you can only hold one at a time. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Medium Clue', icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Medium Clue Scroll', desc: 'Obtain and complete a medium clue scroll.', combatReq: 30, note: 'If you already have a clue in the bank, complete that one instead — you can only hold one at a time. Medium clues drop from guards, tribesmen and other mid-level monsters. <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
+  { name: 'Hard Clue',   icon: '🗺️', itemImage: 'Clue_scroll_(v1)_detail', title: 'Complete a Hard Clue Scroll',   desc: 'Obtain and complete a hard clue scroll.',   combatReq: 50, note: 'If you already have a clue in the bank, complete that one instead — you can only hold one at a time. Some steps require defeating a Zamorak Wizard (level 65). <a href="/clue-tracker" target="_blank" style="color:#c9a227;">Track your clue steps →</a>' },
 ];
 
 const COMBAT_TASKS = [
@@ -2466,9 +2466,12 @@ const SKILL_TASKS = [
 
   // Agility — Brimhaven Agility Arena tickets
   { skill: 'agility', name: 'Gnome Stronghold laps', icon: '🏃', req: 1,  unitMin: 10, unitMax: 40, unit: 'laps', loc: 'Gnome Stronghold Agility Course', itemImage: 'Agility_icon_(detail)', maxReq: 34 },
-  { skill: 'agility', name: 'Brimhaven tickets (low)',  icon: '🎟️', req: 35, unitMin: 20,  unitMax: 60,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 59 },
+  { skill: 'agility', name: 'Brimhaven tickets (low)',  icon: '🎟️', req: 1,  unitMin: 10,  unitMax: 30,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 19 },
+  { skill: 'agility', name: 'Brimhaven tickets (mid-low)', icon: '🎟️', req: 20, unitMin: 20,  unitMax: 60,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 39 },
+  { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 40, unitMin: 40,  unitMax: 100, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 59 },
   { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 60, unitMin: 60,  unitMax: 150, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 79 },
   { skill: 'agility', name: 'Brimhaven tickets (high)', icon: '🎟️', req: 80, unitMin: 150, unitMax: 350, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket' },
+  { skill: 'gathering', name: 'Archery tickets', icon: '🏹', req: 1, unitMin: 20, unitMax: 60, unit: 'archery tickets', loc: 'Ranging Guild, north of Ardougne', itemImage: 'Archery_ticket', rangedReq: 40, note: 'Requires 40 Ranged to enter the Ranging Guild. Shoot targets in the range to earn tickets. Spend them on rune arrows and other rewards.' },
   { skill: 'agility', name: 'Barbarian Outpost laps',   icon: '🏃', req: 35, unitMin: 20,  unitMax: 60,  unit: 'laps', loc: 'Barbarian Outpost Agility Course, north of Baxtorian Falls', itemImage: 'Agility_icon_(detail)', maxReq: 51 },
   { skill: 'agility', name: 'Wilderness laps',          icon: '🏃', req: 52, unitMin: 15,  unitMax: 45,  unit: 'laps', loc: 'Wilderness Agility Course, level 50-56 Wilderness', note: '⚠️ Located deep in the Wilderness. Bring nothing you are not willing to lose.', itemImage: 'Agility_icon_(detail)' },
 
@@ -2929,8 +2932,8 @@ function generateDailyTask() {
     pickType = types[randInt(0, 7)];
     if (pickType === 'combat') {
       const lowestStyle1 = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
-      let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle1 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle1 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+      let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle1 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && (!t.questReq || completedQuests.has(t.questReq)) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle1 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && (!t.questReq || completedQuests.has(t.questReq)));
       if (!eligible.length) continue;
       const t = eligible[randInt(0, eligible.length - 1)];
       const count = randInt(t.countMin, t.countMax);
@@ -3692,8 +3695,8 @@ function buildOneTask() {
 
   if (pickType === 'combat') {
     const lowestStyle2 = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
-    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle2 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle2 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle2 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && (!t.questReq || completedQuests.has(t.questReq)) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle2 < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && (!t.questReq || completedQuests.has(t.questReq)));
     if (!eligible.length) return null;
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4623,8 +4626,8 @@ function generateTask(isReroll = false) {
   if (pickType === 'combat') {
     // Use the player's best combat style level to filter tasks, not just overall cb
     const lowestStyle = Math.min(getStat('stat-attack'), getStat('stat-strength'), getStat('stat-ranged'), getStat('stat-magic'));
-    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && t.name !== lastTaskName);
-    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility));
+    let eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && (!t.questReq || completedQuests.has(t.questReq)) && t.name !== lastTaskName);
+    if (eligible.length === 0) eligible = COMBAT_TASKS.filter(t => (cb >= t.min && cb <= t.max || (lowestStyle < 10 && t.min <= 10)) && (bossesEnabled || !BOSSES.includes(t.name)) && (!t.agility || agility >= t.agility) && (!t.questReq || completedQuests.has(t.questReq)));
     if (eligible.length === 0) { showError(); return; }
     const t = eligible[randInt(0, eligible.length - 1)];
     const count = randInt(t.countMin, t.countMax);
@@ -4668,6 +4671,7 @@ function generateTask(isReroll = false) {
       if (stats[t.skill] < t.req || !passesMaxReq(t, stats)) return false;
       if (t.questReq && !completedQuests.has(t.questReq)) return false;
       if (t.magicReq && (getStat('stat-magic') || 1) < t.magicReq) return false;
+      if (t.rangedReq && (getStat('stat-ranged') || 1) < t.rangedReq) return false;
       if (t.name === lastTaskName) return false;
       return true;
     });
