@@ -2561,7 +2561,9 @@ async function pushToOverlay(task) {
           bossKills: tracker.bossKills || 0,
           prestige:  tracker.prestige  || 0,
           highWater: tracker.highWater || 0,
-        }
+        },
+        killCount:  playerKillCount || 0,
+        killTarget: killTarget || 0
       })
     });
     const data = await res.json();
@@ -4844,6 +4846,7 @@ let killTarget = 0;
 function adjustKills(delta) {
   playerKillCount = Math.max(0, playerKillCount + delta);
   updateKillCounter();
+  pushToOverlay(currentTask);
 }
 
 function updateKillCounter() {
