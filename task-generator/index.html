@@ -2196,7 +2196,7 @@ const COMBAT_TASKS = [
   { name: 'Bears',             icon: '🐻', min: 25, max: 45,  loc: 'East of Ardougne',                  countMin: 20, countMax: 60,  prayer: false, npcImage: 'Grizzly_bear_(historical)' },
   { name: 'Unicorns',          icon: '🦄', min: 20, max: 50,  loc: 'White Wolf Mountain, north of Ardougne, or Wilderness (black unicorns)', countMin: 20, countMax: 60, prayer: false, npcImage: 'Unicorn_(historical_v1)', note: 'Unicorn horns are used in Herblore (anti-poison potions). Worth picking up! Black unicorns can also be found in the Wilderness.' },
   { name: 'Guards',            icon: '💂', min: 15, max: 55,  loc: 'Varrock or Falador',               countMin: 20, countMax: 60, prayer: false , npcImage: 'Guard' },
-  { name: 'Skeletons',         icon: '💀', min: 15, max: 55,  loc: 'Edgeville Dungeon or Karamja Volcano', countMin: 20, countMax: 60, prayer: false , npcImage: 'Skeleton' },
+  { name: 'Skeletons',         icon: '💀', min: 15, max: 55,  loc: 'Edgeville Dungeon or Karamja Volcano', countMin: 20, countMax: 60, prayer: false , npcImage: 'Skeleton_(Level_22)_(historical)' },
   { name: 'Black Knights',     icon: '🗡️', min: 40, max: 65,  loc: 'Ice Mountain dungeon',             countMin: 20, countMax: 60, prayer: false , npcImage: 'Black_Knight_(historical)' },
   { name: 'Dark Wizards',      icon: '🧙', min: 15, max: 40,  loc: 'South of Varrock',                 countMin: 20, countMax: 60, prayer: false , npcImage: 'Dark_wizard' },
   { name: 'Zombies',            icon: '🧟', min: 15, max: 40,  loc: 'Edgeville Dungeon',                 countMin: 20, countMax: 60,  prayer: false, npcImage: 'Zombie_(Level_13)_(historical)' },
@@ -2466,11 +2466,11 @@ const SKILL_TASKS = [
 
   // Agility — Brimhaven Agility Arena tickets
   { skill: 'agility', name: 'Gnome Stronghold laps', icon: '🏃', req: 1,  unitMin: 10, unitMax: 40, unit: 'laps', loc: 'Gnome Stronghold Agility Course', itemImage: 'Agility_icon_(detail)', maxReq: 34 },
-  { skill: 'agility', name: 'Brimhaven tickets (low)',  icon: '🎟️', req: 1,  unitMin: 10,  unitMax: 30,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 19 },
-  { skill: 'agility', name: 'Brimhaven tickets (mid-low)', icon: '🎟️', req: 20, unitMin: 20,  unitMax: 60,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 39 },
-  { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 40, unitMin: 40,  unitMax: 100, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 59 },
+  { skill: 'agility', name: 'Brimhaven tickets (low)',  icon: '🎟️', req: 20, unitMin: 10,  unitMax: 30,  unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Agility_arena_ticket_detail', maxReq: 39 },
+  
+  { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 40, unitMin: 40,  unitMax: 100, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Agility_arena_ticket_detail', maxReq: 59 },
   { skill: 'agility', name: 'Brimhaven tickets (mid)',  icon: '🎟️', req: 60, unitMin: 60,  unitMax: 150, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket', maxReq: 79 },
-  { skill: 'agility', name: 'Brimhaven tickets (high)', icon: '🎟️', req: 80, unitMin: 150, unitMax: 350, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Ticket' },
+  { skill: 'agility', name: 'Brimhaven tickets (high)', icon: '🎟️', req: 80, unitMin: 150, unitMax: 350, unit: 'Brimhaven Agility Arena tickets', loc: 'Brimhaven Agility Arena, Brimhaven', note: "Spend tickets on Pirate's hook or XP lamp at the ticket booth", itemImage: 'Agility_arena_ticket_detail' },
   { skill: 'gathering', name: 'Archery tickets', icon: '🏹', req: 1, unitMin: 20, unitMax: 60, unit: 'archery tickets', loc: 'Ranging Guild, north of Ardougne', itemImage: 'Archery_ticket', rangedReq: 40, note: 'Requires 40 Ranged to enter the Ranging Guild. Shoot targets in the range to earn tickets. Spend them on rune arrows and other rewards.' },
   { skill: 'agility', name: 'Barbarian Outpost laps',   icon: '🏃', req: 35, unitMin: 20,  unitMax: 60,  unit: 'laps', loc: 'Barbarian Outpost Agility Course, north of Baxtorian Falls', itemImage: 'Agility_icon_(detail)', maxReq: 51 },
   { skill: 'agility', name: 'Wilderness laps',          icon: '🏃', req: 52, unitMin: 15,  unitMax: 45,  unit: 'laps', loc: 'Wilderness Agility Course, level 50-56 Wilderness', note: '⚠️ Located deep in the Wilderness. Bring nothing you are not willing to lose.', itemImage: 'Agility_icon_(detail)' },
@@ -3712,7 +3712,20 @@ function buildOneTask() {
       return true;
     });
     if (!allEl.length) return null;
-    const t = allEl[randInt(0, allEl.length - 1)];
+    // Skill-first: pick skill uniformly then task within it
+    const GATHERING_SKILLS_B = new Set(['wc','mining','fishing','rc','agility','thieving','gathering']);
+    const skillMapB = {};
+    for (const task of allEl) {
+      if (!skillMapB[task.skill]) skillMapB[task.skill] = [];
+      skillMapB[task.skill].push(task);
+    }
+    const skillPoolB = [];
+    for (const skill of Object.keys(skillMapB)) {
+      const weight = GATHERING_SKILLS_B.has(skill) ? 3 : 1;
+      for (let i = 0; i < weight; i++) skillPoolB.push(skill);
+    }
+    const chosenSkillB = skillPoolB[randInt(0, skillPoolB.length - 1)];
+    const t = skillMapB[chosenSkillB][randInt(0, skillMapB[chosenSkillB].length - 1)];
     let count = t.skill === 'rc' ? rcTaskCount(t.name, stats['rc'] || 1)
       : (t.skill === 'wc' || t.skill === 'mining') ? scaledTaskCount(t.name, stats[t.skill] || 1, t.unitMin, t.unitMax)
         : t.multipleOf ? randIntMultiple(t.unitMin, t.unitMax, t.multipleOf) : randInt(t.unitMin, t.unitMax);
@@ -4703,12 +4716,23 @@ function generateTask(isReroll = false) {
     const chainableEligible = wantChain ? allEligibleFull.filter(t => chainableSkills.has(t.skill)) : [];
     const eligible = (wantChain && chainableEligible.length > 0) ? chainableEligible : allEligibleFull;
 
-    // Weight gathering skills 3x over processing skills
+    // Roll skill-first so each skill has equal chance regardless of how many tasks it has
+    // Gathering skills weighted 3x vs processing skills
     const GATHERING_SKILLS = new Set(['wc','mining','fishing','rc','agility','thieving','gathering']);
-    const weightedEligible = eligible.flatMap(t => 
-      GATHERING_SKILLS.has(t.skill) ? [t, t, t] : [t]
-    );
-    const t = weightedEligible[randInt(0, weightedEligible.length - 1)];
+    const skillMap = {};
+    for (const task of eligible) {
+      if (!skillMap[task.skill]) skillMap[task.skill] = [];
+      skillMap[task.skill].push(task);
+    }
+    // Build weighted skill pool: gathering skills get 3 entries, processing get 1
+    const skillPool = [];
+    for (const skill of Object.keys(skillMap)) {
+      const weight = GATHERING_SKILLS.has(skill) ? 3 : 1;
+      for (let i = 0; i < weight; i++) skillPool.push(skill);
+    }
+    const chosenSkill = skillPool[randInt(0, skillPool.length - 1)];
+    const skillTasks = skillMap[chosenSkill];
+    const t = skillTasks[randInt(0, skillTasks.length - 1)];
     let count;
     if (t.skill === 'rc') {
       count = rcTaskCount(t.name, stats['rc'] || 1);
@@ -5385,7 +5409,7 @@ async function lookupUser() {
   const status = document.getElementById('lookup-status');
   status.textContent = 'Looking up ' + username + '...';
   try {
-    const res = await fetch('https://lostcity-hiscores.nehughes97.workers.dev/?username=' + encodeURIComponent(username));
+    const res = await fetch('https://lostcity-hiscores.nehughes97.workers.dev/?username=' + encodeURIComponent(username.replace(/ /g, '_')));
     const data = await res.json();
     if (!data.skills || data.skills.length === 0) {
       status.textContent = 'Player not found.';
