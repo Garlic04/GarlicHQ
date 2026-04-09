@@ -2148,7 +2148,7 @@ const QUEST_TASKS = [
   { name: "Tree Gnome Village",         f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
   { name: "Holy Grail",                 f2p: false, qpReq: 0,   skillReqs: { attack: 20 },                                                                   questReqs: ["Merlin's Crystal"] },
   { name: "Biohazard",                  f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: ["Plague City"] },
-  { name: "Priest in Peril",            f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
+  { name: "Priest in Peril",            f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: ["Rune Mysteries"] },
   { name: "Nature Spirit",              f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: ["Priest in Peril", "The Restless Ghost"] },
   { name: "Death Plateau",              f2p: false, qpReq: 0,   skillReqs: {},                                                                               questReqs: [] },
   { name: "Elemental Workshop",         f2p: false, qpReq: 0,   skillReqs: { mining: 20, smithing: 20, crafting: 20 },                                       questReqs: [] },
@@ -2210,9 +2210,9 @@ const COMBAT_TASKS = [
   { name: 'Chaos Druids',       icon: '🌿', min: 25, max: 126, loc: 'Edgeville Dungeon or Taverley Dungeon', countMin: 20, countMax: 80, prayer: false, note: 'Great for herb drops. Beware of PKers in Edgeville Dungeon', npcImage: 'Chaos_druid' },
 
   // Mid tier
-  { name: 'Chaos Druid Warriors', icon: '🌿', min: 30, max: 126, loc: 'Yanille Agility Dungeon',         countMin: 20, countMax: 60, prayer: false, npcImage: 'Chaos_druid_warrior_(historical)', note: 'Found deep in the Yanille Agility Dungeon. Bring antipoison.' },
+  { name: 'Chaos Druid Warriors', icon: '🌿', min: 30, max: 126, loc: 'Yanille Agility Dungeon',         countMin: 20, countMax: 60, prayer: false, npcImage: 'Chaos_druid_warrior_(historical)', agility: 40, note: 'Found in the Yanille Agility Dungeon. Requires 40 Agility for the pipe shortcut. Bring antipoison.' },
   { name: 'Hobgoblins',        icon: '👾', min: 30, max: 126,  loc: 'Edgeville Dungeon or Port Sarim Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Hobgoblin' },
-  { name: 'Giants',            icon: '🗿', min: 20, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false, note: 'Bring a brass key' , npcImage: 'Hill_Giant_(historical_v1)' },
+  { name: 'Hill Giants',       icon: '🗿', min: 20, max: 126,  loc: 'Edgeville Dungeon',                countMin: 50, countMax: 120, prayer: false, note: 'Bring a brass key to access the Edgeville Dungeon.' , npcImage: 'Hill_Giant_(historical_v1)' },
   { name: 'Moss Giants',       icon: '🧟', min: 35, max: 126,  loc: 'Varrock Sewers or Crandor',        countMin: 50, countMax: 120, prayer: false , npcImage: 'Moss_giant_(historical)' },
   { name: 'Ice Giants',        icon: '🧊', min: 40, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_giant_(historical_v1)' },
   { name: 'Ice Warriors',      icon: '❄️', min: 45, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_warrior' },
@@ -2386,15 +2386,15 @@ const SKILL_TASKS = [
   { skill: 'mining', name: 'Rune essence',   icon: '🪨', req: 1,  unitMin: 200, unitMax: 500, unit: 'rune essence',   loc: 'Rune essence mine (via teleport)', itemImage: 'Rune_essence', questReq: 'Rune Mysteries', note: 'Requires completion of <strong>Rune Mysteries</strong> to access the essence mine.' },
 
   // <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABZ0lEQVR4nMVVsW3EMAykHxlE8AJZIHU2UCPN4coukypz/De/gWsv4AUMbaIUMfUkTcp6BEgOMGBT1B1JUxTAH6Br9Mu/2S+dLDJ4f3tl3/OyUo5qEChSnJBsXlaTmNrnZQUfw4H9fr0VIZrJQUhEfAANiAJFdyG1pFl5WvyY3cdQ7C/K5tZmMP1k+VoJnwXNrNMy0Rw1aAGqe1oyycM4McPX54fprPk+dRglAZJodrpeK5dKntJW3u/Xmxo57kHfM5Fu35gBeNdQgZQ2cK4vaz4GFsxZucqPFAcMfAyFGAmd6w+ZtoiYYlJAwrkeS1dtYQZaqpoAIQfYk0CR2hQta7TuUoAMRCZAX6pnweouKoD/CEukqWWtHBIpbVrEAPBTTjre6doFjeigCaS0SYGOPKzTpICGMrp9DHkYJzqyrbGfh3GqXguyu9hNKepvRii7SeKiGQEe3WL9HyFeSmc51MDuhTO1f8U38tm2Q55K5qUAAAAASUVORK5CYII=" width="18" height="18" style="image-rendering:pixelated;vertical-align:middle;margin-right:3px;"> Fishing — stat(fishing) checks from fishing_spots scripts
-  { skill: 'fishing', name: 'Shrimps',   icon: '🦐', req: 1,  unitMin: 40, unitMax: 100, unit: 'shrimps',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_shrimps' , maxReq: 14, maxReqOverrideIf: [{skill:'cooking',below:15}] },
-  { skill: 'fishing', name: 'Sardines',  icon: '🐟', req: 5,  unitMin: 40,  unitMax: 100, unit: 'sardines',  loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_sardine' , maxReq: 19, maxReqOverrideIf: [{skill:'cooking',below:15}] },
-  { skill: 'fishing', name: 'Herring',   icon: '🐟', req: 10, unitMin: 50,  unitMax: 120, unit: 'herring',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_herring' , maxReq: 29, maxReqOverrideIf: [{skill:'cooking',below:25}] },
+  { skill: 'fishing', name: 'Shrimps',   icon: '🦐', req: 1,  unitMin: 40, unitMax: 100, unit: 'shrimps',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_shrimps' , maxReq: 14, maxReqOverrideIf: [{skill:'cooking',below:15}], note: 'You can cook the raw shrimps on a fire or range for some early Cooking XP.' },
+  { skill: 'fishing', name: 'Sardines',  icon: '🐟', req: 5,  unitMin: 40,  unitMax: 100, unit: 'sardines',  loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_sardine' , maxReq: 19, maxReqOverrideIf: [{skill:'cooking',below:15}], note: 'You can cook the raw sardines on a fire or range for some early Cooking XP.' },
+  { skill: 'fishing', name: 'Herring',   icon: '🐟', req: 10, unitMin: 50,  unitMax: 120, unit: 'herring',   loc: 'Draynor Village or Al-Kharid' , itemImage: 'Raw_herring' , maxReq: 29, maxReqOverrideIf: [{skill:'cooking',below:25}], note: 'You can cook the raw herring on a fire or range for some early Cooking XP.' },
   { skill: 'fishing', name: 'Mackerel',  icon: '🐟', req: 16, unitMin: 40, unitMax: 100, unit: 'mackerel', loc: 'Catherby or Fishing Guild', itemImage: 'Raw_mackerel', maxReq: 29, note: 'Use a big fishing net on a Net/Harpoon spot. Caskets occasionally caught can contain talismans.' },
   { skill: 'fishing', name: 'Cod',       icon: '🐟', req: 23, unitMin: 40, unitMax: 100, unit: 'cod',      loc: 'Catherby or Fishing Guild', itemImage: 'Raw_cod',      maxReq: 45, note: 'Use a big fishing net on a Net/Harpoon spot. Caskets occasionally caught can contain talismans.' },
   { skill: 'fishing', name: 'Bass',      icon: '🐟', req: 46, unitMin: 30, unitMax: 80,  unit: 'bass',     loc: 'Catherby or Fishing Guild', itemImage: 'Raw_bass',              note: 'Use a big fishing net on a Net/Harpoon spot. Caskets occasionally caught can contain talismans.' },
-  { skill: 'fishing', name: 'Trout',     icon: '🐟', req: 20, unitMin: 50,  unitMax: 120, unit: 'trout',     loc: 'Barbarian Village' , itemImage: 'Raw_trout' , maxReq: 34 },
-  { skill: 'fishing', name: 'Pike',      icon: '🐟', req: 25, unitMin: 40,  unitMax: 100, unit: 'pike',      loc: 'Barbarian Village' , itemImage: 'Raw_pike' , maxReq: 39 },
-  { skill: 'fishing', name: 'Salmon',    icon: '🐠', req: 30, unitMin: 80,  unitMax: 200, unit: 'salmon',    loc: 'Barbarian Village' , itemImage: 'Raw_salmon' , maxReq: 44 },
+  { skill: 'fishing', name: 'Trout',     icon: '🐟', req: 20, unitMin: 50,  unitMax: 120, unit: 'trout',     loc: 'Barbarian Village' , itemImage: 'Raw_trout' , maxReq: 34, note: 'You can cook the raw trout on a fire or range for some Cooking XP.' },
+  { skill: 'fishing', name: 'Pike',      icon: '🐟', req: 25, unitMin: 40,  unitMax: 100, unit: 'pike',      loc: 'Barbarian Village' , itemImage: 'Raw_pike' , maxReq: 39, note: 'You can cook the raw pike on a fire or range for some Cooking XP.' },
+  { skill: 'fishing', name: 'Salmon',    icon: '🐠', req: 30, unitMin: 80,  unitMax: 200, unit: 'salmon',    loc: 'Barbarian Village' , itemImage: 'Raw_salmon' , maxReq: 44, note: 'You can cook the raw salmon on a fire or range for some Cooking XP.' },
   { skill: 'fishing', name: 'Tuna',      icon: '🐡', req: 35, unitMin: 60,  unitMax: 150, unit: 'tuna',      loc: 'Karamja or Catherby' , itemImage: 'Raw_tuna' , maxReq: 49 },
   { skill: 'fishing', name: 'Lobsters',  icon: '🦞', req: 40, unitMin: 60,  unitMax: 150, unit: 'lobsters',  loc: 'Karamja or Catherby' , itemImage: 'Raw_lobster'  },
   { skill: 'fishing', name: 'Swordfish', icon: '🐡', req: 50, unitMin: 50,  unitMax: 120, unit: 'swordfish', loc: 'Karamja or Catherby' , itemImage: 'Raw_swordfish'  },
@@ -2628,6 +2628,8 @@ async function exportSave() {
     }
     // Also save tracker object directly
     save.trackerObj = tracker;
+    save.playerKillCount = playerKillCount || 0;
+    save.killTarget = killTarget || 0;
     save.collectionLogArr = [...collectionLog];
     save.completedQuestsArr = [...completedQuests];
     save.enabledSkillsArr = [...enabledSkills];
@@ -2681,6 +2683,14 @@ async function importSave(event) {
     if (save.dailyTask !== undefined)    { dailyTask    = save.dailyTask;    await dbPut('settings', 'dailyTask', dailyTask); }
     if (save.dailyDateKey !== undefined) { dailyDateKey = save.dailyDateKey; await dbPut('settings', 'dailyDateKey', dailyDateKey); }
     if (save.dailyDone !== undefined)    { dailyDone    = save.dailyDone;    await dbPut('settings', 'dailyDone', dailyDone); }
+    if (save.playerKillCount !== undefined) { playerKillCount = save.playerKillCount; }
+    if (save.killTarget !== undefined)      { killTarget = save.killTarget; }
+    // Restore current task
+    if (save.currentTask !== undefined) {
+      currentTask = save.currentTask;
+      await dbPut('settings', 'currentTask', currentTask);
+      if (currentTask) { renderTask(currentTask); updateKillCounter(); }
+    }
 
     // Re-render everything
     renderTracker();
@@ -4879,7 +4889,8 @@ let taskModified = false; // tracks if extender/reducer has been used on current
 let killTarget = 0;
 
 function adjustKills(delta) {
-  playerKillCount = Math.max(0, playerKillCount + delta);
+  const cap = killTarget > 0 ? killTarget : Infinity;
+  playerKillCount = Math.max(0, Math.min(cap, playerKillCount + delta));
   updateKillCounter();
   pushToOverlay(currentTask);
 }
