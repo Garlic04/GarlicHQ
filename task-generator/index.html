@@ -2217,7 +2217,7 @@ const COMBAT_TASKS = [
   { name: 'Ice Giants',        icon: '🧊', min: 40, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_giant_(historical_v1)' },
   { name: 'Ice Warriors',      icon: '❄️', min: 45, max: 126,  loc: 'White Wolf Mountain or Asgarnian Ice Dungeon', countMin: 50, countMax: 120, prayer: false , npcImage: 'Ice_warrior' },
   { name: 'Jogres',            icon: '🦍', min: 45, max: 126,  loc: 'Karamja',                          countMin: 50, countMax: 120, prayer: false , npcImage: 'Jogre_(historical)' },
-  { name: 'Ice Spiders',       icon: '🕷️', min: 40, max: 126, loc: 'Asgarnian Ice Dungeon',              countMin: 30, countMax: 80, prayer: false, npcImage: 'Ice_spider_(historical)' },
+  { name: 'Ice Spiders',       icon: '🕷️', min: 40, max: 126, loc: '',                                   countMin: 30, countMax: 80, prayer: false, npcImage: 'Ice_spider_(historical)' },
   { name: 'Deadly Red Spiders', icon: '🕷️', min: 40, max: 126, loc: 'Karamja Volcano or Edgeville Dungeon', countMin: 30, countMax: 80, prayer: false, npcImage: 'Deadly_red_spider_(historical)' },
   { name: 'Ogres',             icon: '👹', min: 40, max: 126,  loc: "Gu'Tanoth",                        countMin: 50, countMax: 120, prayer: false , npcImage: 'Ogre' },
   { name: 'Dwarves',           icon: '⛏', min: 15, max: 60,  loc: 'Dwarven Mine',                       countMin: 20, countMax: 60,  prayer: false, npcImage: 'Dwarf' },
@@ -3930,11 +3930,12 @@ function buildChainTask(primaryTask, stats) {
 
     // Find chains the player can do — filter to chains that use the primary ore
     const oreToChains = {
-      'Copper ore': ['bronze bars'], 'Tin ore': ['bronze bars'],
-      'Iron ore':   ['iron bars', 'steel bars'],
-      'Gold ore':   ['gold bars'],
-      'Mithril ore':['mithril bars'],
+      'Copper ore':     ['bronze bars'], 'Tin ore': ['bronze bars'],
+      'Iron ore':       ['iron bars', 'steel bars'],
+      'Gold ore':       ['gold bars'],
+      'Mithril ore':    ['mithril bars'],
       'Adamantite ore': ['adamant bars'],
+      'Rune essence':   [], // handled by RC chain, not mining chain
     };
     const allowedBars = oreToChains[primaryTask.name] || null;
     const eligible = miningChains.filter(c =>
@@ -4329,12 +4330,18 @@ function buyReroll() {
 
 function safeRerollTask() {
   if (!tracker.safeRerolls || tracker.safeRerolls <= 0) return;
+  const prevName = currentTask ? currentTask.name : null;
   tracker.safeRerolls--;
   if (currentTask) lastTaskName = currentTask.name;
   saveTracker();
   generateTask(true); // true = isReroll, skips streak reset
   renderTracker();
-  showToast('Safe Reroll used — streak preserved!');
+  // Warn if same task was rolled again (shouldn't happen but just in case)
+  if (currentTask && prevName && currentTask.name === prevName) {
+    showToast('⚠ Same task rolled again — you may safe reroll once more.');
+  } else {
+    showToast('🛡 Safe Reroll used — streak preserved!');
+  }
 }
 
 function updateGenerateBtn() {
@@ -5088,6 +5095,7 @@ function extractKillCount(task) {
 }
 
 function rerollTask() {
+  const prevName = currentTask ? currentTask.name : null;
   // Rerolling breaks the streak
   if (currentTask && tracker.streak > 0) {
     tracker.streak = 0;
@@ -5097,6 +5105,10 @@ function rerollTask() {
   }
   if (currentTask) lastTaskName = currentTask.name;
   generateTask(true);
+  // Warn if same task came up again
+  if (currentTask && prevName && currentTask.name === prevName) {
+    setTimeout(() => showToast('⚠ Same task rolled again — try rerolling once more.'), 300);
+  }
 }
 
 function showError() {
