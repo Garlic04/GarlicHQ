@@ -459,11 +459,8 @@ function parseDate(s) {
 // ─────────────────────────────────────────
 // WIKI IMAGE HELPER
 // ─────────────────────────────────────────
-function wikiImg(name) {
-  return `https://oldschool.runescape.wiki/images/${encodeURIComponent(name)}`;
-}
 function wikiImg(file) {
-  return `https://oldschool.runescape.wiki/w/Special:FilePath/${encodeURIComponent(file)}`;
+  return `https://oldschool.runescape.wiki/images/${encodeURIComponent(file)}`;
 }
 
 // ─────────────────────────────────────────
