@@ -420,8 +420,8 @@ const START_PX    = 80;  // left padding
 const YEAR_PX     = 900; // px per year
 const MONTH_PX    = YEAR_PX / 12;
 
-// "Current date" on Lost City: 7 Sep 2004
-const NOW_DATE = new Date(2004, 8, 7); // month is 0-indexed
+// "Current date" on Lost City: 23 Nov 2004 (Rev 274)
+const NOW_DATE = new Date(2004, 10, 23); // month is 0-indexed
 
 // RS2 start: 1 Jan 2004 (our timeline start)
 const TIMELINE_START = new Date(2004, 0, 1);
@@ -610,13 +610,13 @@ const EVENTS = [
     newsUrl: 'https://secure.runescape.com/m=news/situation-in-the-sands',
   },
 
-  // ─── CURRENT DATE: 7 Sep 2004 ───
+  // ─── CURRENT DATE: 23 Nov 2004 (Rev 274) ───
 
   // ═══ REV 274 — 2004-11-23 (PROJECT BOARD) ═══
   {
     date: '2004-09-14', title: 'Tai Bwo Wannai Trio', side: 'below', offset: 128,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Cooked_karambwan.png'),
     tag: 'quest', desc: 'Rev 274. Help three brothers in Tai Bwo Wannai. Unlocks Karambwan fishing and cooking.',
     releaseNote: 'Rev 274',
@@ -624,8 +624,8 @@ const EVENTS = [
   },
   {
     date: '2004-09-20', title: 'Plague City Pt 4', side: 'above', offset: 112,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Mourner_top.png'),
     tag: 'quest', desc: 'Rev 274. Fourth chapter of the West Ardougne plague storyline.',
     releaseNote: 'Rev 274',
@@ -633,8 +633,8 @@ const EVENTS = [
   },
   {
     date: '2004-09-27', title: 'Skills, Duels & the Kalphite', side: 'below', offset: 98,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Kalphite_Queen_(historical).png'),
     tag: 'combat', desc: 'Rev 274. Kalphite Queen expanded. Make-X added for Crafting & Fletching. Duel arena changes.',
     releaseNote: 'Rev 274',
@@ -642,8 +642,8 @@ const EVENTS = [
   },
   {
     date: '2004-10-05', title: "Eadgar\'s Ruse", side: 'above', offset: 130,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Ranarr_weed.png'),
     tag: 'quest', desc: 'Rev 274. Infiltrate the Troll Stronghold to get goutweed. Unlocks Trollheim Teleport.',
     releaseNote: 'Rev 274',
@@ -651,8 +651,8 @@ const EVENTS = [
   },
   {
     date: '2004-10-14', title: 'Morytania Expansion', side: 'below', offset: 112,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Mort_myre_fungus.png'),
     tag: 'content', desc: "Rev 274. Deeper Morytania and Mort'ton Shades open. Mage Armour updated.",
     releaseNote: 'Rev 274',
@@ -660,8 +660,8 @@ const EVENTS = [
   },
   {
     date: '2004-10-26', title: 'Treasure Trails & Changes', side: 'above', offset: 125,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Clue_scroll_(hard).png'),
     tag: 'content', desc: 'Rev 274. Treasure Trails expanded with new reward items.',
     releaseNote: 'Rev 274',
@@ -669,8 +669,8 @@ const EVENTS = [
   },
   {
     date: '2004-11-02', title: 'Fremennik Trials', side: 'below', offset: 158,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Helm_of_neitiznot.png'),
     tag: 'quest', desc: 'Rev 274. Prove yourself to the Fremennik people. Unlocks Rellekka and Dagannoth Kings cave.',
     releaseNote: 'Rev 274',
@@ -678,8 +678,8 @@ const EVENTS = [
   },
   {
     date: '2004-11-17', title: 'Horror from the Deep', side: 'above', offset: 118,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Unholy_book.png'),
     tag: 'quest', desc: 'Rev 274. Investigate the haunted Lighthouse. Rewards God books.',
     releaseNote: 'Rev 274',
@@ -687,8 +687,8 @@ const EVENTS = [
   },
   {
     date: '2004-11-23', title: 'Burthorpe Games Room', side: 'below', offset: 108,
-    status: 'upcoming', rev: 274,
-    revColor: '#4a8fd4',
+    status: 'released', rev: 274,
+
     img: wikiImg('Games_necklace(8).png'),
     tag: 'minigame', desc: 'Rev 274. Games Room opens in Burthorpe with board games including Draughts and Runelink.',
     releaseNote: 'Rev 274',
@@ -1077,7 +1077,7 @@ nowLbl.style.cssText = `
   box-shadow:0 0 8px rgba(90,170,90,0.2);
   z-index:200;
 `;
-nowLbl.textContent = 'We are here — ' + fmtDate('2004-09-07');
+nowLbl.textContent = 'We are here — ' + fmtDate('2004-11-23');
 canvas.appendChild(nowLbl);
 
 // (future progress marker removed)
