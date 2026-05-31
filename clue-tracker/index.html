@@ -166,8 +166,8 @@
       <div>
         <h2 class="text-lg font-semibold">Easy Clue Rewards</h2>
         <div class="flex items-center gap-3 mt-1">
-          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-easy"><span>0</span> / 13</p>
-          <progress class="progress progress-accent w-48" id="bar-easy" value="0" max="13"></progress>
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-easy"><span>0</span> / 15</p>
+          <progress class="progress progress-accent w-48" id="bar-easy" value="0" max="15"></progress>
         </div>
       </div>
       <button class="btn btn-sm btn-outline" onclick="resetTier('easy')">Reset</button>
@@ -181,8 +181,8 @@
       <div>
         <h2 class="text-lg font-semibold">Medium Clue Rewards</h2>
         <div class="flex items-center gap-3 mt-1">
-          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-medium"><span>0</span> / 12</p>
-          <progress class="progress progress-accent w-48" id="bar-medium" value="0" max="12"></progress>
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-medium"><span>0</span> / 14</p>
+          <progress class="progress progress-accent w-48" id="bar-medium" value="0" max="14"></progress>
         </div>
       </div>
       <button class="btn btn-sm btn-outline" onclick="resetTier('medium')">Reset</button>
@@ -196,13 +196,28 @@
       <div>
         <h2 class="text-lg font-semibold">Hard Clue Rewards</h2>
         <div class="flex items-center gap-3 mt-1">
-          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-hard"><span>0</span> / 25</p>
-          <progress class="progress progress-accent w-48" id="bar-hard" value="0" max="25"></progress>
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-hard"><span>0</span> / 35</p>
+          <progress class="progress progress-accent w-48" id="bar-hard" value="0" max="35"></progress>
         </div>
       </div>
       <button class="btn btn-sm btn-outline" onclick="resetTier('hard')">Reset</button>
     </div>
     <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-hard"></div>
+  </div>
+
+  <!-- GOD PAGES -->
+  <div class="tier-panel card bg-base-200 shadow p-4 mb-4" id="panel-pages">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">God Pages</h2>
+        <div class="flex items-center gap-3 mt-1">
+          <p class="text-sm opacity-60 whitespace-nowrap" id="progress-pages"><span>0</span> / 12</p>
+          <progress class="progress progress-accent w-48" id="bar-pages" value="0" max="12"></progress>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetTier('pages')">Reset</button>
+    </div>
+    <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-pages"></div>
   </div>
 </div>
 
@@ -233,10 +248,12 @@ const REWARDS = {
   easy: [
     { id: 'black_platebody_t',  name: 'Black Platebody (t)',  img: 'Black_platebody_(t)' },
     { id: 'black_platelegs_t',  name: 'Black Platelegs (t)',  img: 'Black_platelegs_(t)' },
+    { id: 'black_plateskirt_t', name: 'Black Plateskirt (t)', img: 'Black_plateskirt_(t)' },
     { id: 'black_full_helm_t',  name: 'Black Full Helm (t)',  img: 'Black_full_helm_(t)' },
     { id: 'black_kiteshield_t', name: 'Black Kiteshield (t)', img: 'Black_kiteshield_(t)' },
     { id: 'black_platebody_g',  name: 'Black Platebody (g)',  img: 'Black_platebody_(g)' },
     { id: 'black_platelegs_g',  name: 'Black Platelegs (g)',  img: 'Black_platelegs_(g)' },
+    { id: 'black_plateskirt_g', name: 'Black Plateskirt (g)', img: 'Black_plateskirt_(g)' },
     { id: 'black_full_helm_g',  name: 'Black Full Helm (g)',  img: 'Black_full_helm_(g)' },
     { id: 'black_kiteshield_g', name: 'Black Kiteshield (g)', img: 'Black_kiteshield_(g)' },
     { id: 'highwayman_mask',    name: 'Highwayman Mask',      img: 'Highwayman_mask' },
@@ -250,10 +267,12 @@ const REWARDS = {
     { id: 'adamant_full_helm_t', name: 'Adamant Full Helm (t)',img: 'Adamant_full_helm_(t)' },
     { id: 'adamant_platebody_t', name: 'Adamant Platebody (t)',img: 'Adamant_platebody_(t)' },
     { id: 'adamant_platelegs_t', name: 'Adamant Platelegs (t)',img: 'Adamant_platelegs_(t)' },
+    { id: 'adamant_plateskirt_t', name: 'Adamant Plateskirt (t)',img: 'Adamant_plateskirt_(t)' },
     { id: 'adamant_kite_t',      name: 'Adamant Kiteshield (t)',img: 'Adamant_kiteshield_(t)' },
     { id: 'adamant_full_helm_g', name: 'Adamant Full Helm (g)',img: 'Adamant_full_helm_(g)' },
     { id: 'adamant_platebody_g', name: 'Adamant Platebody (g)',img: 'Adamant_platebody_(g)' },
     { id: 'adamant_platelegs_g', name: 'Adamant Platelegs (g)',img: 'Adamant_platelegs_(g)' },
+    { id: 'adamant_plateskirt_g', name: 'Adamant Plateskirt (g)',img: 'Adamant_plateskirt_(g)' },
     { id: 'adamant_kite_g',      name: 'Adamant Kiteshield (g)',img: 'Adamant_kiteshield_(g)' },
     { id: 'red_headband',        name: 'Red Headband',          img: 'Red_headband' },
     { id: 'black_headband',      name: 'Black Headband',        img: 'Black_headband' },
@@ -264,11 +283,18 @@ const REWARDS = {
     { id: 'rune_full_helm_t',    name: 'Rune Full Helm (t)',    img: 'Rune_full_helm_(t)' },
     { id: 'rune_platebody_t',    name: 'Rune Platebody (t)',    img: 'Rune_platebody_(t)' },
     { id: 'rune_platelegs_t',    name: 'Rune Platelegs (t)',    img: 'Rune_platelegs_(t)' },
+    { id: 'rune_plateskirt_t',   name: 'Rune Plateskirt (t)',   img: 'Rune_plateskirt_(t)' },
     { id: 'rune_kiteshield_t',   name: 'Rune Kiteshield (t)',   img: 'Rune_kiteshield_(t)' },
     { id: 'rune_full_helm_g',    name: 'Rune Full Helm (g)',    img: 'Rune_full_helm_(g)' },
     { id: 'rune_platebody_g',    name: 'Rune Platebody (g)',    img: 'Rune_platebody_(g)' },
     { id: 'rune_platelegs_g',    name: 'Rune Platelegs (g)',    img: 'Rune_platelegs_(g)' },
+    { id: 'rune_plateskirt_g',   name: 'Rune Plateskirt (g)',   img: 'Rune_plateskirt_(g)' },
     { id: 'rune_kiteshield_g',   name: 'Rune Kiteshield (g)',   img: 'Rune_kiteshield_(g)' },
+    { id: 'gilded_full_helm',    name: 'Gilded Full Helm',      img: 'Gilded_full_helm' },
+    { id: 'gilded_platebody',    name: 'Gilded Platebody',      img: 'Gilded_platebody_(historical)', imgUrl: 'https://oldschool.runescape.wiki/images/Gilded_platebody_%28historical%29.png' },
+    { id: 'gilded_platelegs',    name: 'Gilded Platelegs',      img: 'Gilded_platelegs' },
+    { id: 'gilded_plateskirt',   name: 'Gilded Plateskirt',     img: 'Gilded_plateskirt' },
+    { id: 'gilded_kiteshield',   name: 'Gilded Kiteshield',     img: 'Gilded_kiteshield' },
     { id: 'pirates_hat',         name: "Pirate's Hat",          img: 'Pirates_hat', imgUrl: 'https://oldschool.runescape.wiki/w/Special:FilePath/Pirate%27s_hat.png' },
     { id: 'tan_cavalier',        name: 'Tan Cavalier',          img: 'Tan_cavalier' },
     { id: 'dark_cavalier',       name: 'Dark Cavalier',         img: 'Dark_cavalier' },
@@ -276,36 +302,91 @@ const REWARDS = {
     { id: 'zamorak_full_helm',   name: 'Zamorak Full Helm',     img: 'Zamorak_full_helm' },
     { id: 'zamorak_platebody',   name: 'Zamorak Platebody',     img: 'Zamorak_platebody' },
     { id: 'zamorak_platelegs',   name: 'Zamorak Platelegs',     img: 'Zamorak_platelegs' },
+    { id: 'zamorak_plateskirt',  name: 'Zamorak Plateskirt',    img: 'Zamorak_plateskirt' },
     { id: 'zamorak_kiteshield',  name: 'Zamorak Kiteshield',    img: 'Zamorak_kiteshield' },
     { id: 'guthix_full_helm',    name: 'Guthix Full Helm',      img: 'Guthix_full_helm' },
     { id: 'guthix_platebody',    name: 'Guthix Platebody',      img: 'Guthix_platebody' },
     { id: 'guthix_platelegs',    name: 'Guthix Platelegs',      img: 'Guthix_platelegs' },
+    { id: 'guthix_plateskirt',   name: 'Guthix Plateskirt',     img: 'Guthix_plateskirt' },
     { id: 'guthix_kiteshield',   name: 'Guthix Kiteshield',     img: 'Guthix_kiteshield' },
     { id: 'saradomin_full_helm', name: 'Saradomin Full Helm',   img: 'Saradomin_full_helm' },
     { id: 'saradomin_platebody', name: 'Saradomin Platebody',   img: 'Saradomin_platebody' },
     { id: 'saradomin_platelegs', name: 'Saradomin Platelegs',   img: 'Saradomin_platelegs' },
+    { id: 'saradomin_plateskirt',name: 'Saradomin Plateskirt',  img: 'Saradomin_plateskirt' },
     { id: 'saradomin_kiteshield',name: 'Saradomin Kiteshield',  img: 'Saradomin_kiteshield' },
+  ],
+  pages: [
+    { id: 'guthix_page_1',     name: 'Guthix Page 1',     img: 'Guthix_page_1' },
+    { id: 'guthix_page_2',     name: 'Guthix Page 2',     img: 'Guthix_page_2' },
+    { id: 'guthix_page_3',     name: 'Guthix Page 3',     img: 'Guthix_page_3' },
+    { id: 'guthix_page_4',     name: 'Guthix Page 4',     img: 'Guthix_page_4' },
+    { id: 'saradomin_page_1',  name: 'Saradomin Page 1',  img: 'Saradomin_page_1' },
+    { id: 'saradomin_page_2',  name: 'Saradomin Page 2',  img: 'Saradomin_page_2' },
+    { id: 'saradomin_page_3',  name: 'Saradomin Page 3',  img: 'Saradomin_page_3' },
+    { id: 'saradomin_page_4',  name: 'Saradomin Page 4',  img: 'Saradomin_page_4' },
+    { id: 'zamorak_page_1',    name: 'Zamorak Page 1',    img: 'Zamorak_page_1' },
+    { id: 'zamorak_page_2',    name: 'Zamorak Page 2',    img: 'Zamorak_page_2' },
+    { id: 'zamorak_page_3',    name: 'Zamorak Page 3',    img: 'Zamorak_page_3' },
+    { id: 'zamorak_page_4',    name: 'Zamorak Page 4',    img: 'Zamorak_page_4' },
   ],
 };
 
-// State: obtained = Set of obtained ids, counts = {id: number}
+// ── IndexedDB setup ──────────────────────────────────────────────────────────
+const DB_NAME    = 'garlichq-clue-tracker';
+const DB_VERSION = 1;
+const STORE      = 'clue-data';
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      e.target.result.createObjectStore(STORE);
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function idbGet(key) {
+  return new Promise((resolve, reject) => {
+    const tx  = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).get(key);
+    req.onsuccess = e => resolve(e.target.result ?? null);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function idbSet(key, value) {
+  return new Promise((resolve, reject) => {
+    const tx  = db.transaction(STORE, 'readwrite');
+    const req = tx.objectStore(STORE).put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror   = e  => reject(e.target.error);
+  });
+}
+
+// ── In-memory state (populated on init) ─────────────────────────────────────
 const state = {
-  easy:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-easy-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-easy-cnt')   || '{}') },
-  medium: { obtained: new Set(JSON.parse(localStorage.getItem('clue-medium-obt') || '[]')), counts: JSON.parse(localStorage.getItem('clue-medium-cnt') || '{}') },
-  hard:   { obtained: new Set(JSON.parse(localStorage.getItem('clue-hard-obt')   || '[]')), counts: JSON.parse(localStorage.getItem('clue-hard-cnt')   || '{}') },
+  easy:   { obtained: new Set(), counts: {} },
+  medium: { obtained: new Set(), counts: {} },
+  hard:   { obtained: new Set(), counts: {} },
+  pages:  { obtained: new Set(), counts: {} },
 };
 
+const clueCounts = { easy: 0, medium: 0, hard: 0 };
 
-// Clue completion counts
-const clueCounts = {
-  easy:   parseInt(localStorage.getItem('clue-done-easy')   || '0'),
-  medium: parseInt(localStorage.getItem('clue-done-medium') || '0'),
-  hard:   parseInt(localStorage.getItem('clue-done-hard')   || '0'),
-};
+// ── Persist helpers ───────────────────────────────────────────────────────────
+async function saveState() {
+  for (const tier of ['easy','medium','hard','pages']) {
+    await idbSet('clue-' + tier + '-obt', [...state[tier].obtained]);
+    await idbSet('clue-' + tier + '-cnt', state[tier].counts);
+  }
+}
 
-function adjustCount(tier, delta) {
+async function adjustCount(tier, delta) {
   clueCounts[tier] = Math.max(0, clueCounts[tier] + delta);
-  localStorage.setItem('clue-done-' + tier, clueCounts[tier]);
+  await idbSet('clue-done-' + tier, clueCounts[tier]);
   updateCountDisplay();
 }
 
@@ -317,11 +398,46 @@ function updateCountDisplay() {
   document.getElementById('count-total').textContent = total;
 }
 
-function saveState() {
-  ['easy','medium','hard'].forEach(tier => {
-    localStorage.setItem('clue-' + tier + '-obt', JSON.stringify([...state[tier].obtained]));
-    localStorage.setItem('clue-' + tier + '-cnt', JSON.stringify(state[tier].counts));
-  });
+// ── Migrate any old localStorage data, then wipe it ─────────────────────────
+async function migrateFromLocalStorage() {
+  const tiers = ['easy','medium','hard','pages'];
+  let migrated = false;
+  for (const tier of tiers) {
+    const obt = localStorage.getItem('clue-' + tier + '-obt');
+    const cnt = localStorage.getItem('clue-' + tier + '-cnt');
+    if (obt !== null) {
+      await idbSet('clue-' + tier + '-obt', JSON.parse(obt));
+      localStorage.removeItem('clue-' + tier + '-obt');
+      migrated = true;
+    }
+    if (cnt !== null) {
+      await idbSet('clue-' + tier + '-cnt', JSON.parse(cnt));
+      localStorage.removeItem('clue-' + tier + '-cnt');
+    }
+  }
+  for (const tier of ['easy','medium','hard']) {
+    const done = localStorage.getItem('clue-done-' + tier);
+    if (done !== null) {
+      await idbSet('clue-done-' + tier, parseInt(done));
+      localStorage.removeItem('clue-done-' + tier);
+      migrated = true;
+    }
+  }
+  return migrated;
+}
+
+// ── Load all state from IndexedDB into memory ─────────────────────────────────
+async function loadState() {
+  for (const tier of ['easy','medium','hard','pages']) {
+    const obt = await idbGet('clue-' + tier + '-obt');
+    const cnt = await idbGet('clue-' + tier + '-cnt');
+    if (obt) state[tier].obtained = new Set(obt);
+    if (cnt) state[tier].counts   = cnt;
+  }
+  for (const tier of ['easy','medium','hard']) {
+    const done = await idbGet('clue-done-' + tier);
+    if (done !== null) clueCounts[tier] = done;
+  }
 }
 
 function buildGrid(tier) {
@@ -465,11 +581,7 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.add('hidden'), 2000);
 }
 
-// Init
-buildGrid('easy');
-buildGrid('medium');
-buildGrid('hard');
-
+// ── Boot ──────────────────────────────────────────────────────────────────────
 function setTheme(val) {
   if (val === 'garlic') {
     document.body.setAttribute('data-theme', 'dark');
@@ -481,12 +593,23 @@ function setTheme(val) {
   localStorage.setItem('clue-theme', val);
 }
 
-// Restore saved theme
-const savedTheme = localStorage.getItem('clue-theme') || 'garlic';
-updateCountDisplay();
-setTheme(savedTheme);
-const sel = document.querySelector('nav select');
-if (sel) sel.value = savedTheme;
+(async () => {
+  db = await openDB();
+  await migrateFromLocalStorage();
+  await loadState();
+
+  updateCountDisplay();
+  buildGrid('easy');
+  buildGrid('medium');
+  buildGrid('hard');
+  buildGrid('pages');
+
+  // Theme stays in localStorage — it's a UI pref, not user data
+  const savedTheme = localStorage.getItem('clue-theme') || 'garlic';
+  setTheme(savedTheme);
+  const sel = document.querySelector('nav select');
+  if (sel) sel.value = savedTheme;
+})();
 
 </script>
 
