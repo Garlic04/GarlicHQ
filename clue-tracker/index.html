@@ -146,8 +146,8 @@
   }
 
   body.overlay-mode .tier-panel {
-    padding: 7px 8px !important;
-    margin-bottom: 5px !important;
+    padding: 2px 4px !important;
+    margin-bottom: 3px !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -160,13 +160,15 @@
     border: none !important;
   }
 
-  body.overlay-mode .tier-panel h2 {
-    font-size: 0.7rem !important;
-    letter-spacing: 0.06em;
+  body.overlay-mode .tier-panel h2 { display: none !important; }
+
+  body.overlay-mode .tier-panel .flex.justify-between {
     margin-bottom: 2px !important;
+    align-items: center !important;
   }
 
-  body.overlay-mode .tier-panel .flex.justify-between { margin-bottom: 4px !important; }
+  /* Hide the reset button space so progress bar aligns left */
+  body.overlay-mode .tier-panel .btn-outline { display: none !important; }
 
   body.overlay-mode progress { width: 80px !important; height: 5px !important; }
   body.overlay-mode #progress-easy,
