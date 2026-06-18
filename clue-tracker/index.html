@@ -104,22 +104,202 @@
   }
 
   .nav-brand span { color: #8a6f2e !important; font-weight: 400; }
+
+  /* ── OVERLAY MODE ── */
+  .overlay-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding: 5px 12px;
+    border-radius: 3px;
+    border: 1px solid rgba(200,168,75,0.5);
+    background: #1a1510;
+    color: #f0cc6e;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .overlay-btn:hover { border-color: #c8a84b; background: #241f12; }
+  .overlay-btn.active { background: rgba(200,168,75,0.18); border-color: #c8a84b; color: #f5d76e; }
+
+  body.overlay-mode nav,
+  body.overlay-mode .clue-counter-panel,
+  body.overlay-mode .btn-outline[onclick^="resetTier"],
+  body.overlay-mode h1,
+  body.overlay-mode > .p-6 > p,
+  body.overlay-mode #toast,
+  body.overlay-mode a[href*="ko-fi"] { display: none !important; }
+
+  body.overlay-mode {
+    background-image: none !important;
+  }
+  body.overlay-mode.overlay-dark-bg { background: rgba(0,0,0,0.55) !important; }
+
+  body.overlay-mode .p-6 {
+    padding: 6px !important;
+    max-width: 100% !important;
+  }
+
+  #overlay-content-width {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  body.overlay-mode .tier-panel {
+    padding: 7px 8px !important;
+    margin-bottom: 5px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  body.overlay-mode .tier-panel .card,
+  body.overlay-mode .tier-panel.card {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  body.overlay-mode .tier-panel h2 {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.06em;
+    margin-bottom: 2px !important;
+  }
+
+  body.overlay-mode .tier-panel .flex.justify-between { margin-bottom: 4px !important; }
+
+  body.overlay-mode progress { width: 80px !important; height: 5px !important; }
+  body.overlay-mode #progress-easy,
+  body.overlay-mode #progress-medium,
+  body.overlay-mode #progress-hard,
+  body.overlay-mode #progress-pages { font-size: 0.6rem !important; }
+
+  /* Overlay flat icon grid - no cards, no text, seamless */
+  body.overlay-mode .item-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    padding: 2px 0 !important;
+  }
+
+  body.overlay-mode .card.cursor-pointer {
+    all: unset !important;
+    position: relative !important;
+    display: inline-flex !important;
+    cursor: pointer !important;
+    opacity: 0.25 !important;
+    transition: opacity 0.15s !important;
+    filter: grayscale(60%) !important;
+  }
+
+  body.overlay-mode .card.cursor-pointer.opacity-100 {
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  body.overlay-mode .card.cursor-pointer:hover {
+    opacity: 0.7 !important;
+    filter: none !important;
+  }
+
+  body.overlay-mode .card.cursor-pointer.opacity-100:hover {
+    opacity: 0.8 !important;
+  }
+
+  body.overlay-mode .item-img {
+    width: 30px !important;
+    height: 30px !important;
+    display: block !important;
+    image-rendering: pixelated !important;
+  }
+
+  body.overlay-mode .item-emoji { font-size: 1.2rem !important; }
+
+  /* Hide item name labels in overlay */
+  body.overlay-mode .card.cursor-pointer .text-xs { display: none !important; }
+
+  /* Count badge - keep but shrink */
+  body.overlay-mode .badge {
+    font-size: 0.5rem !important;
+    padding: 1px 3px !important;
+    min-height: unset !important;
+    height: auto !important;
+    line-height: 1.2 !important;
+    position: absolute !important;
+    top: -3px !important;
+    right: -3px !important;
+  }
+
+
+  #overlay-controls {
+    display: none;
+    position: fixed;
+    top: 6px;
+    right: 8px;
+    z-index: 9999;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 320px;
+  }
+  body.overlay-mode #overlay-controls { display: flex; }
+
+  #overlay-controls button, #overlay-controls label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(200,168,75,0.45);
+    background: rgba(13,11,8,0.92);
+    color: #c8a84b;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #overlay-controls button.active,
+  #overlay-controls label.active {
+    background: #c8a84b;
+    border-color: #c8a84b;
+    color: #1a1510;
+    font-weight: 700;
+  }
+  #overlay-controls button:hover,
+  #overlay-controls label:hover { border-color: #c8a84b; }
 </style>
 </head>
 <body data-theme="dark" class="theme-garlic min-h-screen">
 
 <nav>
   <a class="nav-brand" href="/">← <span>GarlicHQ</span> / Clue Tracker</a>
-  <select onchange="setTheme(this.value)" style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.06em;padding:5px 10px;border-radius:3px;border:1px solid rgba(200,168,75,0.5);background:#1a1510;color:#f0cc6e;cursor:pointer;outline:none;appearance:auto;">
-    <option value="garlic">Garlic</option>
-    <option value="dark">Dark</option>
-    <option value="light">Light</option>
-    <option value="retro">Retro</option>
-    <option value="forest">Forest</option>
-  </select>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="overlay-btn" id="overlay-toggle-btn" onclick="toggleOverlayMode()">📺 Overlay</button>
+    <select onchange="setTheme(this.value)" style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.06em;padding:5px 10px;border-radius:3px;border:1px solid rgba(200,168,75,0.5);background:#1a1510;color:#f0cc6e;cursor:pointer;outline:none;appearance:auto;">
+      <option value="garlic">Garlic</option>
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="retro">Retro</option>
+      <option value="forest">Forest</option>
+    </select>
+  </div>
 </nav>
 
-<div class="p-6 max-w-5xl mx-auto">
+<!-- Overlay floating controls (only visible in overlay mode) -->
+<div id="overlay-controls">
+  <button onclick="setOverlayTiers('hard','pages')" id="ovr-btn-hard-pages">Hard + Pages</button>
+  <button onclick="setOverlayTiers('medium','pages')" id="ovr-btn-medium-pages">Med + Pages</button>
+  <button onclick="setOverlayTiers('easy','pages')" id="ovr-btn-easy-pages">Easy + Pages</button>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <span style="font-family:'Cinzel',serif;font-size:0.6rem;color:#c8a84b;letter-spacing:0.05em;white-space:nowrap;">↔</span>
+    <input type="range" id="ovr-width-slider" min="200" max="1400" step="10" value="600"
+      oninput="setOverlayWidth(this.value)"
+      style="width:80px;accent-color:#c8a84b;cursor:pointer;">
+    <span id="ovr-width-label" style="font-family:'Cinzel',serif;font-size:0.6rem;color:#c8a84b;width:36px;">600px</span>
+  </div>
+  <button onclick="toggleOverlayMode()" style="border-color:rgba(200,75,75,0.5);color:#e07070;">✕ Exit</button>
+</div>
+
+<div id="overlay-content-width"><div class="p-6 max-w-5xl mx-auto">
   <h1 class="text-3xl font-bold text-center mb-1">Clue Scroll Tracker</h1>
   <p class="text-center opacity-50 text-sm mb-6">Track your unique rewards from clue scrolls</p>
 
@@ -127,7 +307,7 @@
 
   <!-- EASY -->
   <!-- Clue Counter -->
-  <div class="card bg-base-200 shadow p-4 mb-6">
+  <div class="clue-counter-panel card bg-base-200 shadow p-4 mb-6">
     <h2 class="text-lg font-semibold mb-4">Clues Completed</h2>
     <div class="flex flex-wrap gap-6">
       <div class="flex flex-col items-center gap-2 min-w-[80px]">
@@ -219,7 +399,7 @@
     </div>
     <div class="item-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="grid-pages"></div>
   </div>
-</div>
+</div></div>
 
 <div id="toast" class="toast toast-bottom toast-center hidden">
   <div class="alert alert-success text-sm" id="toast-msg"></div>
@@ -581,6 +761,73 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.add('hidden'), 2000);
 }
 
+// ── OVERLAY MODE ─────────────────────────────────────────────────────────────
+const ALL_TIERS = ['easy','medium','hard','pages'];
+
+let overlayActive = false;
+let overlayVisibleTiers = ['hard','pages'];
+
+function toggleOverlayMode() {
+  overlayActive = !overlayActive;
+  document.body.classList.toggle('overlay-mode', overlayActive);
+  const btn = document.getElementById('overlay-toggle-btn');
+  if (btn) btn.classList.toggle('active', overlayActive);
+  const el = document.getElementById('overlay-content-width');
+  if (overlayActive) {
+    applyOverlayTiers();
+    const savedWidth = localStorage.getItem('clue-overlay-width') || 600;
+    if (el) el.style.width = savedWidth + 'px';
+    const slider = document.getElementById('ovr-width-slider');
+    if (slider) slider.value = savedWidth;
+    const lbl = document.getElementById('ovr-width-label');
+    if (lbl) lbl.textContent = savedWidth + 'px';
+  } else {
+    // Restore all panels visible and clear width
+    ALL_TIERS.forEach(t => {
+      const p = document.getElementById('panel-' + t);
+      if (p) p.style.display = '';
+    });
+    if (el) el.style.width = '';
+  }
+  localStorage.setItem('clue-overlay', overlayActive ? '1' : '0');
+}
+
+function setOverlayTiers(t1, t2) {
+  overlayVisibleTiers = t2 ? [t1, t2] : [t1];
+  applyOverlayTiers();
+  // Update active button state
+  const ids = ['hard-pages','medium-pages','easy-pages'];
+  const key = overlayVisibleTiers.join('-').replace('pages','pages');
+  ids.forEach(id => {
+    const b = document.getElementById('ovr-btn-' + id);
+    if (b) b.classList.toggle('active', id === `${t1}-${t2 || ''}`);
+  });
+  localStorage.setItem('clue-overlay-tiers', JSON.stringify(overlayVisibleTiers));
+}
+
+function applyOverlayTiers() {
+  ALL_TIERS.forEach(t => {
+    const p = document.getElementById('panel-' + t);
+    if (p) p.style.display = overlayVisibleTiers.includes(t) ? '' : 'none';
+  });
+  // Sync button states
+  const combos = [['hard','pages'],['medium','pages'],['easy','pages']];
+  combos.forEach(([t1,t2]) => {
+    const btn = document.getElementById(`ovr-btn-${t1}-${t2}`);
+    if (btn) btn.classList.toggle('active',
+      overlayVisibleTiers.includes(t1) && overlayVisibleTiers.includes(t2) && overlayVisibleTiers.length === 2);
+  });
+}
+
+function setOverlayWidth(px) {
+  px = parseInt(px);
+  const el = document.getElementById('overlay-content-width');
+  if (el && overlayActive) el.style.width = px + 'px';
+  const lbl = document.getElementById('ovr-width-label');
+  if (lbl) lbl.textContent = px + 'px';
+  localStorage.setItem('clue-overlay-width', px);
+}
+
 // ── Boot ──────────────────────────────────────────────────────────────────────
 function setTheme(val) {
   if (val === 'garlic') {
@@ -591,6 +838,8 @@ function setTheme(val) {
     document.body.classList.remove('theme-garlic');
   }
   localStorage.setItem('clue-theme', val);
+  // Keep both selects in sync
+  document.querySelectorAll('select[onchange^="setTheme"]').forEach(s => s.value = val);
 }
 
 (async () => {
@@ -609,6 +858,28 @@ function setTheme(val) {
   setTheme(savedTheme);
   const sel = document.querySelector('nav select');
   if (sel) sel.value = savedTheme;
+
+  // Restore overlay state
+  const savedOverlayTiers = localStorage.getItem('clue-overlay-tiers');
+  if (savedOverlayTiers) {
+    try { overlayVisibleTiers = JSON.parse(savedOverlayTiers); } catch(e) {}
+  }
+  const savedWidth = localStorage.getItem('clue-overlay-width');
+  if (savedWidth) {
+    const slider = document.getElementById('ovr-width-slider');
+    if (slider) slider.value = savedWidth;
+    setOverlayWidth(savedWidth);
+  }
+  if (localStorage.getItem('clue-overlay') === '1') {
+    toggleOverlayMode();
+    // Re-apply tier button active state
+    const combos = [['hard','pages'],['medium','pages'],['easy','pages']];
+    combos.forEach(([t1,t2]) => {
+      const btn = document.getElementById(`ovr-btn-${t1}-${t2}`);
+      if (btn) btn.classList.toggle('active',
+        overlayVisibleTiers.includes(t1) && overlayVisibleTiers.includes(t2) && overlayVisibleTiers.length === 2);
+    });
+  }
 })();
 
 </script>
