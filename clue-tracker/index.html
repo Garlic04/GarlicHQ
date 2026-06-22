@@ -160,11 +160,28 @@
     border: none !important;
   }
 
-  body.overlay-mode .tier-panel h2 { display: none !important; }
+  body.overlay-mode .tier-panel h2 {
+    display: inline !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    font-size: 0.6rem !important;
+    letter-spacing: 0.04em !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
 
   body.overlay-mode .tier-panel .flex.justify-between {
-    margin-bottom: 2px !important;
+    display: flex !important;
+    flex-direction: row !important;
     align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Collapse the two child divs inside the header row into inline flow */
+  body.overlay-mode .tier-panel .flex.justify-between > div {
+    display: contents !important;
   }
 
   /* Hide the reset button space so progress bar aligns left */
