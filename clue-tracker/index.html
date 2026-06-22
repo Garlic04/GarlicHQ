@@ -161,13 +161,25 @@
   }
 
   body.overlay-mode .tier-panel h2 {
-    display: inline !important;
+    display: inline-flex !important;
+    align-items: center !important;
     font-family: 'Cinzel', serif !important;
     font-weight: 600 !important;
     font-size: 0.6rem !important;
     letter-spacing: 0.04em !important;
     margin: 0 !important;
     white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  body.overlay-mode .tier-panel progress,
+  body.overlay-mode .tier-panel [id^="progress-"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle !important;
+    font-size: 0.6rem !important;
+    margin: 0 !important;
+    line-height: 1 !important;
   }
 
   body.overlay-mode .tier-panel .flex.justify-between {
@@ -179,8 +191,11 @@
     margin-bottom: 2px !important;
   }
 
-  /* Collapse the two child divs inside the header row into inline flow */
+  /* Collapse the nested wrapper divs so h2 + progress sit in one flat row */
   body.overlay-mode .tier-panel .flex.justify-between > div {
+    display: contents !important;
+  }
+  body.overlay-mode .tier-panel .flex.justify-between > div > div {
     display: contents !important;
   }
 
