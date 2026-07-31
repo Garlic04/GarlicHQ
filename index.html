@@ -318,6 +318,13 @@
   }
   .arena-banner { animation: arena-pulse 3s ease-in-out infinite; }
   .arena-banner:hover { animation: none; }
+  .wiki-banner { border-color: rgba(201,162,39,0.4); background: linear-gradient(135deg, #0f0d04, #1a1608, #0f0d04); animation: wiki-pulse 3s ease-in-out infinite; }
+  .wiki-banner:hover { border-color: rgba(201,162,39,0.8); box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 24px rgba(201,162,39,0.15); transform: translateY(-2px); animation: none; }
+  .wiki-banner::before { background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,162,39,0.08) 0%, transparent 70%); }
+  .wiki-banner .arena-banner-title { color: #c9a227; }
+  .wiki-banner .arena-banner-cta { border-color: rgba(201,162,39,0.4); color: #c9a227; }
+  .wiki-banner:hover .arena-banner-cta { background: rgba(201,162,39,0.15); border-color: #c9a227; }
+  @keyframes wiki-pulse { 0%,100%{box-shadow:0 0 12px 2px rgba(201,162,39,0)} 50%{box-shadow:0 0 12px 2px rgba(201,162,39,0.18)} }
 
   .card-icon {
     font-size: 2rem;
@@ -536,6 +543,17 @@
       </div>
     </div>
     <div class="arena-banner-cta">Play Now →</div>
+  </a>
+
+  <a class="arena-banner wiki-banner" href="https://wiki.garlichq.com/wiki/Main_Page" target="_blank" rel="noopener">
+    <div class="arena-banner-left">
+      <div class="arena-banner-icon"><img src="https://oldschool.runescape.wiki/images/Address_form.png?c7acf" alt="📖" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;" onerror="this.outerHTML='📖'"></div>
+      <div>
+        <div class="arena-banner-title">📖 Lost City Wiki</div>
+        <div class="arena-banner-desc">A community wiki for Lost City — under construction. &nbsp;·&nbsp; <span style="color:#c9a227;text-decoration:underline;" onclick="event.stopPropagation();window.open('https://docs.google.com/forms/d/e/1FAIpQLScMlr_1686kqMsJC3F_jAHgJ5T19jttPrD4Eb4QjvFk2IHNgQ/viewform?usp=sharing','_blank')">Interested in helping build it? →</span></div>
+      </div>
+    </div>
+    <div class="arena-banner-cta">Visit Wiki →</div>
   </a>
 
 </main>
